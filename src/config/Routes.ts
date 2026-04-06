@@ -1,0 +1,26 @@
+const Routes: any = {
+  Home: "Home",
+  Login: "Login",
+  Register: "Register",
+  ForgotPassword: "ForgotPassword",
+  Specialties: "Specialties",
+  Profile: "Profile",
+  ProfileSegment: "ProfileSegment",
+  BasicInformation: "BasicInformation",
+  Address: "Address",
+  Calendar: "Calendar",
+  AppointmentHour: "AppointmentHour",
+  Patient: "Patient",
+  Summary: "Summary",
+  Notifications: "Notifications",
+  Payments: "Payments",
+  FamilyMembers: "FamilyMembers",
+  MedicalHistory: "MedicalHistory",
+  UnderlyingDiseases: "UnderlyingDiseases",
+  HereditaryDiseases: "HereditaryDiseases",
+  Allergies: "Allergies",
+  Medication: "Medication",
+  MedicalInsurance: "MedicalInsurance"
+};
+
+export default Routes;
