@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 interface Disease {
   id: string;
-  [key: string]: any;
+  name: any;
 }
 
 // Si no tienes el hook
