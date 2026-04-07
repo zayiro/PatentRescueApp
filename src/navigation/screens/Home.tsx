@@ -29,7 +29,7 @@ import { getUserData } from '@/service/firestore';
 import Colors from '@/config/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
-import { AppointmentType } from '@/enums/AppointmentType';
+import { ConsultationTypes } from '@/enums/ConsultationTypes';
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,9 +42,9 @@ export function Home() {
   const [userName, setUserName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleAppointmentType = useCallback((appointmentType: string) => {
-    saveAppointment({ 
-      appointmentType: appointmentType,
+  const handleAppointmentType = useCallback((consultationType: number) => {
+    saveAppointment({
+      consultationType,
       status: 'draft',
      });
 
@@ -188,10 +188,10 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(AppointmentType.MedicalConsultation)}
+                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
                   >
                     <IconButton icon="message-video" size={40} iconColor={Colors.specialityIconGreen} />
-                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta en línea</Text>    
+                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta en línea {ConsultationTypes.MedicalConsultation}</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -200,10 +200,10 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(AppointmentType.Telemedicine)}
+                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
                   >
                     <IconButton icon="hospital-building" size={40} iconColor={Colors.specialityIconGreen} />
-                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta presencial</Text>    
+                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta presencial {ConsultationTypes.Telemedicine}</Text>    
                   </TouchableOpacity>
                 </View>
               </View>

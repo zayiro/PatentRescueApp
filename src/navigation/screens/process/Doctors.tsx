@@ -5,34 +5,39 @@ import {
   Card,
   Avatar,
   Text,
-  Button,
   Chip,
+  Searchbar,
 } from 'react-native-paper';
-import { useDoctorsBySpecialty } from '@/hooks/useDoctorsBySpecialty'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useDoctorsFilter } from '@/hooks/useDoctorsFilter'
+import { useNavigation } from '@react-navigation/native';
 import Routes from '@/config/Routes';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 
-interface Props {
-    specialtyId: string;
-    specialtyName: string;
-}
-
 export default function Doctors() {
   const navigation = useNavigation();
   const { saveAppointment, appointment } = useAppointmentStorage();
-          
-  const specialtyId = appointment?.specialty.id;
-  const { filteredDoctors, loading } = useDoctorsBySpecialty({ specialtyId });
 
+  const [search, setSearch] = useState<string>('');
+
+  const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+  const specialtyId = parseInt(appointment?.specialty.id || '0');
+  
+  const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);  
+  
+  const filteredDoctors = doctors.filter(doctor =>
+    doctor.name.toLowerCase().includes(search.toLowerCase())
+  );
+  
   const handleSelectCalendar = useCallback((doctorId: string) => {
     saveAppointment({ 
       doctorId,
     });
 
-     navigation.navigate(Routes.Calendar);
+    console.log("doctorId: ", doctorId);
+
+     //navigation.navigate(Routes.Calendar);
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
@@ -40,37 +45,52 @@ export default function Doctors() {
         <Card style={styles.card}>
         <Card.Content style={styles.cardContent}>
             <View style={styles.doctorRow}>
-            {/* 🔹 Foto */}
-            <Avatar.Image 
-                size={80} 
-                source={{ uri: 'https://i.pravatar.cc/300' }} 
-            />
+              {/* 🔹 Foto */}
+              <Avatar.Image 
+                  size={80} 
+                  source={{ uri: 'https://i.pravatar.cc/300' }} 
+              />
             
-            {/* 🔹 Info */}
-            <View style={styles.infoCol}>
-                <Text style={styles.doctorName}>{item.name}</Text>
-                <Text style={styles.specialty}>{item.specialtyName}</Text>
-                
-                        
-                {/* 🔹 Precio + Slots */}
-                <View style={styles.detailsRow}>
-                <Chip style={styles.priceChip}>$ {item.price}</Chip>              
-                </View>
-            </View>
+              {/* 🔹 Info */}
+              <View style={styles.infoCol}>
+                  <Text style={styles.doctorName}>{item.name}</Text>
+                  <Text style={styles.specialty}>{item.id}</Text>                                        
+                  {/* 🔹 Precio + Slots */}
+                  <View style={styles.detailsRow}>
+                    <Chip style={styles.priceChip}>$ {item.name}</Chip>              
+                  </View>
+              </View>
             </View>
         </Card.Content>
         </Card>
     </TouchableOpacity>
   );
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return (<LoadingSpinner />);
 
   return (
-    <View style={{ flex: 1 }}>            
+    <View style={{ flex: 1 }}>          
+      <View>
+        <Text>
+          Especialidad: {specialtyId}
+        </Text>
+        <Text>
+          {filteredDoctors.length} doctores disponibles
+        </Text>
+      </View>
+      
+      {/* 🔹 Search */}
+      <Searchbar
+        placeholder="Buscar por nombre..."
+        onChangeText={setSearch}
+        value={search}
+        style={styles.searchbar}
+      />
+
       <FlatList
         data={filteredDoctors}
         renderItem={renderDoctor}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         numColumns={1}

@@ -36,13 +36,13 @@ export default function Specialties() {
       
       <FlatList
         data={specialties}
-        renderItem={({ item }) => (          
+        renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.specialtyCard}
             onPress={() => handleSelectSpecialty(item)}
           >
             <IconButton icon={item.icon} size={40} style={{ backgroundColor: item.color + '20' }} />
-            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
+            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name} ({item.id})</Text>
           </TouchableOpacity>          
         )}
         numColumns={2}
