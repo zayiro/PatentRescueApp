@@ -28,16 +28,28 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { getUserData } from '@/service/firestore';
 import Colors from '@/config/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
+import { AppointmentType } from '@/enums/AppointmentType';
 
 const { width, height } = Dimensions.get('window');
 
 export function Home() {
   const navigation = useNavigation();
+  const { saveAppointment } = useAppointmentStorage();
 
   const { user, isAuthenticated, logout } = useAuth();
 
   const [userName, setUserName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleAppointmentType = useCallback((appointmentType: string) => {
+    saveAppointment({ 
+      appointmentType: appointmentType,
+      status: 'draft',
+     });
+
+     navigation.navigate(Routes.Specialties);
+  }, [saveAppointment, navigation]);
 
   const onUserData = useCallback( async(userId: string) => {
     try {
@@ -157,20 +169,29 @@ export function Home() {
           (
             <>                        
               <View style={{ marginBottom: 30 }}>
-                <Text style={{ fontSize: 20 }}>Hola, <Text style={{ fontWeight: '700', color: Colors.Title }}>{userName}.</Text></Text>
+                <Text style={{ fontSize: 20 }}>Hola, <Text style={{ fontWeight: '700' }}>{userName}</Text></Text>
               </View>
 
-              <View style={styles.twoColumns}>
+              <View>
+                <Text style={{ fontSize: 16, fontWeight: '700' }}>
+                  Encuentra tu especialista y pide cita
+                </Text>
+                <Text variant='labelMedium' style={{ marginTop: 10, marginBottom: 30 }}>
+                  Más de 60 mil profesionales están aquí para ayudarte.
+                </Text>
+              </View>
+
+              <View style={styles.twoColumns}>                
                 <View style={styles.column}>              
                   <TouchableOpacity 
-                    style={[styles.card]}
+                    style={[styles.card, { backgroundColor: Colors.White }]}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Specialties)}
+                    onPress={() => handleAppointmentType(AppointmentType.MedicalConsultation)}
                   >
-                    <IconButton icon="calendar" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Especialistas</Text>    
+                    <IconButton icon="message-video" size={40} iconColor={Colors.specialityIconGreen} />
+                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta en línea</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -179,67 +200,14 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Specialties)}
+                    onPress={() => handleAppointmentType(AppointmentType.Telemedicine)}
                   >
-                    <IconButton icon="calendar" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Agendar consulta</Text>    
+                    <IconButton icon="hospital-building" size={40} iconColor={Colors.specialityIconGreen} />
+                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta presencial</Text>    
                   </TouchableOpacity>
                 </View>
               </View>
-
-              <View style={styles.twoColumns}>
-                <View style={styles.column}>              
-                  <TouchableOpacity 
-                    style={[styles.card]}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Specialties)}
-                  >
-                    <IconButton icon="calendar" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Consultas activas</Text>    
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.column}>
-                  <TouchableOpacity 
-                    style={[styles.card]}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Notifications)}
-                  >
-                    <IconButton icon="bell" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Notificaciones</Text>    
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={styles.twoColumns}>
-                <View style={styles.column}>              
-                  <TouchableOpacity 
-                    style={[styles.card]}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Profile)}
-                  >
-                    <IconButton icon="calendar" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Perfil</Text>    
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.column}>
-                  <TouchableOpacity 
-                    style={[styles.card]}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate(Routes.Notifications)}
-                  >
-                    <IconButton icon="bell" size={40} style={{ backgroundColor: "#88dcf1" }} />
-                    <Text style={[styles.cardName, { color: Colors.Title }]}>Configuración</Text>    
-                  </TouchableOpacity>
-                </View>
-              </View>             
+           
 
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>  
                 <Button icon="logout" mode="contained" onPress={handleLogout} style={styles.button}>
@@ -308,3 +276,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+function saveAppointment(arg0: { specialty: any; status: string; }) {
+  throw new Error('Function not implemented.');
+}
+

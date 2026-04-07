@@ -5,9 +5,11 @@ import { useState, useEffect, useCallback } from 'react';
 const APPOINTMENT_KEY = '@appointment:draft';
 
 interface AppointmentData {
+  appointmentType: string;
   specialty: any;
+  doctorId: string;
   selectedDate: string;
-  selectedTime: string;
+  selectedTime: string;  
   patientData: {
     name: string;
     userId: string;

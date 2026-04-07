@@ -7,9 +7,13 @@ const Colors = {
   backgroundHour: "#007AFF",
   White: "#FFFFFF",
   SlateGray: "#6B7280",
+  specialityGrayName: "#9297a3",
   LightGray: "#F3F4F6",
   Gray400: "#9CA3AF",
-  GreenMedium: "#10B981"
+  GreenMedium: "#10B981",
+  specialityIconGreen: "#047216",
+  specialityBoxGreen: "#32c54b",
+  GreenLight: "#006A58",
 };
 
 export default Colors;

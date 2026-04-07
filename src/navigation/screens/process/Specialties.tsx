@@ -6,7 +6,6 @@ import { useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Routes from '@/config/Routes';
 
-
 export default function Specialties() {
   const navigation = useNavigation();
   const { saveAppointment } = useAppointmentStorage();
@@ -24,15 +23,14 @@ export default function Specialties() {
   const handleSelectSpecialty = useCallback((specialty: any) => {
     saveAppointment({ 
       specialty,
-      status: 'draft',
      });
 
-     navigation.navigate(Routes.Calendar, { specialtyId: specialty.id, specialtyName: specialty.name });
+     navigation.navigate(Routes.Doctors);
   }, [saveAppointment, specialties, navigation]);
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 28, fontWeight: 'bold', marginBottom: 30, color: Colors.Title }}>
+      <Text style={{ marginBottom: 30 }}>
         Selecciona una opción
       </Text>
       

@@ -20,6 +20,7 @@ const Routes: any = {
   HereditaryDiseases: "HereditaryDiseases",
   Allergies: "Allergies",
   Medication: "Medication",
+  Doctors: "Doctors",
   MedicalInsurance: "MedicalInsurance"
 };
 

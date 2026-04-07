@@ -26,6 +26,7 @@ import { HereditaryDiseases } from './screens/profile/HereditaryDiseases';
 import { Allergies } from './screens/profile/Allergies';
 import { Medication } from './screens/profile/Medication';
 import { MedicalInsurance } from './screens/profile/MedicalInsurance';
+import Doctors from './screens/process/Doctors';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -177,6 +178,13 @@ const RootStack = createNativeStackNavigator({
       screen: Payments,
       options: {
         title: 'Pagos',
+        headerShown: true,
+      },
+    },
+    Doctors: {
+      screen: Doctors,
+      options: {
+        title: 'Doctores',
         headerShown: true,
       },
     },
