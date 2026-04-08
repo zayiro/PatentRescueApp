@@ -13,92 +13,71 @@ import {
   Button,
   TextInput,
   Text,
-  Card,
-  List,
-  IconButton
+  Divider,
+  IconButton,
+  Chip,
+  List
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import Colors from '@/config/Colors';
-import { getMedicalHistoryData, getUserData, updateDocumentCollection } from '@/service/firestore';
+import { getMedicalHistoryData, updateDocumentCollection } from '@/service/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { NameCollection } from '@/enums/NameCollection';
-import { UserDataType } from '@/type/UserDataType';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { serverTimestamp } from "firebase/firestore";
+import { useMedicalHistory } from '@/hooks/useMedicalHistory';
+import Colors from '@/config/Colors';
+
+interface Disease {
+  id: string;
+  name: string;
+}
 
 export function HereditaryDiseases() {
   const navigation = useNavigation();
   const { user } = useAuth();
+  const userId = user?.uid ?? '';
 
-  const [activeDiseases, setActiveDiseases] = useState<string>('');
-  const [familyDiseases, setFamilyDiseases] = useState<string>('');
-  const [allergies, setAllergies] = useState<string>('');  
-  
-  const [alergia, setAlergia] = useState('');
-  const [listaAlergias, setListaAlergias] = useState<any>([]);
+  const diseaseItem = 'hereditaryDiseases';
 
-  const [activeMedications, setActiveMedications] = useState<string>('');
+  const { diseasesList, removeFromMedicalHistory } = useMedicalHistory(userId, diseaseItem);
+
+  const [medicalHistory, setMedicalHistory] = useState<string>('');
+  const [medicalHistoryList, setMedicalHistoryList] = useState<Disease[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-   // Añadir alergia al array local
-  const handleAddAlergia = () => {
-    if (alergia.trim() === '') {
-      Alert.alert('Error', 'Por favor escribe una alergia');
-      return;
-    }
-    setListaAlergias([...listaAlergias, alergia]);
-    setAlergia(''); // Limpiar input
-  };
+  const handleAddMedicaHistory = useCallback( async () => {   
+    const newDisease: Disease = { id: Date.now().toString(), name: medicalHistory };
+    setMedicalHistoryList(prev => [...prev, newDisease]);
 
-  // Guardar array en Firestore [3, 12]
-  const saveToFirebase = async () => {
-  if (listaAlergias.length === 0) {
-    Alert.alert('Aviso', 'No hay alergias para guardar');
-    return;
-  }
+    try {
+      setLoading(true)
 
-  try {
-    /*await addDoc(collection(db, "pacientes_alergias"), {
-      alergias: listaAlergias,
-      fecha: new Date()
-    });
-    */
-    Alert.alert('Éxito', 'Alergias guardadas');
-    setListaAlergias([]);
-  } catch (error) {
-    Alert.alert('Error', String(error));
-  }
-}
+      let data = {
+        hereditaryDiseases: [...medicalHistoryList, newDisease],
+        updatedAt: serverTimestamp()
+      };
 
-  const handleProfile = useCallback( async () => {      
-    setLoading(true)
+      const response = await updateDocumentCollection(NameCollection.MedicalHistory, user?.uid, data)
 
-    let userData = {
-      activeDiseases: activeDiseases.trim(),
-      familyDiseases: familyDiseases.trim(),
-      allergies: activeDiseases.trim(),
-      activeMedications: activeMedications.trim()
-    };
-      
-    const updateUser = await updateDocumentCollection(NameCollection.MedicalHistory, user?.uid, userData)
-            
-    if (updateUser.isSuccess) {      
+      if (response.isSuccess) {
+        setMedicalHistory('')
+        Alert.alert("Éxito", "Datos guardados correctamente")
+      } else {
+        Alert.alert("Error", response.errorMessage)
+      }
+    } catch (error) {
+      Alert.alert("Error", String(error))
+    } finally {
       setLoading(false)
-      Alert.alert("Éxito", "Perfil actualizado correctamente.")
-    } else {
-      setLoading(false)
-      Alert.alert("Error", "Hubo un error al actualizar el perfil.")
     }
-  }, [activeDiseases, familyDiseases, allergies, activeMedications, activeMedications, user]);
+  }, [medicalHistory, medicalHistoryList, user]);
 
   const onUserData = useCallback( async(userId: string) => {
     const result: any = await getMedicalHistoryData(userId)
     
     setLoading(true)
     if (result) {
-      setActiveDiseases(result.activeDiseases || '');
-      setFamilyDiseases(result.familyDiseases || '');
-      setAllergies(result.allergies || '');
-      setActiveMedications(result.activeMedications || '');
+      setMedicalHistory(result.activeDiseases || '');
     }
     setLoading(false)
   }, []);  
@@ -109,6 +88,52 @@ export function HereditaryDiseases() {
     }
   }, [user, onUserData]);
 
+  useEffect(() => {       
+    setMedicalHistoryList(diseasesList);
+  }, [diseasesList]);
+
+  const handleDelete = (diseaseId: string) => {
+    console.log("diseaseId: "+ diseaseId);
+    Alert.alert(
+      'Eliminar',
+      '¿Quitar enfermedad del historial?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => removeFromMedicalHistory(userId, diseaseId),
+        },
+      ]
+    );
+  };
+
+  const renderDisease = ({ item }: { item: any }) => (
+    <List.Item
+      title={item.name}
+      left={() => <List.Icon icon="check" color={Colors.SlateGray} />}
+      right={() => (
+        <View style={styles.rightContent}>                  
+          <IconButton
+            icon="delete"
+            size={20}
+            iconColor={Colors.Red}
+            onPress={() => handleDelete(item.id)}
+          />
+        </View>
+      )}
+      onPress={() => Alert.alert('Info', item.name)}
+    />
+  );
+
+  const ListItemSeparator = () => (
+  <View style={{
+    height: 1,
+    backgroundColor: Colors.LightGray,
+    marginHorizontal: 15,
+  }} />
+);
+
   return (
     <>
       <StatusBar translucent barStyle="dark-content" backgroundColor="transparent" />
@@ -116,16 +141,8 @@ export function HereditaryDiseases() {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={true}
-          nestedScrollEnabled={true}
-        >
-          {loading ? (            
+      >        
+        {loading ? (            
             <>
               <View>
                 <LoadingSpinner message="Cargando..." />
@@ -137,29 +154,44 @@ export function HereditaryDiseases() {
             <>
               <View style={{ marginTop: 25 }}>                
                 <Text style={{ marginBottom: 30 }}>
-                  Polen, moho, alimentos (maní, leche, mariscos), picaduras de insectos y ciertos medicamentos...
+                  Ejemplo: Hipertensión, Asma, EPOC, Diabetes (tipo 1 o 2), obesidad, colesterol alto...
                 </Text>
                 <TextInput
-                  label="Agregar alergia"
-                  value={activeDiseases}
-                  onChangeText={setActiveDiseases}
+                  value={medicalHistory}
+                  onChangeText={setMedicalHistory}
                   multiline={true}
-                  mode="outlined"
+                  mode="flat"
+                  placeholder='Ej: Diabetes'
                 />
-                <Text variant='labelLarge' style={{ marginTop: 5, marginBottom: 30, color: Colors.SlateGray }}>
-                  Ej: Picadura de abejas
-                </Text>
               </View>
 
-              <View style={{ marginTop: 10 }}>
-                <Button icon="account" mode="contained" onPress={handleProfile} loading={loading} disabled={loading} style={[styles.button]}>
-                  <Text style={{ fontSize: 20, color: '#fff' }}>{loading ? 'Actualizando...' : 'Guardar'}</Text>
+              <View style={{ marginVertical: 30 }}>
+                <Button icon="account-heart" mode="contained" onPress={handleAddMedicaHistory} loading={loading} disabled={loading} style={[styles.button]}>
+                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Actualizando...' : 'Registrar'}</Text>
                 </Button>
+              </View>
+
+              <Divider />
+
+              <View style={{ marginTop: 10 }}>
+                <Text style={{ fontWeight: '700' }}>
+                  Enfermedades hereditarias ({ medicalHistoryList.length })
+                </Text>
+              </View>  
+              <View style={{ flex: 1 }}>
+                <FlatList
+                  data={medicalHistoryList}
+                  renderItem={renderDisease}
+                  keyExtractor={(item) => item.id}
+                  style={{ flex: 1 }} 
+                  contentContainerStyle={{ flexGrow: 1 }}
+                  showsVerticalScrollIndicator={false}
+                  ItemSeparatorComponent={ListItemSeparator}
+                />
               </View>
             </>
           )
         }          
-        </ScrollView>
       </KeyboardAvoidingView>    
     </>
   );
@@ -169,18 +201,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 50,
-    backgroundColor: '#FFF',
+    paddingHorizontal: 15,
+    paddingVertical: 30,
+    backgroundColor: Colors.White
   },
   button: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 12, // 📱 Android
-  }, 
+  },
   avatar: {
     justifyContent: "center",
     alignItems: "center",
@@ -207,7 +239,30 @@ const styles = StyleSheet.create({
   },
   card: { padding: 10, marginBottom: 10},
   inputContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  input: { flex: 1 },
-  list: { maxHeight: 300 },
-
+  input: { flex: 1 },  
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    padding: 20,
+    paddingBottom: 10,
+  },
+  list: {
+    flex: 1,
+    paddingBottom: 80,  // Espacio FAB
+  },
+  rightContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  severityChip: {
+    height: 24,
+    marginRight: 8,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 20,
+    right: 0,
+    bottom: 0,
+  },
 });

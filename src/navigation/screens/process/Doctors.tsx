@@ -1,6 +1,6 @@
 // screens/DoctorsScreen.tsx
 import React, { useCallback, useState } from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   Card,
   Avatar,
@@ -14,6 +14,7 @@ import Routes from '@/config/Routes';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
+import StarRating from '@/components/StarRating';
 
 export default function Doctors() {
   const navigation = useNavigation();
@@ -41,72 +42,100 @@ export default function Doctors() {
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
-    <TouchableOpacity onPress={() => handleSelectCalendar(item.id)}>
-        <Card style={styles.card}>
-        <Card.Content style={styles.cardContent}>
-            <View style={styles.doctorRow}>
-              {/* 🔹 Foto */}
-              <Avatar.Image 
-                  size={80} 
-                  source={{ uri: 'https://i.pravatar.cc/300' }} 
-              />
-            
-              {/* 🔹 Info */}
-              <View style={styles.infoCol}>
-                  <Text style={styles.doctorName}>{item.name}</Text>
-                  <Text style={styles.specialty}>{item.id}</Text>                                        
-                  {/* 🔹 Precio + Slots */}
-                  <View style={styles.detailsRow}>
-                    <Chip style={styles.priceChip}>$ {item.name}</Chip>              
-                  </View>
+    <TouchableOpacity style={styles.boxDoctor} onPress={() => handleSelectCalendar(item.id)}>
+      <View>
+        <View style={styles.doctorRow}>
+          {/* 🔹 Foto */}
+          <View style={{ alignItems: 'center' }}>
+            <Avatar.Image 
+                size={80} 
+                source={{ uri: 'https://i.pravatar.cc/300' }} 
+            />
+            <StarRating rating={5} />
+          </View>
+        
+          {/* 🔹 Info */}
+          <View style={styles.infoCol}>
+              <Text style={styles.doctorName}>{item.name}</Text>
+              <Text style={{ fontSize: 12 }}>Anestesiólogo +</Text>                                   
+              {/* 🔹 Precio + Slots */}
+              <View style={styles.detailsRow}>
+                <Text>$ 180.000 COP</Text>              
               </View>
-            </View>
-        </Card.Content>
-        </Card>
+          </View>
+        </View>        
+      </View>
     </TouchableOpacity>
   );
 
   if (loading) return (<LoadingSpinner />);
 
   return (
-    <View style={{ flex: 1 }}>          
-      <View>
-        <Text>
-          Especialidad: {specialtyId}
-        </Text>
-        <Text>
-          {filteredDoctors.length} doctores disponibles
-        </Text>
-      </View>
-      
-      {/* 🔹 Search */}
-      <Searchbar
-        placeholder="Buscar por nombre..."
-        onChangeText={setSearch}
-        value={search}
-        style={styles.searchbar}
-      />
+    <>
+      <StatusBar translucent barStyle="dark-content" backgroundColor="transparent" /> 
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      > 
+      <View style={{ flex: 1 }}>                  
+        <View>
+          <Text>
+            Especialidad: {specialtyId}
+          </Text>
+          <Text>
+            {filteredDoctors.length} doctores disponibles
+          </Text>
+        </View>
+        
+        {/* 🔹 Search */}
+        <Searchbar
+          placeholder="Buscar por nombre..."
+          onChangeText={setSearch}
+          value={search}
+          style={styles.searchbar}
+        />
 
-      <FlatList
-        data={filteredDoctors}
-        renderItem={renderDoctor}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        numColumns={1}
-      />
-    </View>
+        <FlatList
+          data={filteredDoctors}
+          renderItem={renderDoctor}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+          numColumns={1}
+        />
+      </View>  
+      </KeyboardAvoidingView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  list: {
+  container: {
     flex: 1,
-    padding: 12,
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 50,
+    backgroundColor: '#FFF',
+  },
+  boxDoctor: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 15,
+    marginTop: 18,
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  list: {
+    padding: 3,
   },
   card: {
-    marginVertical: 8,
-    elevation: 2,
+    backgroundColor: Colors.White,
+    marginVertical: 10,
   },
   cardContent: {
     padding: 0,
@@ -117,19 +146,19 @@ const styles = StyleSheet.create({
   },
   infoCol: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 8,
   },
   doctorName: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
+    color: Colors.Violet
   },
   specialty: {
-    color: Colors.specialityGrayName,
     marginBottom: 8,
   },
   detailsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     marginTop: 8,
   },
   priceChip: {

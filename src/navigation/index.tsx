@@ -27,14 +27,26 @@ import { Allergies } from './screens/profile/Allergies';
 import { Medication } from './screens/profile/Medication';
 import { MedicalInsurance } from './screens/profile/MedicalInsurance';
 import Doctors from './screens/process/Doctors';
+import { IconButton, useTheme } from 'react-native-paper';
+import Routes from '@/config/Routes';
+import { theme } from '@/config/theme'
+import Colors from '@/config/Colors';
 
 const RootStack = createNativeStackNavigator({
   screens: {
     Home: {
       screen: Home,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Inicio',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="account"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Profile)}
+          />
+        ),
+      }),
     },
     Login: {
       screen: Login,
@@ -56,39 +68,87 @@ const RootStack = createNativeStackNavigator({
     },
     Calendar: {
       screen: Calendar,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Selecciona una fecha',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     AppointmentHour: {
       screen: AppointmentHour,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Selecciona una hora',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Patient: {
       screen: Patient,
-      options: {    
+      options: ({ navigation }) => ({
         title: 'Datos del paciente',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Summary: {
       screen: Summary,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Resumen de la cita',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Profile: {
       screen: Profile,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Perfil',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     ProfileSegment: {
       screen: ProfileSegment,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Perfil',
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Settings: {
       screen: Settings,
@@ -106,87 +166,171 @@ const RootStack = createNativeStackNavigator({
     },
     Notifications: {
       screen: Notifications,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Notificaciones',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     BasicInformation: {
       screen: BasicInformation,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Información básica',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Address: {
       screen: Address,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Dirección',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     MedicalInsurance: {
       screen: MedicalInsurance,
-      options: {
-        title: 'Identificacíon y seguro médico',
-        headerShown: true,
-      },
+      options: ({ navigation }) => ({
+        title: 'Identificación y seguro médico',
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     MedicalHistory: {
       screen: MedicalHistory,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Historial médico',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     UnderlyingDiseases: {
       screen: UnderlyingDiseases,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Enfermedades activas',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     HereditaryDiseases: {
       screen: HereditaryDiseases,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Enfermedades hereditarias',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Allergies: {
       screen: Allergies,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Alergias',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Medication: {
       screen: Medication,
-      options: {
-        title: 'Medicación activa',
-        headerShown: true,
-      },
+      options: ({ navigation }) => ({
+        title: 'Medicación actual',
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     FamilyMembers: {
       screen: FamilyMembers,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Miembros de la familia',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Payments: {
       screen: Payments,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Pagos',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
     Doctors: {
       screen: Doctors,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Doctores',
-        headerShown: true,
-      },
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
     },
   },
 });

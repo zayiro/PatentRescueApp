@@ -13,7 +13,8 @@ import {
 import {
   Text,
   IconButton,
-  Card
+  Card,
+  Avatar
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '@/config/Colors';
@@ -22,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { IMAGE } from '@/assets';
 import Routes from '@/config/Routes';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { theme } from '@/config/theme'
 
 interface ItemData {
   id: string;
@@ -108,7 +110,7 @@ export function ProfileSegment() {
           {/* 🔹 COLUMNA 1: Icono + Texto */}
           <View style={styles.leftColumn}>
             <View style={styles.iconRow}>
-              <IconButton icon={item.icon} size={28} iconColor={Colors.Gray400} />
+              <IconButton icon={item.icon} size={28} iconColor={theme.colors.primary} />
               <Text style={styles.title}>{item.title}</Text>
             </View>
             
@@ -132,25 +134,22 @@ export function ProfileSegment() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        {loading ? (            
-            <>
-              <View>
-                <LoadingSpinner message="Cargando..." />
-              </View>
-            </>
+        {loading ? ( 
+            <View>
+              <LoadingSpinner message="Cargando..." />
+            </View>
           )
         :
           (
             <>
-              <View style={[styles.avatar, { marginBottom: 30 }]}>
-                <Image
-                  source={
-                    photoURL
-                    ? { uri: photoURL }
-                    : IMAGE.avatar
-                  }
-                  resizeMode="cover"
-                  style={styles.img}
+              <View style={[styles.avatar, { marginBottom: 30 }]}>                
+                <Avatar.Image 
+                    size={80} 
+                    source={
+                      photoURL
+                      ? { uri: 'https://i.pravatar.cc/300' }
+                      : IMAGE.avatar
+                    } 
                 />
                 <Text style={{ marginVertical: 5 }}>{firstName}</Text>
               </View>
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: Colors.White
   },

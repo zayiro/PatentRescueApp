@@ -37,7 +37,9 @@ export function UnderlyingDiseases() {
   const { user } = useAuth();
   const userId = user?.uid ?? '';
 
-  const { diseasesList, removeFromMedicalHistory } = useMedicalHistory(userId);
+  const diseaseItem = 'underlyingDiseases';
+
+  const { diseasesList, removeFromMedicalHistory } = useMedicalHistory(userId, diseaseItem);
 
   const [medicalHistory, setMedicalHistory] = useState<string>('');
   const [medicalHistoryList, setMedicalHistoryList] = useState<Disease[]>([]);
@@ -115,7 +117,7 @@ export function UnderlyingDiseases() {
           <IconButton
             icon="delete"
             size={20}
-            iconColor="#EF4444"
+            iconColor={Colors.Red}
             onPress={() => handleDelete(item.id)}
           />
         </View>
@@ -159,13 +161,13 @@ export function UnderlyingDiseases() {
                   onChangeText={setMedicalHistory}
                   multiline={true}
                   mode="flat"
-                  placeholder='Ej: tengo diabetes tipo 1.'
+                  placeholder='Ej: Diabetes tipo 1'
                 />
               </View>
 
               <View style={{ marginVertical: 30 }}>
-                <Button icon="account" mode="contained" onPress={handleAddMedicaHistory} loading={loading} disabled={loading} style={[styles.button]}>
-                  <Text style={{ fontSize: 20, color: '#fff' }}>{loading ? 'Actualizando...' : 'Guardar'}</Text>
+                <Button icon="account-heart" mode="contained" onPress={handleAddMedicaHistory} loading={loading} disabled={loading} style={[styles.button]}>
+                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Actualizando...' : 'Registrar'}</Text>
                 </Button>
               </View>
 
@@ -173,10 +175,10 @@ export function UnderlyingDiseases() {
 
               <View style={{ marginTop: 10 }}>
                 <Text style={{ fontWeight: '700' }}>
-                  Historial Médico ({medicalHistoryList.length})
+                  Enfermedades activas ({ medicalHistoryList.length })
                 </Text>
               </View>  
-              <View style={{ flex: 1,  }}>
+              <View style={{ flex: 1 }}>
                 <FlatList
                   data={medicalHistoryList}
                   renderItem={renderDisease}
@@ -199,12 +201,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 30,
     backgroundColor: Colors.White
   },
   button: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,

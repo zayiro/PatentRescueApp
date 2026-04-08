@@ -14,6 +14,9 @@ const Colors = {
   specialityIconGreen: "#047216",
   specialityBoxGreen: "#32c54b",
   GreenLight: "#006A58",
+  Red: "#EF4444",
+  Violet: "#8B5CF6",
+  Teal: "#00a085",
 };
 
 export default Colors;

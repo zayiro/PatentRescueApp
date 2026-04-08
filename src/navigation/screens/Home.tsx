@@ -24,12 +24,13 @@ import { useNavigation } from '@react-navigation/native';
 
 import Routes from '@/config/Routes';
 import { useAuth } from '@/hooks/useAuth';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getUserData } from '@/service/firestore';
 import Colors from '@/config/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
+import { theme } from '@/config/theme'
 
 const { width, height } = Dimensions.get('window');
 
@@ -158,12 +159,10 @@ export function Home() {
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >
-          {loading ? (            
-            <>
-              <View>
-                <LoadingSpinner message="Cargando..." />
-              </View>
-            </>
+          {loading ? ( 
+            <View>
+              <LoadingSpinner message="Cargando..." />
+            </View>
           )
         :
           (
@@ -176,7 +175,7 @@ export function Home() {
                 <Text style={{ fontSize: 16, fontWeight: '700' }}>
                   Encuentra tu especialista y pide cita
                 </Text>
-                <Text variant='labelMedium' style={{ marginTop: 10, marginBottom: 30 }}>
+                <Text variant='labelMedium' style={{ marginTop: 10, marginBottom: 30, color: Colors.SlateGray }}>
                   Más de 60 mil profesionales están aquí para ayudarte.
                 </Text>
               </View>
@@ -190,8 +189,8 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
                   >
-                    <IconButton icon="message-video" size={40} iconColor={Colors.specialityIconGreen} />
-                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta en línea {ConsultationTypes.MedicalConsultation}</Text>    
+                    <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta en línea</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -202,8 +201,8 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
                   >
-                    <IconButton icon="hospital-building" size={40} iconColor={Colors.specialityIconGreen} />
-                    <Text style={[styles.cardName, { color: Colors.GreenLight }]}>Consulta presencial {ConsultationTypes.Telemedicine}</Text>    
+                    <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta presencial</Text>    
                   </TouchableOpacity>
                 </View>
               </View>
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
   container2: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: '#FFF',
   },

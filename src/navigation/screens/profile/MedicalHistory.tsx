@@ -22,6 +22,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { IMAGE } from '@/assets';
 import Routes from '@/config/Routes';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { theme } from '@/config/theme'
 
 interface ItemData {
   id: string;
@@ -99,8 +100,10 @@ export function MedicalHistory() {
       <Card style={styles.card}>
         <Card.Content style={styles.cardContent}>          
             <View style={styles.iconRow}>
-              <IconButton icon={item.icon} size={28} iconColor={Colors.Gray400} />
-              <Text>{item.title}</Text>
+              <IconButton icon={item.icon} size={28} iconColor={theme.colors.primary} />
+              <View>
+                <Text>{item.title}</Text>
+              </View>
               <IconButton icon="chevron-right" size={24} iconColor={Colors.Gray400} />            
           </View>          
         </Card.Content>
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: Colors.White
   },
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
     elevation: 0,             // 🔹 Sin sombra Android
     shadowOpacity: 0,
   },
-  cardContent: {
+  cardContent: {    
     flexDirection: 'row',   
   },
   leftColumn: {

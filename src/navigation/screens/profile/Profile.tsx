@@ -4,32 +4,25 @@ import {
   StyleSheet,
   StatusBar,
   View,
-  Alert,
   Platform,
-  ScrollView,
   Image,
   TouchableOpacity,
   FlatList
 } from 'react-native';
 import {
-  Button,
-  RadioButton,
-  TextInput,
   Text,
-  Menu, 
   List,
   IconButton,
   Divider
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '@/config/Colors';
-import { getUserData, updateDocumentCollection, updateProfileUser } from '@/service/firestore';
+import { getUserData } from '@/service/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { IMAGE } from '@/assets';
-import { NameCollection } from '@/enums/NameCollection';
-import { UserDataType } from '@/type/UserDataType';
 import Routes from '@/config/Routes';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { theme } from '@/config/theme'
 
 interface MenuItem {
   id: string;
@@ -65,8 +58,8 @@ export function Profile() {
     }, [user, onUserData]);
 
    const items = [
-      { id: 'medicalInformation', name: 'Información médica', icon: 'heart', color: Colors.SlateGray, routeItem: Routes.ProfileSegment },
-      { id: 'familyMembers', name: 'Miembros de la familia', icon: 'account', color: Colors.SlateGray, routeItem: Routes.FamilyMembers },
+      { id: 'medicalInformation', name: 'Información médica', icon: 'heart', color: theme.colors.primary, routeItem: Routes.ProfileSegment },
+      { id: 'familyMembers', name: 'Miembros de la familia', icon: 'account', color: theme.colors.primary, routeItem: Routes.FamilyMembers },
     ];
 
   const renderItem = ({ item }: { item: MenuItem }) => (
@@ -140,7 +133,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: Colors.White
   },

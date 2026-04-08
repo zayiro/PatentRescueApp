@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
     backgroundColor: Colors.White,
+    marginTop: 50
   },
   progressBar: {
     width: 200,

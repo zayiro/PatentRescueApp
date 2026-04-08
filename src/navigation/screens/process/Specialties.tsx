@@ -11,13 +11,13 @@ export default function Specialties() {
   const { saveAppointment } = useAppointmentStorage();
 
   const specialties = [
-    { id: 1, name: 'Medicina general', icon: 'heart', color: '#EF4444', amount: 50000 },
-    { id: 2, name: 'Cardiología', icon: 'heart', color: '#EF4444', amount: 70000 },
-    { id: 3, name: 'Dermatología', icon: 'hand-back-left', color: '#10B981', amount: 60000 },
-    { id: 4, name: 'Pediatría', icon: 'baby-carriage', color: '#3B82F6', amount: 55000 },
-    { id: 5, name: 'Neurología', icon: 'brain', color: '#8B5CF6', amount: 80000 },
-    { id: 6, name: 'Gastroenterología', icon: 'food-apple', color: '#F59E0B', amount: 65000 },
-    { id: 7, name: 'Psiquiatría', icon: 'emoticon-happy', color: '#EC4899', amount: 75000 },    
+    { id: 1, name: 'Medicina general', icon: 'heart', color: Colors.Violet, amount: 50000 },
+    { id: 2, name: 'Cardiología', icon: 'heart', color: Colors.Violet, amount: 70000 },
+    { id: 3, name: 'Dermatología', icon: 'hand-back-left', color: Colors.Violet, amount: 60000 },
+    { id: 4, name: 'Pediatría', icon: 'baby-carriage', color: Colors.Violet, amount: 55000 },
+    { id: 5, name: 'Neurología', icon: 'brain', color: Colors.Violet, amount: 80000 },
+    { id: 6, name: 'Gastroenterología', icon: 'food-apple', color: Colors.Violet, amount: 65000 },
+    { id: 7, name: 'Psiquiatría', icon: 'emoticon-happy', color: Colors.Violet, amount: 75000 },    
   ];
 
   const handleSelectSpecialty = useCallback((specialty: any) => {
@@ -29,11 +29,7 @@ export default function Specialties() {
   }, [saveAppointment, specialties, navigation]);
 
   return (
-    <View style={styles.container}>
-      <Text style={{ marginBottom: 30 }}>
-        Selecciona una opción
-      </Text>
-      
+    <View style={styles.container}>      
       <FlatList
         data={specialties}
         renderItem={({ item }) => (
@@ -42,7 +38,7 @@ export default function Specialties() {
             onPress={() => handleSelectSpecialty(item)}
           >
             <IconButton icon={item.icon} size={40} style={{ backgroundColor: item.color + '20' }} />
-            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name} ({item.id})</Text>
+            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
           </TouchableOpacity>          
         )}
         numColumns={2}
@@ -56,7 +52,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: '#FFF',
   },
