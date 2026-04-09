@@ -1,4 +1,3 @@
-// hooks/useAppointmentStorage.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect, useCallback } from 'react';
 

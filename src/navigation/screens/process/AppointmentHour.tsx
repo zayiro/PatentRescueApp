@@ -9,31 +9,23 @@ import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, ScrollView, StatusBar, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { Text, Button, Divider } from 'react-native-paper';
 
-interface Props {
-    specialtyId: string;
-    specialtyName: string;
-    selectedDate: string;
-}
-
-// screens/CalendarScreen.js
 export default function AppointmentHour() {
     const navigation = useNavigation();
-
-    const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
-    const { specialtyId, specialtyName, selectedDate } = route.params;
 
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedTime, setSelectedTime] = useState<string>('');
 
     const { appointment, saveAppointment } = useAppointmentStorage();
+
+    const specialtyName = appointment?.specialty.name;
+    const selectedDate = appointment?.selectedDate;
   
     const handleSlotSelect = useCallback(async (date: any) => {    
         await saveAppointment({            
-            selectedTime: selectedTime,
-            status: 'draft',
+            selectedTime: selectedTime
         });
         
-        navigation.navigate(Routes.Patient, { specialtyId, specialtyName, selectedDate, selectedTime });
+        navigation.navigate(Routes.Patient);
     }, [saveAppointment, navigation, selectedTime]);
 
   return (

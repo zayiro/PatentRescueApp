@@ -38,7 +38,7 @@ export default function Doctors() {
 
     console.log("doctorId: ", doctorId);
 
-     //navigation.navigate(Routes.Calendar);
+     navigation.navigate(Routes.Calendar);
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
@@ -48,7 +48,7 @@ export default function Doctors() {
           {/* 🔹 Foto */}
           <View style={{ alignItems: 'center' }}>
             <Avatar.Image 
-                size={80} 
+                size={75} 
                 source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
             <StarRating rating={5} />

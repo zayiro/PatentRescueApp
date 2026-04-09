@@ -8,31 +8,22 @@ import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, ScrollView, StatusBar, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { Text, Button, Divider } from 'react-native-paper';
 
-
-interface Props {
-  specialtyId: string;
-  specialtyName: string;
-}
-
-// screens/CalendarScreen.js
 export default function Calendar() {
     const navigation = useNavigation();
 
-    const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
-    const { specialtyId, specialtyName } = route.params;
+    const { appointment, saveAppointment } = useAppointmentStorage();
+    console.log(appointment);
+    const specialtyName = 'Cardiologia'
 
     const [selectedDate, setSelectedDate] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
-
-    const { appointment, saveAppointment } = useAppointmentStorage();
+    const [loading, setLoading] = useState<boolean>(false);    
   
     const handleSlotSelect = useCallback(async () => {    
         await saveAppointment({
             selectedDate: selectedDate,
-            status: 'draft',
         });
         
-        navigation.navigate(Routes.AppointmentHour, { specialtyId, specialtyName, selectedDate });
+        navigation.navigate(Routes.AppointmentHour);
     }, [saveAppointment, navigation, selectedDate]);
 
     const handleDateSelect = (date: string) => {
@@ -88,14 +79,14 @@ export default function Calendar() {
                     <>
                         <View style={{ marginTop: 15 }}>
                             <Button icon="login" mode="contained" onPress={handleSlotSelect} loading={loading} disabled={loading} style={[styles.button]}>
-                            <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>{loading ? 'Confirmando...' : 'Confirmar Día'}</Text>
+                            <Text style={{ fontSize: 20, color: '#fff' }}>{loading ? 'Confirmando...' : 'Confirmar Día'}</Text>
                             </Button>
                         </View>
                     </>                     
                 ) : (
                     <View style={{ marginTop: 15 }}>
                         <Button icon="calendar" mode="contained" disabled style={[styles.button]}>
-                            <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>Selecciona el día</Text>
+                            <Text style={{ fontSize: 20, color: '#fff' }}>Selecciona el día</Text>
                         </Button>
                     </View>
                 )}

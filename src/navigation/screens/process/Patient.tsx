@@ -6,33 +6,53 @@ import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { createDocument, getUserData } from "@/service/firestore";
 import dayjs from "@/utils/dayjs";
-import { DrawerActions, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { serverTimestamp } from "firebase/firestore";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
-import { Button, TextInput, Text, Divider, Checkbox, IconButton } from "react-native-paper";
+import { Button, TextInput, Text, Divider, Checkbox, RadioButton } from "react-native-paper";
 import uuid from 'react-native-uuid'
 import { formatDateTime } from '@/utils/formatDateTime';
-
-interface Props {
-    specialtyId: string;
-    specialtyName: string;
-    selectedDate: string;
-    selectedTime: string;
-}
 
 export default function Patient() {
     const navigation = useNavigation();
     const { user } = useAuth();
-
-    const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
-    const { specialtyId, specialtyName, selectedDate, selectedTime } = route.params;
     
-    const { appointment, saveAppointment, clearAppointment } = useAppointmentStorage();   
+    const { appointment, saveAppointment, clearAppointment } = useAppointmentStorage();
 
+    const specialtyId = appointment?.specialty.id;
+    const specialtyName = appointment?.specialty.name;
+    const selectedDate = appointment?.selectedDate;
+    const selectedTime = appointment?.selectedTime;
+
+    const [value, setValue] = useState<string>('first');
     const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
+
+    const [day, setDay] = useState('');
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
+
+     // 🔹 Crear Date
+  const getDate = (): Date | null => {
+    const d = parseInt(day);
+    const m = parseInt(month) - 1;  // Mes 0-index
+    const y = parseInt(year);
+    
+    if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 0 || m > 11) {
+      return null;
+    }
+    
+    const date = new Date(y, m, d);
+    return date.getDate() === d && date.getMonth() === m && date.getFullYear() === y 
+      ? date 
+      : null;
+  };
+
+  const date = getDate();
+  const isValid = date && date <= new Date();
 
     const [showTermsModal, setShowTermsModal] = useState<boolean>(false);
     const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
@@ -98,17 +118,15 @@ export default function Patient() {
 
   const onUserData = useCallback( async(userId: string) => {
       const result: any = await getUserData(userId)
-      setFirstName(result.name || '');      
+      console.log(result);
+      setFirstName(result.firstName || '');      
+      setLastName(result.lastName || '');      
     }, [firstName]);  
   
     useEffect(() => {
-      const unsubscribe = navigation.addListener('focus', (e) => {      
-          if (user) {
-            onUserData(user?.uid);
-          }
-      });
-  
-      return () => unsubscribe();
+      if (user) {
+        onUserData(user?.uid);
+      }
     }, [user]);
 
   return (
@@ -126,7 +144,7 @@ export default function Patient() {
           showsVerticalScrollIndicator={false}
           scrollEnabled={true}
           nestedScrollEnabled={true}
-        >
+        >          
           <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
               <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
               <Text>{specialtyName || ''}</Text>
@@ -141,12 +159,84 @@ export default function Patient() {
 
           <Divider />
 
+          <View style={{ alignItems: 'flex-start', marginTop: 30, marginBottom: 20 }}>
+            <Text variant="headlineSmall">¿Para quién es la cita?</Text>
+          </View>
+
+          <View style={{ marginBottom: 10 }}>            
+            <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value}>
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>                
+                <RadioButton value="first" />
+                <Text style={{ paddingTop: 5 }}>{ firstName } { lastName}</Text>
+              </View>
+              <View style={{ flexDirection: 'row' }}>                
+                <RadioButton value="second" />
+                <Text style={{ paddingTop: 5 }}>Para otra persona</Text>
+              </View>
+            </RadioButton.Group>
+          </View>
+
           <View style={{ marginTop: 30 }}>
             <TextInput
               label="Nombre del paciente"        
               onChangeText={setFirstName}
               value={firstName}
               right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+              mode="outlined"
+            />
+          </View>
+
+          <View style={{ marginTop: 30 }}>
+            <TextInput
+              label="Apellido del paciente"        
+              onChangeText={setFirstName}
+              value={lastName}
+              right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+              mode="outlined"
+            />
+          </View>
+
+          <View>
+            <Text style={{ marginTop: 30 }}>Fecha de Nacimiento</Text>
+          </View>
+          <View style={styles.dateRow}>
+            
+            {/* 🔹 Día */}
+            <TextInput
+              style={styles.input}
+              label="Día"
+              value={day}
+              onChangeText={(text) => {
+                setDay(text.replace(/\D/g, '').slice(0, 2));
+              }}
+              keyboardType="numeric"
+              maxLength={2}
+              mode="outlined"
+            />
+            
+            {/* 🔹 Mes */}
+            <TextInput
+              style={styles.input}
+              label="Mes"
+              value={month}
+              onChangeText={(text) => {
+                setMonth(text.replace(/\D/g, '').slice(0, 2));
+              }}
+              keyboardType="numeric"
+              maxLength={2}
+              mode="outlined"
+            />
+            
+            {/* 🔹 Año */}
+            <TextInput
+              style={styles.input}
+              label="Año"
+              value={year}
+              onChangeText={(text) => {
+                setYear(text.replace(/\D/g, '').slice(0, 4));
+              }}
+              keyboardType="numeric"
+              maxLength={4}
               mode="outlined"
             />
           </View>
@@ -165,7 +255,7 @@ export default function Patient() {
 
           <View style={{ marginTop: 40 }}>
             <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-              <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
+              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 28 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
             </Button>
           </View>
 
@@ -201,6 +291,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 50,
     backgroundColor: '#FFF',
+  },
+  dateRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  input: {
+    flex: 1,
   },
   button: {
     paddingVertical: 10,
