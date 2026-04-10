@@ -72,7 +72,7 @@ export default function AppointmentHour() {
                         <>
                             <View style={{ marginTop: 30 }}>
                                 <Button icon="login" mode="contained" onPress={handleSlotSelect} loading={loading} disabled={loading} style={[styles.button]}>
-                                <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>{loading ? 'Confirmando...' : 'Confirmar Hora'}</Text>
+                                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Confirmando...' : 'Confirmar Hora'}</Text>
                                 </Button>
                             </View>
                         </>
@@ -80,7 +80,7 @@ export default function AppointmentHour() {
                         <>
                             <View style={{ marginTop: 30 }}>
                                 <Button icon="calendar" mode="contained" disabled style={[styles.button]}>
-                                    <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>Selecciona la hora</Text>
+                                    <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Selecciona la hora</Text>
                                 </Button>
                             </View>
                         </>

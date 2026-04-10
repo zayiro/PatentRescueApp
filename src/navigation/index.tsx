@@ -31,6 +31,7 @@ import { IconButton, useTheme } from 'react-native-paper';
 import Routes from '@/config/Routes';
 import { theme } from '@/config/theme'
 import Colors from '@/config/Colors';
+import ThankYouPage from './screens/process/ThankYouPage';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -322,6 +323,20 @@ const RootStack = createNativeStackNavigator({
       screen: Doctors,
       options: ({ navigation }) => ({
         title: 'Doctores',
+        headerRight: () => (
+          <IconButton
+            icon="home"
+            iconColor={Colors.SlateGray}
+            size={28}
+            onPress={() => navigation.navigate(Routes.Home)}
+          />
+        ),
+      }),
+    },
+    ThankYouPage: {
+      screen: ThankYouPage,
+      options: ({ navigation }) => ({
+        title: 'Reserva confirmada',
         headerRight: () => (
           <IconButton
             icon="home"

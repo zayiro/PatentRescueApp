@@ -9,33 +9,37 @@ import dayjs from "@/utils/dayjs";
 import { useNavigation } from "@react-navigation/native";
 import { serverTimestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert, Animated } from "react-native";
 import { Button, TextInput, Text, Divider, Checkbox, RadioButton } from "react-native-paper";
 import uuid from 'react-native-uuid'
 import { formatDateTime } from '@/utils/formatDateTime';
 
 export default function Patient() {
-    const navigation = useNavigation();
-    const { user } = useAuth();
-    
-    const { appointment, saveAppointment, clearAppointment } = useAppointmentStorage();
+  const navigation = useNavigation();
+  const { user } = useAuth();
+  
+  const { appointment, saveAppointment, clearAppointment } = useAppointmentStorage();
 
-    const specialtyId = appointment?.specialty.id;
-    const specialtyName = appointment?.specialty.name;
-    const selectedDate = appointment?.selectedDate;
-    const selectedTime = appointment?.selectedTime;
+  const specialtyId = appointment?.specialty.id;
+  const specialtyName = appointment?.specialty.name;
+  const selectedDate = appointment?.selectedDate;
+  const selectedTime = appointment?.selectedTime;
 
-    const [value, setValue] = useState<string>('first');
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
+  const [value, setValue] = useState<string>('first');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [firstNameSaved, setFirstNameSaved] = useState<string>('');
+  const [lastNameSaved, setLastNameSaved] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState(false);
+  const [heightAnim] = useState(new Animated.Value(0));
 
-    const [day, setDay] = useState('');
-    const [month, setMonth] = useState('');
-    const [year, setYear] = useState('');
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
-     // 🔹 Crear Date
+    // 🔹 Crear Date
   const getDate = (): Date | null => {
     const d = parseInt(day);
     const m = parseInt(month) - 1;  // Mes 0-index
@@ -54,80 +58,112 @@ export default function Patient() {
   const date = getDate();
   const isValid = date && date <= new Date();
 
-    const [showTermsModal, setShowTermsModal] = useState<boolean>(false);
-    const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
-        
-    const handleTermsAccept = () => {
-      setTermsAccepted(true);
-      setShowTermsModal(false);
-    };
+  const toggleOtherPerson = () => {
+    if (visible) {
+      // 🔹 Ocultar
+      Animated.timing(heightAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        setVisible(false);
+      });
+    } else {
+      // 🔹 Mostrar
+      setVisible(true);
+      Animated.timing(heightAnim, {
+        toValue: 175,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
 
-    const handleSubmit = useCallback(async () => {
+  const [showTermsModal, setShowTermsModal] = useState<boolean>(false);
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
+      
+  const handleTermsAccept = () => {
+    setTermsAccepted(true);
+    setShowTermsModal(false);
+  };
+
+  const handleSubmit = useCallback(async () => {
       if (!termsAccepted) {
         Alert.alert('Error', 'Debes aceptar términos y condiciones');
         return false;
       }
 
-      if (!firstName.length) {
-        Alert.alert("Error", "El nombre es obligatorio.")
-        
-        return false;
+      let patientName = firstNameSaved+" "+lastNameSaved;      
+      if (value !== 'first') {
+        if (!firstName.length) {
+          Alert.alert("Error", "El nombre es obligatorio.")
+          
+          return false;
+        }
+
+        if (!lastName.length) {
+          Alert.alert("Error", "El apellido es obligatorio.")
+          
+          return false;
+        }
+
+        patientName = firstName+" "+lastName;
       }
 
       if (!description.length) {
-        Alert.alert("Error", "La descripción es obligatoria.")        
+        Alert.alert("Aviso", "La descripción es obligatoria.")        
         return false;
       }
 
       let createdAt: any = serverTimestamp(); 
+      let appointmentId = uuid.v4().toString();
 
       // 🔹 Guardar datos paciente
       await saveAppointment({ 
+          appointmentId: appointmentId,
           patientData: {
-              name: firstName.trim(),
+              name: patientName,
               userId: user?.uid || '',
               description: description.trim(),
           },
           status: 'completed',
           createdAt: formatDateTime(new Date(), undefined, 'YYYY-MM-DDTHH:mm:ssZ')
-      });
-
-      let appointmentId = uuid.v4().toString();
+      });      
 
       let data = {
         id: appointmentId,
+        appointmentType: appointment?.consultationType,
         creationDate: appointment?.createdAt,
         userId: appointment?.patientData.userId,
-        name: appointment?.patientData.name,
+        name: patientName,
         description: appointment?.patientData.description,
         specialtyId: appointment?.specialty?.id,
-        specialtyName: appointment?.specialty?.name,
         specialtyAmount: appointment?.specialty?.amount,
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
+        link: '',
+        isPay: 'Pending',
         createdAt,
       }
 
       createDocument(NameCollection.Appointments, appointmentId, data);
-      console.log("Appointment saved with ID:", appointmentId, "Data:", data);
+      //console.log("Appointment saved with ID:", appointmentId, "Data:", data);
 
-      //await clearAppointment();
-
-      navigation.navigate(Routes.Summary, { appointmentId });    
-  }, [saveAppointment, navigation, firstName, description, user, termsAccepted]);
+      navigation.navigate(Routes.Summary);    
+  }, [saveAppointment, navigation, firstName, lastName, firstNameSaved, lastNameSaved, description, user, termsAccepted, value]);
 
   const onUserData = useCallback( async(userId: string) => {
       const result: any = await getUserData(userId)
       console.log(result);
-      setFirstName(result.firstName || '');      
-      setLastName(result.lastName || '');      
-    }, [firstName]);  
+      setFirstNameSaved(result.firstName || '');      
+      setLastNameSaved(result.lastName || '');      
+  }, [firstName]);  
   
-    useEffect(() => {
-      if (user) {
-        onUserData(user?.uid);
-      }
-    }, [user]);
+  useEffect(() => {
+    if (user) {
+      onUserData(user?.uid);
+    }
+  }, [user]);
 
   return (
     <>
@@ -159,123 +195,141 @@ export default function Patient() {
 
           <Divider />
 
-          <View style={{ alignItems: 'flex-start', marginTop: 30, marginBottom: 20 }}>
-            <Text variant="headlineSmall">¿Para quién es la cita?</Text>
-          </View>
-
-          <View style={{ marginBottom: 10 }}>            
-            <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value}>
-              <View style={{ flexDirection: 'row', marginBottom: 5 }}>                
-                <RadioButton value="first" />
-                <Text style={{ paddingTop: 5 }}>{ firstName } { lastName}</Text>
-              </View>
-              <View style={{ flexDirection: 'row' }}>                
-                <RadioButton value="second" />
-                <Text style={{ paddingTop: 5 }}>Para otra persona</Text>
-              </View>
-            </RadioButton.Group>
-          </View>
-
-          <View style={{ marginTop: 30 }}>
-            <TextInput
-              label="Nombre del paciente"        
-              onChangeText={setFirstName}
-              value={firstName}
-              right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
-              mode="outlined"
-            />
-          </View>
-
-          <View style={{ marginTop: 30 }}>
-            <TextInput
-              label="Apellido del paciente"        
-              onChangeText={setFirstName}
-              value={lastName}
-              right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
-              mode="outlined"
-            />
-          </View>
-
           <View>
-            <Text style={{ marginTop: 30 }}>Fecha de Nacimiento</Text>
-          </View>
-          <View style={styles.dateRow}>
-            
-            {/* 🔹 Día */}
-            <TextInput
-              style={styles.input}
-              label="Día"
-              value={day}
-              onChangeText={(text) => {
-                setDay(text.replace(/\D/g, '').slice(0, 2));
-              }}
-              keyboardType="numeric"
-              maxLength={2}
-              mode="outlined"
-            />
-            
-            {/* 🔹 Mes */}
-            <TextInput
-              style={styles.input}
-              label="Mes"
-              value={month}
-              onChangeText={(text) => {
-                setMonth(text.replace(/\D/g, '').slice(0, 2));
-              }}
-              keyboardType="numeric"
-              maxLength={2}
-              mode="outlined"
-            />
-            
-            {/* 🔹 Año */}
-            <TextInput
-              style={styles.input}
-              label="Año"
-              value={year}
-              onChangeText={(text) => {
-                setYear(text.replace(/\D/g, '').slice(0, 4));
-              }}
-              keyboardType="numeric"
-              maxLength={4}
-              mode="outlined"
-            />
-          </View>
-          
-          <View style={{ marginTop: 25 }}>
-            <TextInput
-              label="Cuéntanos el motivo de la reunión"
-              value={description}
-              onChangeText={setDescription}
-              multiline={true}
-              numberOfLines={4}
-              style={styles.textArea}
-              mode="outlined"
-            />
-          </View>
+            <View style={{ alignItems: 'flex-start', marginTop: 30, marginBottom: 20 }}>
+              <Text variant="headlineSmall">¿Para quién es la cita?</Text>
+            </View>
 
-          <View style={{ marginTop: 40 }}>
-            <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 28 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
-            </Button>
-          </View>
+            <View style={{ marginBottom: 10 }}>            
+              <RadioButton.Group onValueChange={newValue => { 
+                  setValue(newValue);
+                  toggleOtherPerson();
+                }} value={value}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>                
+                  <RadioButton value="first" />
+                  <Text style={{ paddingTop: 5 }}>{ firstNameSaved } { lastNameSaved }</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>                
+                  <RadioButton value="second" />
+                  <Text style={{ paddingTop: 5 }}>Para otra persona</Text>
+                </View>
+              </RadioButton.Group>
+            </View>
 
-          <View style={{ marginTop: 30, alignSelf: 'center', paddingHorizontal: 15 }}>            
-            <TouchableOpacity
-              onPress={() => setShowTermsModal(true)}
-              style={{ flexDirection: 'row', alignItems: 'center' }}
-            >
-              <Checkbox
-                status={termsAccepted ? 'checked' : 'unchecked'}
-                color="#007AFF"
+            <Animated.View 
+              style={[
+                styles.inputContainer,
+                {
+                  height: heightAnim,
+                  opacity: heightAnim.interpolate({
+                    inputRange: [0, 60],
+                    outputRange: [0, 1],
+                  }),
+                },
+              ]}
+            >                    
+              <View style={{ marginTop: 30 }}>
+                <TextInput
+                  label="Nombre del paciente"        
+                  onChangeText={setFirstName}
+                  value={firstName}
+                  right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+                  mode="outlined"
+                />
+              </View>
+
+              <View style={{ marginTop: 30 }}>
+                <TextInput
+                  label="Apellido del paciente"        
+                  onChangeText={setFirstName}
+                  value={lastName}
+                  right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+                  mode="outlined"
+                />
+              </View>
+
+              <View>
+                <Text style={{ marginTop: 30 }}>Fecha de Nacimiento</Text>
+              </View>
+              <View style={styles.dateRow}>
+                
+                {/* 🔹 Día */}
+                <TextInput
+                  style={styles.input}
+                  label="Día"
+                  value={day}
+                  onChangeText={(text) => {
+                    setDay(text.replace(/\D/g, '').slice(0, 2));
+                  }}
+                  keyboardType="numeric"
+                  maxLength={2}
+                  mode="outlined"
+                />
+                
+                {/* 🔹 Mes */}
+                <TextInput
+                  style={styles.input}
+                  label="Mes"
+                  value={month}
+                  onChangeText={(text) => {
+                    setMonth(text.replace(/\D/g, '').slice(0, 2));
+                  }}
+                  keyboardType="numeric"
+                  maxLength={2}
+                  mode="outlined"
+                />
+                
+                {/* 🔹 Año */}
+                <TextInput
+                  style={styles.input}
+                  label="Año"
+                  value={year}
+                  onChangeText={(text) => {
+                    setYear(text.replace(/\D/g, '').slice(0, 4));
+                  }}
+                  keyboardType="numeric"
+                  maxLength={4}
+                  mode="outlined"
+                />
+              </View>
+            </Animated.View>
+            
+            <View style={{ marginTop: 25 }}>
+              <TextInput
+                label="Cuéntanos el motivo de la reunión"
+                value={description}
+                onChangeText={setDescription}
+                multiline={true}
+                numberOfLines={4}
+                style={styles.textArea}
+                mode="outlined"
               />
-              <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Acepto los Términos y Condiciones del servicio y Política de Privacidad</Text>
-            </TouchableOpacity>
+            </View>
 
-            <TermsModal
-              visible={showTermsModal}
-              onAccept={handleTermsAccept}
-              onClose={() => setShowTermsModal(false)}
-            />
+            <View style={{ marginTop: 40 }}>
+              <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
+                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
+              </Button>
+            </View>
+
+            <View style={{ marginTop: 30, alignSelf: 'center', paddingHorizontal: 15 }}>            
+              <TouchableOpacity
+                onPress={() => setShowTermsModal(true)}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+              >
+                <Checkbox
+                  status={termsAccepted ? 'checked' : 'unchecked'}
+                  color="#007AFF"
+                />
+                <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Acepto los Términos y Condiciones del servicio y Política de Privacidad</Text>
+              </TouchableOpacity>
+
+              <TermsModal
+                visible={showTermsModal}
+                onAccept={handleTermsAccept}
+                onClose={() => setShowTermsModal(false)}
+              />
+            </View>
           </View>
 
         </ScrollView>
@@ -321,4 +375,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 20,
   },
+  inputContainer: {
+    
+  }
 });

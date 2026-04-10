@@ -78,8 +78,6 @@ export function BasicInformation() {
       gender: gender,
       birthday: birthDate.trim(),      
     } as UserDataType;
-
-    console.log("llega");
       
     const updateUser = await updateDocumentCollection(NameCollection.Users, user?.uid, userData)
             

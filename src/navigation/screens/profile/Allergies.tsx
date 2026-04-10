@@ -42,7 +42,7 @@ export function Allergies() {
    // Añadir alergia al array local
   const handleAddAlergia = () => {
     if (alergia.trim() === '') {
-      Alert.alert('Error', 'Por favor escribe una alergia');
+      Alert.alert('Aviso', 'Por favor escribe una alergia');
       return;
     }
     setListaAlergias([...listaAlergias, alergia]);

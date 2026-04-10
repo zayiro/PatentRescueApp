@@ -21,7 +21,8 @@ const Routes: any = {
   Allergies: "Allergies",
   Medication: "Medication",
   Doctors: "Doctors",
-  MedicalInsurance: "MedicalInsurance"
+  MedicalInsurance: "MedicalInsurance",
+  ThankYouPage: "ThankYouPage",
 };
 
 export default Routes;

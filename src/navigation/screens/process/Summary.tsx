@@ -1,39 +1,37 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
-import TermsModal from "@/components/TermsModal";
 import Colors from "@/config/Colors";
 import Routes from "@/config/Routes";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { getAppoinments } from "@/service/firestore";
-import dayjs from "@/utils/dayjs";
 import { formatDate } from "@/utils/formatDateTime";
 import { formatCOP } from "@/utils/priceUtils";
-import { DrawerActions, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
-import { Button, TextInput, Text, Divider, Checkbox, IconButton } from "react-native-paper";
-
-interface Props {
-    appointmentId: string;
-}
+import { useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Button, Text, Divider } from "react-native-paper";
 
 export default function Summary() {
     const navigation = useNavigation();
     const { user } = useAuth();
 
-    const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
-    const { appointmentId } = route.params;
+    const { appointment } = useAppointmentStorage();
+
+    const appointmentId = appointment?.appointmentId || '';
     
     const [loading, setLoading] = useState<boolean>(false);
-    const [appointment, setAppointment] = useState<any>(null);
+    const [appointmentData, setAppointmentData] = useState<any>(null);
+
+    const [generateLink, setGenerateLink] = useState<string>('');
+    const [expirationDate, setExpirationDate] = useState<string>('');
    
     const handleSubmit = useCallback(async () => {               
-      navigation.navigate(Routes.Payments, { appointmentId }); 
-  }, [navigation]);
+      navigation.navigate(Routes.ThankYouPage); 
+    }, [navigation]);
 
   const getAppointmentDetails = useCallback( async(appointmentId: string) => {
-    const result: any = await getAppoinments(appointmentId)
-    setAppointment(result);
+    const result: any = await getAppoinments(appointmentId)    
+    setAppointmentData(result);
   }, []);
 
   useEffect(() => {
@@ -56,23 +54,23 @@ export default function Summary() {
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >                     
-          {appointment ? (
+          {appointmentData ? (
             <>            
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
                   <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
-                  <Text>{appointment.name}</Text>
-                  <Text>{formatDate(appointment.selectedDate)}</Text>
-                  <Text>{appointment.selectedTime}</Text>
+                  <Text>{appointmentData.name}</Text>
+                  <Text>{formatDate(appointmentData.selectedDate)}</Text>
+                  <Text>{appointmentData.selectedTime}</Text>                  
               </View>
 
               <Divider /> 
 
               <View style={{ marginTop: 40 }}>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>El valor de la consulta por especialidad es de {formatCOP(appointment.specialtyAmount)} COP</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Despues de confirmado el pago, te llegara un correo con el enlace a la conferencia.</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Tambien podras ver el enlace en la sección mis citas activas</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>El valor de la consulta por especialidad es de {formatCOP(appointmentData.specialtyAmount)} COP</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>
                 <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-                  <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 5 }}>{loading ? 'Validando...' : 'Pagar'}</Text>
+                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Pagar'}</Text>
                 </Button>
               </View>
             </>

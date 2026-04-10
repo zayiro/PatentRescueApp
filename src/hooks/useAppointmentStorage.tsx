@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 const APPOINTMENT_KEY = '@appointment:draft';
 
 interface AppointmentData {
+  appointmentId: string;
   consultationType: number;
   specialty: any;
   doctorId: string;

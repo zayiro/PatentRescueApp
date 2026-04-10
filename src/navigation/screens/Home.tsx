@@ -206,7 +206,35 @@ export function Home() {
                   </TouchableOpacity>
                 </View>
               </View>
-           
+            
+              <Divider style={{ marginTop: 10, marginBottom: 30 }} />
+
+              <View style={styles.twoColumns}>                
+                <View style={styles.column}>              
+                  <TouchableOpacity 
+                    style={[styles.card, { backgroundColor: Colors.White }]}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    activeOpacity={0.8}
+                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
+                  >
+                    <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Citas programadas</Text>    
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.column}>
+                  <TouchableOpacity 
+                    style={[styles.card]}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    activeOpacity={0.8}
+                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
+                  >
+                    <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Notificaciones</Text>    
+                  </TouchableOpacity>
+                </View>
+              </View>
 
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>  
                 <Button icon="logout" mode="contained" onPress={handleLogout} style={styles.button}>
