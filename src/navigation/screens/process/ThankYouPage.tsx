@@ -10,6 +10,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet
 import { Text, Divider, Button } from "react-native-paper";
 import axios from 'axios';
 import { NameCollection } from "@/enums/NameCollection";
+import dayjs from "@/utils/dayjs";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -18,6 +19,10 @@ export default function ThankYouPage() {
   const { appointment } = useAppointmentStorage();
 
   const appointmentId = appointment?.appointmentId || '';
+  const specialtyId = appointment?.specialty.id;
+  const specialtyName = appointment?.specialty.name;
+  const selectedDate = appointment?.selectedDate;
+  const selectedTime = appointment?.selectedTime;
   
   const [loading, setLoading] = useState<boolean>(false);
   const [appointmentData, setAppointmentData] = useState<any>(null);
@@ -131,10 +136,10 @@ export default function ThankYouPage() {
             <>            
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
                   <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
-                  <Text>{appointmentData.name}</Text>
-                  <Text>{formatDate(appointmentData.selectedDate)}</Text>
-                  <Text>{appointmentData.selectedTime}</Text>
-                  <Text>Fecha de expiracion: {expirationDate}</Text>                  
+                  <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+                  <Text>{specialtyName || ''}</Text>              
+                  <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+                  <Text>Hora: {selectedTime}</Text>   
               </View>
 
               <Divider /> 

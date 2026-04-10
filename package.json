@@ -42,6 +42,7 @@
     "expo-system-ui": "~55.0.10",
     "expo-web-browser": "~55.0.10",
     "firebase": "^12.11.0",
+    "moment": "^2.30.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2",

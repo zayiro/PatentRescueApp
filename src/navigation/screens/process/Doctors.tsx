@@ -31,9 +31,10 @@ export default function Doctors() {
     doctor.name.toLowerCase().includes(search.toLowerCase())
   );
   
-  const handleSelectCalendar = useCallback((doctorId: string) => {
+  const handleSelectCalendar = useCallback((doctorId: string, doctorName: string) => {
     saveAppointment({ 
       doctorId,
+      doctorName
     });
 
     console.log("doctorId: ", doctorId);
@@ -42,7 +43,7 @@ export default function Doctors() {
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
-    <TouchableOpacity style={styles.boxDoctor} onPress={() => handleSelectCalendar(item.id)}>
+    <TouchableOpacity style={styles.boxDoctor} onPress={() => handleSelectCalendar(item.id, item.name)}>
       <View>
         <View style={styles.doctorRow}>
           {/* 🔹 Foto */}

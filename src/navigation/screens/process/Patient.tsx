@@ -139,6 +139,8 @@ export default function Patient() {
         description: appointment?.patientData.description,
         specialtyId: appointment?.specialty?.id,
         specialtyAmount: appointment?.specialty?.amount,
+        doctorId: appointment?.doctorId,
+        doctorName: appointment?.doctorName,
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
         link: '',
@@ -181,16 +183,12 @@ export default function Patient() {
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >          
-          <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
-              <Text>{specialtyName || ''}</Text>
-              <Text>{dayjs(selectedDate).locale('es').format('DD [de] MMMM [de] YYYY')}, a las {selectedTime}</Text>
-          </View>
-
           <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-              <TouchableOpacity onPress={() => navigation.navigate(Routes.Specialties)}>
-              <Text style={{ color: Colors.link, textDecorationLine: 'underline' }}>Cambiar datos</Text>
-              </TouchableOpacity>
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
+              <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+              <Text>{specialtyName || ''}</Text>              
+              <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+              <Text>Hora: {selectedTime}</Text>
           </View>
 
           <Divider />

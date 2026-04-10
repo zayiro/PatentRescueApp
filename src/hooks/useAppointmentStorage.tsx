@@ -8,6 +8,7 @@ interface AppointmentData {
   consultationType: number;
   specialty: any;
   doctorId: string;
+  doctorName: string;
   selectedDate: string;
   selectedTime: string;  
   patientData: {

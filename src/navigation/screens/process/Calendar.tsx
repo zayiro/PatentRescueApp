@@ -12,8 +12,10 @@ export default function Calendar() {
     const navigation = useNavigation();
 
     const { appointment, saveAppointment } = useAppointmentStorage();
-    console.log(appointment);
-    const specialtyName = 'Cardiologia'
+    
+    const doctorId = appointment?.doctorId;
+    const doctorName = appointment?.doctorName;
+    const specialtyName = appointment?.specialty.name;
 
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);    
@@ -68,28 +70,14 @@ export default function Calendar() {
                 <Divider />
 
                 <View style={{ marginTop: 30 }}>
-                    <Text>Selecciona la fecha</Text>
+                    <Text variant="titleMedium" style={{ fontWeight: '700' }}>{doctorName}</Text>
+                    <Text style={{ marginBottom: 10 }}>Selecciona fecha y hora disponible</Text>                   
 
                     <AppCalendar
-                        onDateSelect={handleDateSelect}
+                        doctorId={doctorId}
+                        doctorName={doctorName}
                     />
                 </View>
-
-                {selectedDate ? (
-                    <>
-                        <View style={{ marginTop: 15 }}>
-                            <Button icon="login" mode="contained" onPress={handleSlotSelect} loading={loading} disabled={loading} style={[styles.button]}>
-                            <Text style={{ fontSize: 20, color: '#fff' }}>{loading ? 'Confirmando...' : 'Confirmar Día'}</Text>
-                            </Button>
-                        </View>
-                    </>                     
-                ) : (
-                    <View style={{ marginTop: 15 }}>
-                        <Button icon="calendar" mode="contained" disabled style={[styles.button]}>
-                            <Text style={{ fontSize: 20, color: '#fff' }}>Selecciona el día</Text>
-                        </Button>
-                    </View>
-                )}
             </ScrollView>
         </KeyboardAvoidingView>
     </>

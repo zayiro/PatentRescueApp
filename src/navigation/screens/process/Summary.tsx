@@ -4,12 +4,12 @@ import Routes from "@/config/Routes";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { getAppoinments } from "@/service/firestore";
-import { formatDate } from "@/utils/formatDateTime";
 import { formatCOP } from "@/utils/priceUtils";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
+import dayjs from "@/utils/dayjs";
 
 export default function Summary() {
     const navigation = useNavigation();
@@ -18,6 +18,10 @@ export default function Summary() {
     const { appointment } = useAppointmentStorage();
 
     const appointmentId = appointment?.appointmentId || '';
+    const specialtyId = appointment?.specialty.id;
+    const specialtyName = appointment?.specialty.name;
+    const selectedDate = appointment?.selectedDate;
+    const selectedTime = appointment?.selectedTime;
     
     const [loading, setLoading] = useState<boolean>(false);
     const [appointmentData, setAppointmentData] = useState<any>(null);
@@ -58,9 +62,10 @@ export default function Summary() {
             <>            
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
                   <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
-                  <Text>{appointmentData.name}</Text>
-                  <Text>{formatDate(appointmentData.selectedDate)}</Text>
-                  <Text>{appointmentData.selectedTime}</Text>                  
+                  <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+                  <Text>{specialtyName || ''}</Text>              
+                  <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+                  <Text>Hora: {selectedTime}</Text>               
               </View>
 
               <Divider /> 
