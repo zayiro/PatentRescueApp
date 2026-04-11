@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     maxHeight: 80, // Altura fija para mejor UX
   },
   hourItem: {
-    backgroundColor: 'white',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,    
     minHeight: 60,
     paddingTop: 10,
