@@ -24,6 +24,7 @@ export default function Patient() {
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
   const selectedTime = appointment?.selectedTime;
+  const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
 
   const [value, setValue] = useState<string>('first');
   const [firstName, setFirstName] = useState<string>('');
@@ -183,7 +184,9 @@ export default function Patient() {
           nestedScrollEnabled={true}
         >          
           <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+                {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+              </Text>
               <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
               <Text>{specialtyName || ''}</Text>              
               <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>

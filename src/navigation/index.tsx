@@ -27,11 +27,13 @@ import { Allergies } from './screens/profile/Allergies';
 import { Medication } from './screens/profile/Medication';
 import { MedicalInsurance } from './screens/profile/MedicalInsurance';
 import Doctors from './screens/process/Doctors';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Icon, IconButton, useTheme } from 'react-native-paper';
 import Routes from '@/config/Routes';
 import { theme } from '@/config/theme'
 import Colors from '@/config/Colors';
 import ThankYouPage from './screens/process/ThankYouPage';
+import { TouchableOpacity } from 'react-native';
+import React from 'react';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -39,13 +41,14 @@ const RootStack = createNativeStackNavigator({
       screen: Home,
       options: ({ navigation }) => ({
         title: 'Inicio',
-        headerRight: () => (
-          <IconButton
-            icon="account"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Profile)}
-          />
+        headerRight: () => (         
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Profile)}>
+            <Icon
+              source="account"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity> 
         ),
       }),
     },
@@ -71,13 +74,14 @@ const RootStack = createNativeStackNavigator({
       screen: Calendar,
       options: ({ navigation }) => ({
         title: 'Selecciona una fecha',
-        headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+        headerRight: () => (          
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -86,12 +90,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Selecciona una hora',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -100,12 +105,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Datos del paciente',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -114,12 +120,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Resumen de la cita',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -128,12 +135,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Perfil',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -142,12 +150,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Perfil',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -170,12 +179,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Notificaciones',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -184,12 +194,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Información básica',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -198,12 +209,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Dirección',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -212,12 +224,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Identificación y seguro médico',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -226,12 +239,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Historial médico',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -240,12 +254,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Enfermedades activas',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -254,12 +269,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Enfermedades hereditarias',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -268,12 +284,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Alergias',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -282,12 +299,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Medicación actual',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -296,12 +314,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Miembros de la familia',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -310,12 +329,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Pagos',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -324,12 +344,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Doctores',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },
@@ -338,12 +359,13 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Reserva confirmada',
         headerRight: () => (
-          <IconButton
-            icon="home"
-            iconColor={Colors.SlateGray}
-            size={28}
-            onPress={() => navigation.navigate(Routes.Home)}
-          />
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
         ),
       }),
     },

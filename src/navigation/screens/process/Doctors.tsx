@@ -105,7 +105,8 @@ export default function Doctors() {
       > 
       <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
         <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-          {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }</Text>
+          {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+        </Text>
         <Text>{filteredDoctors.length} especialistas disponibles en</Text>
         <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>
       </View>

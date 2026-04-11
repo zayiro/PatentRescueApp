@@ -16,6 +16,7 @@ export default function Calendar() {
     const doctorId = appointment?.doctorId;
     const doctorName = appointment?.doctorName;
     const specialtyName = appointment?.specialty.name;
+    const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
 
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);    
@@ -57,7 +58,9 @@ export default function Calendar() {
                 nestedScrollEnabled={true}
             >
                 <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-                    <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
+                    <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+                        {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                    </Text>                    
                     <Text>{specialtyName || ''}</Text>                    
                 </View>
 
