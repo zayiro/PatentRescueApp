@@ -57,6 +57,9 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingHours, setLoadingHours] = useState<boolean>(false);
 
+  //const hoy = dayjs().format('YYYY-MM-DD');
+  const hoy = moment().format('DD-MM-YYYY');
+
   const { appointment, saveAppointment } = useAppointmentStorage();
 
   // Obtener fechas y horas del doctor específico
@@ -193,6 +196,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         onDayPress={handleDayPress}        
         theme={calendarTheme}
         enableSwipeMonths={true}
+        minDate={hoy}
       />
 
       {/* Modal de horas */}
@@ -205,10 +209,10 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {moment(selectedDate).format('dddd, DD [de] MMMM [de] YYYY')}
+              {moment(selectedDate).format('dddd, DD [de] MMMM [del] YYYY')}
             </Text>            
             <Text style={styles.modalSubtitle}>
-              <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> Horarios disponibles
+              <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> consultas disponibles
             </Text>
 
             <FlatList
@@ -216,11 +220,13 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
               renderItem={renderHourItem}
               keyExtractor={(item) => item}
               horizontal={true}           // ← HORIZONTAL
-              showsHorizontalScrollIndicator={false}
+              showsHorizontalScrollIndicator={true}              
+              scrollIndicatorInsets={{ right: 20 }} // ← Indicador un poco más adentro
               contentContainerStyle={styles.horizontalHoursList}
               snapToInterval={110}        // ← Snap suave entre items
               decelerationRate="fast"     // ← Scroll rápido
               bounces={true}
+              overScrollMode="never"
               getItemLayout={(data, index) => ({
                 length: 100,
                 offset: 110 * index,

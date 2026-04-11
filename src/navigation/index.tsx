@@ -34,6 +34,7 @@ import Colors from '@/config/Colors';
 import ThankYouPage from './screens/process/ThankYouPage';
 import { TouchableOpacity } from 'react-native';
 import React from 'react';
+import { Appointments } from './screens/Appointments';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -360,6 +361,21 @@ const RootStack = createNativeStackNavigator({
         title: 'Reserva confirmada',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
+        ),
+      }),
+    },
+    Appointments: {
+      screen: Appointments,
+      options: ({ navigation }) => ({
+        title: 'Citas Programadas',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Appointments)}>
             <Icon
               source="home"
               color={Colors.SlateGray}

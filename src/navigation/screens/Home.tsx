@@ -49,7 +49,7 @@ export function Home() {
       status: 'draft',
      });
 
-     navigation.navigate(Routes.Specialties);
+    navigation.navigate(Routes.Specialties);
   }, [saveAppointment, navigation]);
 
   const onUserData = useCallback( async(userId: string) => {
@@ -216,7 +216,7 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
+                    onPress={() => navigation.navigate(Routes.Appointments)}
                   >
                     <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
                     <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Citas programadas</Text>    

@@ -11,6 +11,7 @@ import { Text, Divider, Button } from "react-native-paper";
 import axios from 'axios';
 import { NameCollection } from "@/enums/NameCollection";
 import dayjs from "@/utils/dayjs";
+import Routes from "@/config/Routes";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -153,6 +154,10 @@ export default function ThankYouPage() {
                 <Text>Recuerde conectarse 15 minutos antes de la hora programada, para validar el video y el audio.</Text>
                 <Text>La conferencia se activará solo a la hora definida en la cita. ({appointmentData.selectedTime})</Text>
               </View>
+
+              <Button icon="message-video" mode="contained" onPress={() => navigation.navigate(Routes.Home)} style={[styles.button]}>
+                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Citas Programadas</Text>
+              </Button>
 
               {generateLink && (
                 <Button icon="message-video" mode="contained" onPress={abrirLinkLlamada} style={[styles.button]}>
