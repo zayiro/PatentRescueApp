@@ -56,26 +56,20 @@ export default function Calendar() {
                 scrollEnabled={true}
                 nestedScrollEnabled={true}
             >
-                <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
+                <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
                     <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>Telemedicina</Text>
                     <Text>{specialtyName || ''}</Text>                    
-                </View>
-
-                <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate(Routes.Specialties)}>
-                    <Text style={{ color: Colors.link, textDecorationLine: 'underline' }}>Cambiar datos</Text>
-                    </TouchableOpacity>
                 </View>
 
                 <Divider />
 
                 <View style={{ marginTop: 30 }}>
                     <Text variant="titleMedium" style={{ fontWeight: '700' }}>{doctorName}</Text>
-                    <Text style={{ marginBottom: 10 }}>Selecciona fecha y hora disponible</Text>                   
+                    <Text style={{ marginBottom: 20 }}>Selecciona la fecha y hora disponible</Text>                  
 
                     <AppCalendar
-                        doctorId={doctorId}
-                        doctorName={doctorName}
+                        doctorId={doctorId || ''}
+                        doctorName={doctorName || ''}
                     />
                 </View>
             </ScrollView>

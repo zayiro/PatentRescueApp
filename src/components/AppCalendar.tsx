@@ -2,37 +2,57 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   StyleSheet,
-  Text,
-  ActivityIndicator,
+  Text,  
   Alert,
   Modal,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import moment from 'moment';
 import axios from 'axios';
 import Colors from '@/config/Colors';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import Routes from '@/config/Routes';
 import { useNavigation } from "@react-navigation/native";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
-import { Button } from 'react-native-paper';
 
 interface CalendarProps {
   doctorId: string;
   doctorName: string;
 }
 
-moment.locale('es');
+LocaleConfig.locales['es'] = {
+  monthNames: [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre'
+  ],
+  monthNamesShort: ['Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.', 'Jul.', 'Ago.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+  dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+  dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+  today: "Hoy"
+};
+
+LocaleConfig.defaultLocale = 'es';
+
 
 const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const navigation = useNavigation();
 
-  const [availableDates, setAvailableDates] = useState({});
-  const [markedDates, setMarkedDates] = useState({});
+  const [availableDates, setAvailableDates] = useState<Record<string, string[]>>({});
+  const [markedDates, setMarkedDates] = useState<Record<string, any>>({});
   const [selectedDate, setSelectedDate] = useState<string>('');
-  const [selectedHours, setSelectedHours] = useState([]);
+  const [selectedHours, setSelectedHours] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingHours, setLoadingHours] = useState<boolean>(false);
@@ -65,13 +85,13 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
       setAvailableDates(data.availableDates);
 
       // Crear markedDates para el calendario
-      const marked = {};
+      const marked: Record<string, any> = {};
       Object.keys(data.availableDates).forEach(date => {
         const hoursCount = data.availableDates[date].length;
         marked[date] = {
           selected: true,
           marked: true,
-          selectedColor: hoursCount >= 3 ? '#4CAF50' : '#FF9800',
+          selectedColor: hoursCount >= 3 ? Colors.Teal : '#FF9800',
           selectedTextColor: 'white',
           customStyles: {
             container: {
@@ -131,6 +151,33 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     </TouchableOpacity>
   );
 
+  const calendarTheme = {
+    // 🌟 TEXTOS PRINCIPALES
+    textDayFontSize: 16,        // Día (15, 16, etc.)
+    textMonthFontSize: 21,      // MES (Enero)
+    textDayHeaderFontSize: 15,  // Encabezados días (Lun, Mar...)
+    
+    // 🌟 COLORES Y FONDO
+    backgroundColor: Colors.White,
+    calendarBackground: Colors.White,
+    textSectionTitleColor: Colors.Teal,
+    textSectionTitleDisabledColor: '#d9e1e8',
+    selectedDayBackgroundColor: Colors.Teal,
+    selectedDayTextColor: '#ffffff',
+    todayTextColor: '#FF6B6B',
+    dayTextColor: '#2d4150',
+    textDisabledColor: '#d9e1e8',
+    dotColor: Colors.Teal,
+    selectedDotColor: '#ffffff',
+    arrowColor: Colors.Teal,
+    disabledArrowColor: '#d9e1e8',
+    monthTextColor: Colors.Teal,
+    indicatorColor: Colors.Red,
+    textDayFontWeight: 500 as const,
+    textMonthFontWeight: 700 as const,
+    textDayHeaderFontWeight: 600 as const,
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -143,16 +190,8 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     <View style={styles.container}>
       <Calendar
         markedDates={markedDates}
-        onDayPress={handleDayPress}
-        theme={{
-          selectedDayBackgroundColor: Colors.Teal,
-          selectedDayTextColor: Colors.White,
-          todayTextColor: Colors.Teal,
-          dayTextColor: '#2d4150',
-          textDisabledColor: '#d9e1e8',
-          monthTextColor: Colors.Violet,
-          arrowColor: Colors.Violet,
-        }}
+        onDayPress={handleDayPress}        
+        theme={calendarTheme}
         enableSwipeMonths={true}
       />
 
@@ -166,7 +205,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {moment(selectedDate).locale('es').format('dddd, DD [de] MMMM [de] YYYY')}
+              {moment(selectedDate).format('dddd, DD [de] MMMM [de] YYYY')}
             </Text>            
             <Text style={styles.modalSubtitle}>
               <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> Horarios disponibles
@@ -199,9 +238,9 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         </View>
       </Modal>
 
-      <Button icon="calendar" mode="contained" style={styles.refreshButton} onPress={fetchDoctorAvailableDates}>
-        <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Actualizar agenda</Text>
-      </Button>
+      <View style={{ marginTop: 40, alignItems: 'center' }}>
+        <Text onPress={fetchDoctorAvailableDates} style={{ fontSize: 15, color: Colors.Violet, textDecorationLine: 'underline' }}>Actualizar agenda</Text>
+      </View>
     </View>
   );
 };
@@ -265,17 +304,12 @@ const styles = StyleSheet.create({
   },
   refreshButton: {
     marginTop: 30,
-    paddingVertical: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 12, // 📱 Android
-  },
-  refreshButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    elevation: 12,
+    paddingBottom: 5
   },
   horizontalHoursList: {
     paddingHorizontal: 20,
@@ -308,5 +342,3 @@ const styles = StyleSheet.create({
     elevation: 15,    
   },
 });
-
-

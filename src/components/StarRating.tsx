@@ -23,7 +23,7 @@ export default function StarRating({
                         key={index}
                         icon={starFilled ? 'star' : 'star-outline'}
                         size={size}
-                        iconColor={starFilled ? Colors.Teal : Colors.Gray400}
+                        iconColor={starFilled ? Colors.Violet : Colors.Gray400}
                         style={[styles.noGapStar]}
                     />
                 );

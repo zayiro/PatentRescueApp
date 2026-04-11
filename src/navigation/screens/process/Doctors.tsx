@@ -2,10 +2,8 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import {
-  Card,
   Avatar,
   Text,
-  Chip,
   Searchbar,
 } from 'react-native-paper';
 import { useDoctorsFilter } from '@/hooks/useDoctorsFilter'
@@ -15,15 +13,20 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
+import { Icon, MD3Colors } from 'react-native-paper';
 
 export default function Doctors() {
   const navigation = useNavigation();
-  const { saveAppointment, appointment } = useAppointmentStorage();
 
   const [search, setSearch] = useState<string>('');
 
+  const { saveAppointment, appointment } = useAppointmentStorage();
+
+  const specialtyName = appointment?.specialty.name;
   const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
   const specialtyId = parseInt(appointment?.specialty.id || '0');
+
+  console.log("consultationType: "+consultationType);
   
   const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);  
   
@@ -37,14 +40,16 @@ export default function Doctors() {
       doctorName
     });
 
-    console.log("doctorId: ", doctorId);
-
      navigation.navigate(Routes.Calendar);
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
     <TouchableOpacity style={styles.boxDoctor} onPress={() => handleSelectCalendar(item.id, item.name)}>
       <View>
+        <View>
+          <Text style={styles.doctorName}>{item.name}</Text>          
+          <Text><StarRating rating={4} /></Text>
+        </View>
         <View style={styles.doctorRow}>
           {/* 🔹 Foto */}
           <View style={{ alignItems: 'center' }}>
@@ -52,16 +57,35 @@ export default function Doctors() {
                 size={75} 
                 source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
-            <StarRating rating={5} />
           </View>
         
           {/* 🔹 Info */}
           <View style={styles.infoCol}>
-              <Text style={styles.doctorName}>{item.name}</Text>
-              <Text style={{ fontSize: 12 }}>Anestesiólogo +</Text>                                   
-              {/* 🔹 Precio + Slots */}
+              {consultationType == 2 && (
+                <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <Icon
+                      source="google-maps"
+                      color={Colors.Violet}
+                      size={20}
+                    /><Text style={{ fontSize: 13 }}>Cra 7E # 70-134</Text>
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 13, fontWeight: '700' }}>Clínica inbanaco, consultorio 301</Text>
+                  </View>
+                </>
+              )}
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
+                <Icon
+                  source="heart-plus"
+                  color={Colors.Violet}
+                  size={20}
+                /><Text style={{ fontSize: 13 }}>Visita nutricion y Dietetica, Asesoria nutricional, Alimentación del lactante</Text>
+              </View>
+              
               <View style={styles.detailsRow}>
-                <Text>$ 180.000 COP</Text>              
+                <Text style={{ fontSize: 13, fontWeight: '700' }}>$ 180.000</Text>
               </View>
           </View>
         </View>        
@@ -79,16 +103,14 @@ export default function Doctors() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       > 
-      <View style={{ flex: 1 }}>                  
-        <View>
-          <Text>
-            Especialidad: {specialtyId}
-          </Text>
-          <Text>
-            {filteredDoctors.length} doctores disponibles
-          </Text>
-        </View>
-        
+      <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
+        <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+          {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }</Text>
+        <Text>{filteredDoctors.length} especialistas disponibles en</Text>
+        <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>
+      </View>
+
+      <View style={{ flex: 1 }}>        
         {/* 🔹 Search */}
         <Searchbar
           placeholder="Buscar por nombre..."
@@ -116,20 +138,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
-    backgroundColor: '#FFF',
+    paddingVertical: 30,
+    backgroundColor: Colors.White,    
   },
   boxDoctor: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 15,
-    marginTop: 18,
+    padding: 12,
+    marginTop: 20,
     borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
+    borderColor: Colors.Gray400,
+    borderWidth: 1,
   },
   list: {
     padding: 3,
@@ -150,12 +169,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   doctorName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.Violet
+    fontSize: 18,
+    fontWeight: '700',
   },
   specialty: {
     marginBottom: 8,
+    fontSize: 14,
+    color: Colors.Violet,
   },
   detailsRow: {
     flexDirection: 'row',
@@ -172,6 +192,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   searchbar: {
-    margin: 16,
+    margin: 5,
   },
 });

@@ -18,7 +18,7 @@ export default function Patient() {
   const navigation = useNavigation();
   const { user } = useAuth();
   
-  const { appointment, saveAppointment, clearAppointment } = useAppointmentStorage();
+  const { appointment, saveAppointment } = useAppointmentStorage();
 
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
@@ -132,7 +132,6 @@ export default function Patient() {
 
       let data = {
         id: appointmentId,
-        appointmentType: appointment?.consultationType,
         creationDate: appointment?.createdAt,
         userId: appointment?.patientData.userId,
         name: patientName,
