@@ -141,7 +141,8 @@ export default function Doctors() {
     if (checked) {      
       saveAppointment({ 
         doctorId: doctorIdSelected,
-        doctorName: doctorNameSelected
+        doctorName: doctorNameSelected,
+        address: doctorAddress.find((addr: any) => addr.id === checked)
       });
 
       hideModal();

@@ -215,7 +215,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
             <Text style={styles.modalSubtitle}>
               <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> consultas disponibles              
             </Text>
-            <Text>Selecciona la hora</Text>
+            <Text style={{ color: Colors.Gray400, marginBottom: 10 }}>Selecciona la hora de la consulta</Text>
 
             <FlatList
               data={selectedHours}
@@ -246,7 +246,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         </View>
       </Modal>
 
-      <View style={{ marginTop: 40, alignItems: 'center' }}>
+      <View style={{ marginTop: 30, alignItems: 'center' }}>
         <Text onPress={fetchDoctorAvailableDates} style={{ fontSize: 15, color: Colors.Violet, textDecorationLine: 'underline' }}>Actualizar agenda</Text>
       </View>
     </View>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   modalSubtitle: {
     fontSize: 16,
     textAlign: 'left',
-    marginBottom: 30,
+    marginBottom: 10,
     color: '#666',
   },
   hoursList: {

@@ -2,37 +2,26 @@ import AppCalendar from "@/components/AppCalendar";
 import Colors from "@/config/Colors";
 import Routes from "@/config/Routes";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import dayjs from "dayjs";
-import { SetStateAction, useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, StatusBar, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
-import { Text, Button, Divider } from 'react-native-paper';
+import { useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
+import { KeyboardAvoidingView, ScrollView, StatusBar, View, StyleSheet, Platform } from "react-native";
+import { Text, Divider } from 'react-native-paper';
 
 export default function Calendar() {
     const navigation = useNavigation();
 
     const { appointment, saveAppointment } = useAppointmentStorage();
+    console.log(appointment);
     
     const doctorId = appointment?.doctorId;
     const doctorName = appointment?.doctorName;
     const specialtyName = appointment?.specialty.name;
     const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+    const address = appointment?.address || null;
 
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);    
-  
-    const handleSlotSelect = useCallback(async () => {    
-        await saveAppointment({
-            selectedDate: selectedDate,
-        });
-        
-        navigation.navigate(Routes.AppointmentHour);
-    }, [saveAppointment, navigation, selectedDate]);
-
-    const handleDateSelect = (date: string) => {
-        setSelectedDate(date);
-    };
-
+      
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', (e) => {
             setSelectedDate(appointment?.selectedDate || '');
@@ -66,9 +55,10 @@ export default function Calendar() {
 
                 <Divider />
 
-                <View style={{ marginTop: 30 }}>
+                <View style={{ marginTop: 20 }}>
                     <Text variant="titleMedium" style={{ fontWeight: '700' }}>{doctorName}</Text>
-                    <Text style={{ marginBottom: 20 }}>Selecciona la fecha y hora disponible</Text>                  
+                    <Text>{address ? address.name + ' ' + address.location : ''}</Text>
+                    <Text style={{ marginTop: 10, marginBottom: 20, color: Colors.Gray400 }}>Selecciona la fecha y hora que prefieras para tu cita. Si no ves la fecha que deseas, intenta actualizar la agenda.</Text>
 
                     <AppCalendar
                         doctorId={doctorId || ''}

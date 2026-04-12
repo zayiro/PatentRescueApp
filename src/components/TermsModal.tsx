@@ -1,3 +1,4 @@
+import Colors from '@/config/Colors';
 import React, { useState } from 'react';
 import {
   Modal,
@@ -38,18 +39,17 @@ export default function TermsModal({ visible, onAccept, onClose }: TermsModalPro
         <ScrollView style={styles.content}>
           <Text style={styles.sectionTitle}>1. Aceptación</Text>
           <Text style={styles.paragraph}>
-            Al usar nuestro servicio de telemedicina, aceptas estos términos. Si no estás de acuerdo, no uses la plataforma.
+            Al usar nuestro servicio de reservas, aceptas estos términos. <Text style={{ fontWeight: '700' }}>Si no estás de acuerdo, no uses la plataforma.</Text> Nos reservamos el derecho de modificar estos términos en cualquier momento. Te notificaremos sobre cambios importantes.
           </Text>
           
           <Text style={styles.sectionTitle}>2. Citas</Text>
           <Text style={styles.paragraph}>
-            Las citas son de 30 minutos. Debes conectarte 5 minutos antes. No hay reembolsos por no-shows.
+            No hay reembolsos por no-shows. Puedes cancelar o reprogramar hasta 24 horas antes.
           </Text>
           
           <Text style={styles.sectionTitle}>3. Pagos</Text>
           <Text style={styles.paragraph}>
-            Pago por consulta: segun la especialidad seleccionada. Se cobra al confirmar. Tarjetas aceptadas.
-            Usamos un gateway de pagos para gestionar los cobros de forma segura.
+            El pago se realiza al reservar. Aceptamos tarjetas de crédito y débito. Los precios pueden cambiar, pero te notificaremos antes de cobrar.
           </Text>
           
           {/* Más secciones... */}
@@ -113,16 +113,16 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: '700',
+    color: Colors.Violet,
     marginTop: 20,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   paragraph: {
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 22,
     color: '#4B5563',
-    marginBottom: 12,
+    marginBottom: 7,
   },
   footer: {
     padding: 20,
@@ -144,5 +144,6 @@ const styles = StyleSheet.create({
   },
   acceptBtn: {
     marginTop: 10,
+    paddingVertical: 8,
   },
 });

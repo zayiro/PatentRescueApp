@@ -19,12 +19,13 @@ export default function Patient() {
   const { user } = useAuth();
   
   const { appointment, saveAppointment } = useAppointmentStorage();
-
+  console.log(appointment);
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
   const selectedTime = appointment?.selectedTime;
   const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+  const address = appointment?.address || null;
 
   const [value, setValue] = useState<string>('first');
   const [firstName, setFirstName] = useState<string>('');
@@ -73,7 +74,7 @@ export default function Patient() {
       // 🔹 Mostrar
       setVisible(true);
       Animated.timing(heightAnim, {
-        toValue: 175,
+        toValue: 230,
         duration: 200,
         useNativeDriver: false,
       }).start();
@@ -90,7 +91,7 @@ export default function Patient() {
 
   const handleSubmit = useCallback(async () => {
       if (!termsAccepted) {
-        Alert.alert('Error', 'Debes aceptar términos y condiciones');
+        Alert.alert('Error', 'Debes aceptar los Términos y Condiciones para continuar.');
         return false;
       }
 
@@ -112,7 +113,7 @@ export default function Patient() {
       }
 
       if (!description.length) {
-        Alert.alert("Aviso", "La descripción es obligatoria.")        
+        Alert.alert("Aviso", "Es importante que describas el motivo de tu consulta para que el doctor pueda prepararse y brindarte una mejor atención.")        
         return false;
       }
 
@@ -141,6 +142,8 @@ export default function Patient() {
         specialtyAmount: appointment?.specialty?.amount,
         doctorId: appointment?.doctorId,
         doctorName: appointment?.doctorName,
+        consultationType: appointment?.consultationType,
+        address: appointment?.address || null,        
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
         link: '',
@@ -182,21 +185,22 @@ export default function Patient() {
           showsVerticalScrollIndicator={false}
           scrollEnabled={true}
           nestedScrollEnabled={true}
-        >          
+        >
           <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
-              </Text>
-              <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-              <Text>{specialtyName || ''}</Text>              
-              <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-              <Text>Hora: {selectedTime}</Text>
+            <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+              {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+            </Text>
+            <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+            <Text>{specialtyName || ''}</Text>
+            <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
+            <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+            <Text>Hora: {selectedTime}</Text>
           </View>
 
           <Divider />
 
           <View>
-            <View style={{ alignItems: 'flex-start', marginTop: 30, marginBottom: 20 }}>
+            <View style={{ alignItems: 'flex-start', marginTop: 20, marginBottom: 10 }}>
               <Text variant="headlineSmall">¿Para quién es la cita?</Text>
             </View>
 
@@ -228,7 +232,7 @@ export default function Patient() {
                 },
               ]}
             >                    
-              <View style={{ marginTop: 30 }}>
+              <View style={{ marginTop: 10 }}>
                 <TextInput
                   label="Nombre del paciente"        
                   onChangeText={setFirstName}
@@ -238,9 +242,9 @@ export default function Patient() {
                 />
               </View>
 
-              <View style={{ marginTop: 30 }}>
+              <View style={{ marginTop: 10 }}>
                 <TextInput
-                  label="Apellido del paciente"        
+                  label="Apellidos del paciente"        
                   onChangeText={setFirstName}
                   value={lastName}
                   right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
@@ -249,7 +253,7 @@ export default function Patient() {
               </View>
 
               <View>
-                <Text style={{ marginTop: 30 }}>Fecha de Nacimiento</Text>
+                <Text style={{ marginTop: 10 }}>Fecha de Nacimiento</Text>
               </View>
               <View style={styles.dateRow}>
                 
@@ -294,9 +298,9 @@ export default function Patient() {
               </View>
             </Animated.View>
             
-            <View style={{ marginTop: 25 }}>
+            <View style={{ marginTop: 15 }}>
               <TextInput
-                label="Cuéntanos el motivo de la reunión"
+                label="Motivo de consulta"
                 value={description}
                 onChangeText={setDescription}
                 multiline={true}
@@ -304,15 +308,16 @@ export default function Patient() {
                 style={styles.textArea}
                 mode="outlined"
               />
+              <Text style={styles.label}>Describe brevemente los síntomas o el motivo de tu consulta para que el doctor pueda prepararse para la cita.</Text>
             </View>
 
-            <View style={{ marginTop: 40 }}>
+            <View style={{ marginTop: 25 }}>
               <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
                 <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
               </Button>
             </View>
 
-            <View style={{ marginTop: 30, alignSelf: 'center', paddingHorizontal: 15 }}>            
+            <View style={{ marginTop: 20, alignSelf: 'center', paddingHorizontal: 15 }}>            
               <TouchableOpacity
                 onPress={() => setShowTermsModal(true)}
                 style={{ flexDirection: 'row', alignItems: 'center' }}
@@ -343,11 +348,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
+    paddingVertical: 30,
     backgroundColor: '#FFF',
   },
   dateRow: {
-    marginTop: 8,
     flexDirection: 'row',
     gap: 12,
   },
@@ -363,7 +367,7 @@ const styles = StyleSheet.create({
     elevation: 12, // 📱 Android
   }, 
   textArea: {
-    minHeight: 120,
+    minHeight: 100,
     height: 100, // Altura fija para forzar el área de texto
     textAlignVertical: 'top', // Alinea el texto al inicio en Android
   },
@@ -372,7 +376,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 12,
+    marginTop: 5,
+    color: Colors.Gray400,
+    fontSize: 13,
     lineHeight: 20,
   },
   inputContainer: {

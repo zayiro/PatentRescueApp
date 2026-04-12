@@ -47,7 +47,6 @@ export default function Specialties() {
       const data = response.data;
 
       setSpecialties(data.specialties);
-      console.log(data.specialties);
     } catch (err) {
       console.error('Error especialidades:', err);      
       Alert.alert('Error', String(err));

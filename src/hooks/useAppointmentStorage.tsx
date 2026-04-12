@@ -9,6 +9,7 @@ interface AppointmentData {
   specialty: any;
   doctorId: string;
   doctorName: string;
+  address?: any;
   selectedDate: string;
   selectedTime: string;  
   patientData: {
