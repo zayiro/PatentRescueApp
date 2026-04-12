@@ -60,6 +60,7 @@ export const useDoctorsFilter = (consultationType: number, specialtyId: number, 
         setTotalPaginas(data.total_pages || 1);
       }
     } catch (err) {
+      setLoading(false);
       const errorMessage = axios.isAxiosError(err) && err.response?.data?.message 
         ? err.response.data.message 
         : 'Error de conexión';

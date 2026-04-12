@@ -6,9 +6,14 @@ const APPOINTMENT_KEY = '@appointment:draft';
 interface AppointmentData {
   appointmentId: string;
   consultationType: number;
-  specialty: any;
+  specialty: {
+    id: string;
+    name: string;
+    price: string;
+  };
   doctorId: string;
   doctorName: string;
+  price: string;
   address?: any;
   selectedDate: string;
   selectedTime: string;  
@@ -52,8 +57,7 @@ export const useAppointmentStorage = () => {
       };
       
       setAppointment(newData as AppointmentData);
-      await AsyncStorage.setItem(APPOINTMENT_KEY, JSON.stringify(newData));
-      //console.log('✅ Appointment guardado:', newData);
+      await AsyncStorage.setItem(APPOINTMENT_KEY, JSON.stringify(newData));     
     } catch (error) {
       //console.error('Error saving appointment:', error);
     }

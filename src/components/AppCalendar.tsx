@@ -46,7 +46,6 @@ LocaleConfig.locales['es'] = {
 
 LocaleConfig.defaultLocale = 'es';
 
-
 const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const navigation = useNavigation();
 
@@ -107,8 +106,8 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
 
       setMarkedDates(marked);
     } catch (err) {
-      console.error('Error fetching doctor dates:', err);
-      Alert.alert('Error', `No se pudieron cargar las fechas del ${doctorName || ''}\n${String(err)}`);
+      setLoading(false);
+      Alert.alert('Error', `No se pudierón cargar las fechas del ${doctorName || ''}\n${String(err)}`);
     } finally {
       setLoading(false);
     }

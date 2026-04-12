@@ -1,4 +1,3 @@
-// screens/DoctorsScreen.tsx
 import React, { useCallback, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import {
@@ -26,6 +25,7 @@ export default function Doctors() {
 
   const [doctorIdSelected, setDoctorIdSelected] = useState<string>('');
   const [doctorNameSelected, setDoctorNameSelected] = useState<string>('');
+  const [doctorPrice, setDoctorPrice] = useState<string>('');
 
   const [search, setSearch] = useState<string>('');
   const [visible, setVisible] = useState<boolean>(false);
@@ -65,9 +65,10 @@ export default function Doctors() {
     }
   );
   
-  const handleSelectDoctor = useCallback((item: any) => {
+  const handleSelectDoctor = useCallback((item: any) => {    
     setDoctorIdSelected(item.id);
     setDoctorNameSelected(item.name);
+    setDoctorPrice(item.price)
 
     if (consultationType === 2) {
       if (doctorAddress.length === 0) {
@@ -169,6 +170,7 @@ export default function Doctors() {
       saveAppointment({ 
         doctorId: doctorIdSelected,
         doctorName: doctorNameSelected,
+        price: doctorPrice,
         address: doctorAddress.find((addr: any) => addr.id === checked)
       });
 
@@ -177,7 +179,7 @@ export default function Doctors() {
     } else {
       Alert.alert('Aviso', 'Por favor selecciona una dirección para continuar');
     }
-  }, [saveAppointment, checked, doctorIdSelected, doctorNameSelected, navigation]);
+  }, [saveAppointment, checked, doctorIdSelected, doctorNameSelected, doctorPrice, navigation]);
 
   const renderAddress = ({ item }: { item: any }) => (
     <TouchableOpacity onPress={() => {setChecked(item.id)}} activeOpacity={0.7}>

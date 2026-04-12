@@ -301,7 +301,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-function saveAppointment(arg0: { specialty: any; status: string; }) {
-  throw new Error('Function not implemented.');
-}
-

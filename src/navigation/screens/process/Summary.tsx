@@ -7,7 +7,7 @@ import { getAppoinments } from "@/service/firestore";
 import { formatCOP } from "@/utils/priceUtils";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
 
@@ -18,21 +18,18 @@ export default function Summary() {
     const { appointment } = useAppointmentStorage();
 
     const appointmentId = appointment?.appointmentId || '';
-    const specialtyId = appointment?.specialty.id;
     const specialtyName = appointment?.specialty.name;
     const selectedDate = appointment?.selectedDate;
     const selectedTime = appointment?.selectedTime;
     const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+    const address = appointment?.address || null;
     
     const [loading, setLoading] = useState<boolean>(false);
     const [appointmentData, setAppointmentData] = useState<any>(null);
-
-    const [generateLink, setGenerateLink] = useState<string>('');
-    const [expirationDate, setExpirationDate] = useState<string>('');
    
     const handleSubmit = useCallback(async () => {               
-      navigation.navigate(Routes.ThankYouPage); 
-    }, [navigation]);
+      navigation.navigate(Routes.ThankYouPage, { appointmentId: appointmentId }); 
+    }, [appointmentId, navigation]);
 
   const getAppointmentDetails = useCallback( async(appointmentId: string) => {
     const result: any = await getAppoinments(appointmentId)    
@@ -42,6 +39,8 @@ export default function Summary() {
   useEffect(() => {
     getAppointmentDetails(appointmentId);    
   }, [appointmentId]);
+
+  if (loading) return (<LoadingSpinner message='Confirmando cita...' />);
 
   return (
     <>
@@ -59,36 +58,27 @@ export default function Summary() {
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >                     
-          {appointmentData ? (
-            <>            
-              <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
-                  <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                    {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
-                  </Text>
-                  <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-                  <Text>{specialtyName || ''}</Text>              
-                  <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-                  <Text>Hora: {selectedTime}</Text>               
-              </View>
+          <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+                {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+              </Text>
+              <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+              <Text>{specialtyName || ''}</Text>
+              <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
+              <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+              <Text>Hora: {selectedTime}</Text>             
+          </View>
 
-              <Divider /> 
+          <Divider /> 
 
-              <View style={{ marginTop: 40 }}>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>El valor de la consulta por especialidad es de {formatCOP(appointmentData.specialtyAmount)} COP</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>
-                <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Pagar'}</Text>
-                </Button>
-              </View>
-            </>
-          )
-          :
-          (
-            <View>
-              <LoadingSpinner message="Cargando..." />
-            </View>
-          )}          
+          <View style={{ marginTop: 40 }}>
+            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>El valor de la consulta por especialidad es de {formatCOP(appointmentData?.price)} COP</Text>
+            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
+            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>
+            <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
+              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Pagar'}</Text>
+            </Button>
+          </View>          
         </ScrollView>
       </KeyboardAvoidingView>    
     </>

@@ -11,7 +11,6 @@ import { Settings } from './screens/Settings';
 import { NotFound } from './screens/NotFound';
 import Specialties from './screens/process/Specialties';
 import Calendar from './screens/process/Calendar';
-import AppointmentHour from './screens/process/AppointmentHour';
 import Patient from './screens/process/Patient';
 import Summary from './screens/process/Summary';
 import { Notifications } from './screens/Notifications';
@@ -76,21 +75,6 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Selecciona la fecha',
         headerRight: () => (          
-          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
-            <Icon
-              source="home"
-              color={Colors.SlateGray}
-              size={28}              
-            />
-          </TouchableOpacity>
-        ),
-      }),
-    },
-    AppointmentHour: {
-      screen: AppointmentHour,
-      options: ({ navigation }) => ({
-        title: 'Selecciona una hora',
-        headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
               source="home"
@@ -358,7 +342,7 @@ const RootStack = createNativeStackNavigator({
     ThankYouPage: {
       screen: ThankYouPage,
       options: ({ navigation }) => ({
-        title: 'Reserva confirmada',
+        title: 'Cita confirmada',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon

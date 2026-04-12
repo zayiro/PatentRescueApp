@@ -3,45 +3,47 @@ import Colors from "@/config/Colors";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { getAppoinments, updateDocumentCollection } from "@/service/firestore";
-import { formatDate } from "@/utils/formatDateTime";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, Alert, Linking } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, Alert } from "react-native";
 import { Text, Divider, Button } from "react-native-paper";
 import axios from 'axios';
 import { NameCollection } from "@/enums/NameCollection";
 import dayjs from "@/utils/dayjs";
 import Routes from "@/config/Routes";
+import { useRoute } from '@react-navigation/native';
+import { ConsultationTypes } from "@/enums/ConsultationTypes";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
   const { user } = useAuth();
 
-  const { appointment } = useAppointmentStorage();
+  const route = useRoute();
+  const { appointmentId } = (route.params as { appointmentId: string }) || {};
 
-  const appointmentId = appointment?.appointmentId || '';
-  const specialtyId = appointment?.specialty.id;
-  const specialtyName = appointment?.specialty.name;
-  const selectedDate = appointment?.selectedDate;
-  const selectedTime = appointment?.selectedTime;
-  const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+  const { appointment, clearAppointment } = useAppointmentStorage();
   
   const [loading, setLoading] = useState<boolean>(false);
   const [appointmentData, setAppointmentData] = useState<any>(null);
-
-  const [generateLink, setGenerateLink] = useState<string>('');
-  const [expirationDate, setExpirationDate] = useState<string>('');
   
   const getAppointmentDetails = useCallback( async(appointmentId: string) => {
-    const result: any = await getAppoinments(appointmentId)
-     
-    if (result) {
-      setAppointmentData(result);
-      const isPay = 'Confirmed'; //si el pago salio confirmado, cambiar por el resultado del response del gateway de pagos
+    setLoading(true);
+
+    try {
+      const result: any = await getAppoinments(appointmentId)
       
-      if (result.link == '' && isPay == 'Confirmed') {
-        onGenerateLink(result, appointmentId);
+      if (result) {
+        setAppointmentData(result);
+        const isPay = 'Confirmed'; //si el pago salio confirmado, cambiar por el resultado del response del gateway de pagos
+        
+        if (result.link == '' && result.consultationType == ConsultationTypes.Telemedicine && isPay == 'Confirmed') {
+          onGenerateLink(result, appointmentId);          
+        }
       }
+    } catch (error) {
+      Alert.alert('Error', 'No se pudieron cargar los detalles de la cita. Por favor, intente nuevamente.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -49,6 +51,10 @@ export default function ThankYouPage() {
     if (appointmentId) {
       getAppointmentDetails(appointmentId);
     }
+
+    if (appointment) {
+      clearAppointment();
+    }    
   }, [appointmentId]);
 
   const onGenerateLink = useCallback( async(result: any, appointmentId: string) => {   
@@ -74,11 +80,7 @@ export default function ThankYouPage() {
       }
   
       if (response.data.success) {       
-        await updateDocumentCollection(NameCollection.Appointments, appointmentId, data)
-        
-        setGenerateLink(response.data.link);
-        setExpirationDate(response.data.expira);
-        
+        await updateDocumentCollection(NameCollection.Appointments, appointmentId, data)                
         Alert.alert('✅', 'Link generado correctamente');
       } else {
         Alert.alert('Error', response.data.error || 'Error desconocido');
@@ -93,28 +95,7 @@ export default function ThankYouPage() {
     }
   }, [])
 
-  const abrirLinkLlamada = async () => {
-    if (!generateLink) {
-      Alert.alert('Error', 'Genera un link primero');
-      return;
-    }
-
-    try {
-      // Verificar si puede abrir URL
-      const supported = await Linking.canOpenURL(generateLink);
-      
-      if (supported) {
-        // Abrir en navegador del dispositivo
-        await Linking.openURL(generateLink);
-        Alert.alert('✅', '¡Link abierto! Únete a la llamada en tu navegador');
-      } else {
-        Alert.alert('Error', 'No se puede abrir el navegador');
-      }
-    } catch (error) {
-      console.error('Error abrir link:', error);
-      Alert.alert('Error', 'No se pudo abrir el link');
-    }
-  };
+  if (loading) return (<LoadingSpinner message='Confirmando cita...' />);
 
   return (
     <>
@@ -131,39 +112,40 @@ export default function ThankYouPage() {
           showsVerticalScrollIndicator={false}
           scrollEnabled={true}
           nestedScrollEnabled={true}
-        >                     
-          {appointmentData ? (
-            <>            
+        >
+          {appointmentData && (
+            <>
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
                   <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                    {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                    {appointmentData.consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
                   </Text>
-                  <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-                  <Text>{specialtyName || ''}</Text>              
-                  <Text style={{ marginTop: 5 }}>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-                  <Text>Hora: {selectedTime}</Text>   
+                  <Text style={{ fontWeight: '700' }}>{appointmentData.doctorName || ''}</Text>
+                  <Text>{appointmentData.specialty.name || ''}</Text>
+                  <Text style={{ marginTop: 5 }}>{appointmentData.address ? appointmentData.address.name + ' ' + appointmentData.address.location : ''}</Text>
+                  <Text>{dayjs(appointmentData.selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+                  <Text>Hora: {appointmentData.selectedTime}</Text>     
               </View>
 
               <Divider /> 
 
               <View style={{ marginTop: 40, marginBottom: 40 }}>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>La consulta esta pagada y confirmada!</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Para ingresar a la video conferencia, ingrese a la sección citas programadas y haga click en el enlace "Entrar a la video conferencia".</Text>
-                <Text>Recuerde conectarse 15 minutos antes de la hora programada, para validar el video y el audio.</Text>
-                <Text>La conferencia se activará solo a la hora definida en la cita. ({appointmentData.selectedTime})</Text>
+                <Text variant="titleMedium" style={{ marginBottom: 10 }}>¡Gracias por reservar tu cita con nosotros!</Text>
+                {appointmentData.consultationType == ConsultationTypes.Telemedicine ? (
+                  <>
+                  <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Para ingresar a la video conferencia, ingrese a la sección citas programadas y haga click en el enlace "Entrar a la video conferencia".</Text>
+                  <Text>Recuerde conectarse 15 minutos antes de la hora programada, para validar el video y el audio.</Text>
+                  <Text>La conferencia se activará solo a la hora definida en la cita. ({appointmentData.selectedTime})</Text>
+                  </>                  
+                ) : (
+                  <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Recuerde asistir a la dirección del consultorio, 15 minutos antes de la hora programada.</Text>
+                )}                              
               </View>
 
               <Button icon="message-video" mode="contained" onPress={() => navigation.navigate(Routes.Appointments)} style={[styles.button]}>
                 <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Citas Programadas</Text>
-              </Button>
+              </Button> 
             </>
-          )
-          :
-          (
-            <View>
-              <LoadingSpinner message="Cargando..." />
-            </View>
-          )}          
+          )}                 
         </ScrollView>
       </KeyboardAvoidingView>    
     </>
@@ -175,7 +157,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
+    paddingVertical: 30,
     backgroundColor: '#FFF',
   },
   button: {

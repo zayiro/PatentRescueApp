@@ -19,7 +19,7 @@ export default function Patient() {
   const { user } = useAuth();
   
   const { appointment, saveAppointment } = useAppointmentStorage();
-  
+
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
@@ -138,8 +138,8 @@ export default function Patient() {
         userId: appointment?.patientData.userId,
         name: patientName,
         description: appointment?.patientData.description,
-        specialtyId: appointment?.specialty?.id,
-        specialtyAmount: appointment?.specialty?.amount,
+        specialty: appointment?.specialty || null,
+        price: appointment?.price,
         doctorId: appointment?.doctorId,
         doctorName: appointment?.doctorName,
         consultationType: appointment?.consultationType,
@@ -155,6 +155,7 @@ export default function Patient() {
         createDocument(NameCollection.Appointments, appointmentId, data);
         navigation.navigate(Routes.Summary);    
       } catch (err) {
+        setLoading(false);
         Alert.alert('Error', `No se pudo guardar la cita\n${String(err)}`);
         return false;
       }      

@@ -9,7 +9,6 @@ const Routes: any = {
   BasicInformation: "BasicInformation",
   Address: "Address",
   Calendar: "Calendar",
-  AppointmentHour: "AppointmentHour",
   Patient: "Patient",
   Summary: "Summary",
   Notifications: "Notifications",

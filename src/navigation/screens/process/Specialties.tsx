@@ -24,9 +24,13 @@ export default function Specialties() {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [search, setSearch] = useState<string>('');
 
-  const handleSelectSpecialty = useCallback((specialty: any) => {
+  const handleSelectSpecialty = useCallback((item: any) => {
     saveAppointment({ 
-      specialty,
+      specialty: {
+        id: item.id,
+        name: item.name,
+        price: item.price || '0',
+      }
      });
 
      navigation.navigate(Routes.Doctors);
@@ -47,8 +51,8 @@ export default function Specialties() {
       const data = response.data;
 
       setSpecialties(data.specialties);
-    } catch (err) {
-      console.error('Error especialidades:', err);      
+    } catch (err) {   
+      setLoading(false);
       Alert.alert('Error', String(err));
       return false;
     } finally {
