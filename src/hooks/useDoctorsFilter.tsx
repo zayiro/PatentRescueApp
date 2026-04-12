@@ -10,6 +10,7 @@ interface Doctor {
   id: number;
   name: string;
   specialties: number[];
+  address?: Array<{ id: number; name: string; location: string }>;
   photo: string;
   rating: number;
   availableSlots: number;
@@ -22,6 +23,16 @@ const doctors: Doctor[] = [
       id: 1,
       name: 'Dra. Ana López',
       specialties: [1, 2],
+      address: [
+        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
+        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
+        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
+        { id: 4, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
+        { id: 5, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
+        { id: 6, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
+        { id: 7, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
+        { id: 8, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
+      ],
       photo: 'https://i.pravatar.cc/300',
       rating: 4.9,
       availableSlots: 5,
@@ -31,7 +42,12 @@ const doctors: Doctor[] = [
   {
       id: 2,
       name: 'Dr. Carlos Ruiz',
-      specialties : [1, 2],
+      specialties: [1, 2],
+      address: [
+        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
+        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
+        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
+      ],
       photo: 'https://i.pravatar.cc/300',
       rating: 4.7,
       availableSlots: 3,
@@ -42,6 +58,11 @@ const doctors: Doctor[] = [
       id: 3,
       name: 'Dr. isabel molina',
       specialties: [1, 2],
+      address: [
+        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
+        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
+        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
+      ],
       photo: 'https://i.pravatar.cc/300',
       rating: 4.7,
       availableSlots: 3,
@@ -52,6 +73,11 @@ const doctors: Doctor[] = [
       id: 4,
       name: 'Dr. jhoan castro',
       specialties: [1, 2],
+      address: [
+        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
+        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
+        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
+      ],
       photo: 'https://i.pravatar.cc/300',
       rating: 4.7,
       availableSlots: 3,

@@ -24,16 +24,6 @@ export default function Specialties() {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [search, setSearch] = useState<string>('');
 
-  const specialtiesList = [
-    { id: 1, name: 'Medicina general', icon: 'heart', color: Colors.Violet, amount: 50000 },
-    { id: 2, name: 'Cardiología', icon: 'heart', color: Colors.Violet, amount: 70000 },
-    { id: 3, name: 'Dermatología', icon: 'hand-back-left', color: Colors.Violet, amount: 60000 },
-    { id: 4, name: 'Pediatría', icon: 'baby-carriage', color: Colors.Violet, amount: 55000 },
-    { id: 5, name: 'Neurología', icon: 'brain', color: Colors.Violet, amount: 80000 },
-    { id: 6, name: 'Gastroenterología', icon: 'food-apple', color: Colors.Violet, amount: 65000 },
-    { id: 7, name: 'Psiquiatría', icon: 'emoticon-happy', color: Colors.Violet, amount: 75000 },    
-  ];
-
   const handleSelectSpecialty = useCallback((specialty: any) => {
     saveAppointment({ 
       specialty,
@@ -90,7 +80,7 @@ export default function Specialties() {
             style={styles.specialtyCard}
             onPress={() => handleSelectSpecialty(item)}
           >
-            <IconButton icon={'gesture-tap'} size={40} style={{ backgroundColor: item.color + '20' }} />
+            <IconButton icon={'gesture-tap'} size={40} style={{ backgroundColor: Colors.Violet + '20' }} />
             <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
           </TouchableOpacity>          
         )}
@@ -117,7 +107,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.White,
     padding: 5,
-    paddingBottom: 15,
+    paddingVertical: 15,
     margin: 8,
     borderRadius: 5,
     borderColor: Colors.Gray400,
@@ -127,7 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   specialtyName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
   },

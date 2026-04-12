@@ -1,10 +1,13 @@
 // screens/DoctorsScreen.tsx
 import React, { useCallback, useState } from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
+import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import {
   Avatar,
   Text,
   Searchbar,
+  RadioButton,
+  Button,
+  Divider,
 } from 'react-native-paper';
 import { useDoctorsFilter } from '@/hooks/useDoctorsFilter'
 import { useNavigation } from '@react-navigation/native';
@@ -13,12 +16,21 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
-import { Icon } from 'react-native-paper';
+import { Icon, Modal } from 'react-native-paper';
 
 export default function Doctors() {
   const navigation = useNavigation();
 
+  const [doctorIdSelected, setDoctorIdSelected] = useState<string>('');
+  const [doctorNameSelected, setDoctorNameSelected] = useState<string>('');
+
   const [search, setSearch] = useState<string>('');
+  const [visible, setVisible] = useState<boolean>(false);
+  const [checked, setChecked] = useState<string>('');
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const containerStyle: any = { backgroundColor: 'white', width: '92%', alignSelf: 'center', borderRadius: 8 };
 
   const { saveAppointment, appointment } = useAppointmentStorage();
 
@@ -27,66 +39,111 @@ export default function Doctors() {
   const specialtyId = parseInt(appointment?.specialty.id || '0');
   
   const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);
+
+  const doctorAddress = doctors[0]?.address || [];
   
   const filteredDoctors = doctors.filter(doctor =>
     doctor.name.toLowerCase().includes(search.toLowerCase())
   );
   
-  const handleSelectCalendar = useCallback((doctorId: string, doctorName: string) => {
-    saveAppointment({ 
-      doctorId,
-      doctorName
-    });
+  const handleSelectDoctor = useCallback((doctorId: string, doctorName: string) => {
+    setDoctorIdSelected(doctorId);
+    setDoctorNameSelected(doctorName);
 
-     navigation.navigate(Routes.Calendar);
-  }, [saveAppointment, navigation]);
+    if (consultationType === 2) {
+      showModal();
+    } else {
+      saveAppointment({ 
+        doctorId,
+        doctorName
+      });
+      navigation.navigate(Routes.Calendar);
+    }
+  }, [saveAppointment, consultationType, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
-    <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectCalendar(item.id, item.name)}>
+    <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectDoctor(item.id, item.name)}>
       <View>
-        <View>
-          <Text style={styles.doctorName}>{item.name}</Text>          
-          <Text><StarRating rating={4} /></Text>
-        </View>
-        <View style={styles.doctorRow}>
-          {/* 🔹 Foto */}
+        <View style={[styles.doctorRow, { marginBottom: 10 }]}>
           <View style={{ alignItems: 'center' }}>
             <Avatar.Image 
-                size={75} 
-                source={{ uri: 'https://i.pravatar.cc/300' }} 
+              size={75} 
+              source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
           </View>
-        
+          <View style={styles.infoCol}>
+            <Text style={styles.doctorName}>{item.name}</Text>          
+            <Text><StarRating rating={4} /></Text>
+            <Text style={{ fontSize: 13, fontWeight: '700' }}>$ 180.000</Text>
+          </View>
+        </View>
+        <View style={styles.doctorRow}>                  
           {/* 🔹 Info */}
           <View style={styles.infoCol}>
-              {consultationType == 2 && (
+              {consultationType == 2 && (                                 
                 <>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
                     <Icon
                       source="google-maps"
                       color={Colors.Violet}
                       size={20}
-                    /><Text style={{ fontSize: 13 }}>Cra 7E # 70-134</Text>
+                    />
+                    <Text style={{ fontSize: 14, fontWeight: '700' }}>Direcciones</Text>                
+                  </View>
+                  <View style={{ marginBottom: 6 }}>
+                    <Text style={{ fontSize: 14 }}>Cra 7E # 70-134</Text>
+                    <Text style={{ fontSize: 14 }}>Clínica inbanaco, consultorio 301</Text>
                   </View>
                   <View>
-                    <Text style={{ fontSize: 13, fontWeight: '700' }}>Clínica inbanaco, consultorio 301</Text>
+                    <Text style={{ fontSize: 14 }}>Cra 7E # 70-134</Text>
+                    <Text style={{ fontSize: 14 }}>Clínica inbanaco, consultorio 301</Text>
                   </View>
                 </>
               )}
-
+              
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
                 <Icon
                   source="heart-plus"
                   color={Colors.Violet}
                   size={20}
-                /><Text style={{ fontSize: 13 }}>Visita nutricion y Dietetica, Asesoria nutricional, Alimentación del lactante</Text>
+                />
+                <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
               </View>
-              
-              <View style={styles.detailsRow}>
-                <Text style={{ fontSize: 13, fontWeight: '700' }}>$ 180.000</Text>
+              <View>
+                <Text style={{ fontSize: 14 }}>Visita nutricion y Dietetica, Asesoria nutricional, Alimentación del lactante</Text>
               </View>
           </View>
         </View>        
+      </View>
+    </TouchableOpacity>
+  );
+
+  const handleConfirm = useCallback(() => {
+    if (checked) {      
+      saveAppointment({ 
+        doctorId: doctorIdSelected,
+        doctorName: doctorNameSelected
+      });
+
+      hideModal();
+      navigation.navigate(Routes.Calendar);
+    } else {
+      Alert.alert('Aviso', 'Por favor selecciona una dirección para continuar');
+    }
+  }, [saveAppointment, checked, doctorIdSelected, doctorNameSelected, navigation]);
+
+  const renderAddress = ({ item }: { item: any }) => (
+    <TouchableOpacity onPress={() => {setChecked(item.id); console.log(item.name);}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 15, borderWidth: 1, borderColor: '#dbd8d8', padding: 10, borderRadius: 5 }}>
+        <RadioButton
+          value='first'
+          status={ checked === item.id ? 'checked' : 'unchecked' } 
+          onPress={() => {setChecked(item.id); console.log(item.name);}}         
+        />    
+        <View>
+          <Text style={{ fontSize: 16, fontWeight: '700' }}>{item.name}</Text>
+          <Text style={{ fontSize: 14 }}>{item.location}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -149,6 +206,37 @@ export default function Doctors() {
         </View>
       )}
       </View>
+      <Modal 
+        visible={visible} 
+        onDismiss={hideModal} 
+        contentContainerStyle={containerStyle}
+      >
+        <View style={{ padding: 20 }}>
+          {doctorAddress.length > 0 && (
+            <>
+              <Text style={{ fontSize: 20, fontWeight: '700' }}>Elige el lugar de la consulta?</Text>
+              <Text style={{ fontSize: 14, marginBottom: 25 }}>{doctorAddress.length} direcciones habilitadas</Text>
+              <FlatList
+                data={doctors[0].address}
+                renderItem={renderAddress}
+                keyExtractor={(item) => item.id.toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listaDirecciones}
+                style={{ maxHeight: 300 }}
+                keyboardShouldPersistTaps="handled"
+              />
+            </>
+          )}
+        </View>
+
+        <Divider  />
+
+        <View style={{ padding: 24 }}>  
+          <Button icon="calendar" mode="contained" style={{ width: '100%' }} onPress={handleConfirm}>
+            <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 10 }}>Confirmar</Text>
+          </Button>
+        </View>
+      </Modal>
       </KeyboardAvoidingView>
     </>
   );
@@ -161,6 +249,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 30,
     backgroundColor: Colors.White,    
+  },
+  button: {
+    marginVertical: 10,
+  }, 
+  listaDirecciones: {
+    flexGrow: 1,
   },
   doctorBox: {
     flex: 1,
