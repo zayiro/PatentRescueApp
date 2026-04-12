@@ -42,7 +42,7 @@ export default function Doctors() {
   }, [saveAppointment, navigation]);
 
   const renderDoctor = ({ item }: { item: any}) => (
-    <TouchableOpacity style={styles.boxDoctor} onPress={() => handleSelectCalendar(item.id, item.name)}>
+    <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectCalendar(item.id, item.name)}>
       <View>
         <View>
           <Text style={styles.doctorName}>{item.name}</Text>          
@@ -107,7 +107,7 @@ export default function Doctors() {
         </Text>
         {filteredDoctors.length ? (
           <>
-            <Text>{filteredDoctors.length} especialistas disponibles en</Text>
+            <Text style={{ marginTop: 5 }}>{filteredDoctors.length} especialistas disponibles en</Text>
             <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>  
           </>        
         ): (null)}
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     backgroundColor: Colors.White,    
   },
-  boxDoctor: {
+  doctorBox: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: Colors.White,
     padding: 12,
-    marginTop: 20,
+    marginBottom: 20,
     borderRadius: 5,
     borderColor: Colors.Gray400,
     borderWidth: 1,
@@ -214,5 +214,6 @@ const styles = StyleSheet.create({
   },
   searchbar: {
     margin: 5,
+    marginBottom: 20
   },
 });
