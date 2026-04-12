@@ -93,6 +93,12 @@ export function Home() {
       useNativeDriver: true,
     }).start();
   };
+
+  if (loading) {
+    return (
+      <LoadingSpinner message="Cargando información..." />
+    );
+  }
   
   if (!isAuthenticated) {
     return (
@@ -145,28 +151,20 @@ export function Home() {
   return (
     <>
       <StatusBar translucent barStyle="dark-content" backgroundColor="transparent" />
-
       <KeyboardAvoidingView
         style={styles.container2}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
         <ScrollView
-          style={{ flex: 1 }}
+          style={{ flex: 1, backgroundColor: Colors.White }}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >
-          {loading ? ( 
-            <View>
-              <LoadingSpinner message="Cargando..." />
-            </View>
-          )
-        :
-          (
-            <>                        
+          <View>                        
               <View style={{ marginBottom: 30 }}>
                 <Text style={{ fontSize: 20 }}>Hola, <Text style={{ fontWeight: '700' }}>{userName}</Text></Text>
               </View>
@@ -241,9 +239,7 @@ export function Home() {
                   <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 10 }}>Cerrar sesión</Text>
                 </Button>
               </View> 
-          </> 
-          )
-        }
+            </View> 
         </ScrollView>
       </KeyboardAvoidingView>   
     </>
@@ -254,13 +250,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: Colors.White,
   },
   container2: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
-    backgroundColor: '#FFF',
+    paddingVertical: 30,
+    backgroundColor: Colors.White,
   },
   backgroundImage: {
     position: 'absolute',

@@ -13,7 +13,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
-import { Icon, MD3Colors } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 
 export default function Doctors() {
   const navigation = useNavigation();
@@ -25,10 +25,8 @@ export default function Doctors() {
   const specialtyName = appointment?.specialty.name;
   const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
   const specialtyId = parseInt(appointment?.specialty.id || '0');
-
-  console.log("consultationType: "+consultationType);
   
-  const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);  
+  const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);
   
   const filteredDoctors = doctors.filter(doctor =>
     doctor.name.toLowerCase().includes(search.toLowerCase())
@@ -107,28 +105,50 @@ export default function Doctors() {
         <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
           {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
         </Text>
-        <Text>{filteredDoctors.length} especialistas disponibles en</Text>
-        <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>
+        {filteredDoctors.length ? (
+          <>
+            <Text>{filteredDoctors.length} especialistas disponibles en</Text>
+            <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>  
+          </>        
+        ): (null)}
       </View>
 
-      <View style={{ flex: 1 }}>        
-        {/* 🔹 Search */}
-        <Searchbar
-          placeholder="Buscar por nombre..."
-          onChangeText={setSearch}
-          value={search}
-          style={styles.searchbar}
-        />
+      <View style={{ flex: 1 }}>
+        {filteredDoctors.length ? (
+          <>        
+            {/* 🔹 Search */}
+            <Searchbar
+              placeholder="Buscar por nombre..."
+              onChangeText={setSearch}
+              value={search}
+              style={styles.searchbar}
+            />
 
-        <FlatList
-          data={filteredDoctors}
-          renderItem={renderDoctor}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-          numColumns={1}
-        />
-      </View>  
+            <FlatList
+              data={filteredDoctors}
+              renderItem={renderDoctor}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={styles.list}
+              showsVerticalScrollIndicator={false}
+              numColumns={1}
+            />
+          </>
+        )
+      :
+      (
+        <View>
+          <Text style={{ fontSize: 18, fontWeight: '600', textAlign: 'center', marginTop: 30 }}>
+            No se encontrarón especialistas para {specialtyName}
+          </Text>
+          <TouchableOpacity
+            style={{ marginTop: 20, padding: 12, borderRadius: 5 }}
+            onPress={() => navigation.navigate(Routes.Specialties) }
+          >
+            <Text style={{ color: Colors.Violet, textDecorationLine: 'underline', alignItems: 'center', alignSelf: 'center' }}>Intentar nueva busqueda</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      </View>
       </KeyboardAvoidingView>
     </>
   );

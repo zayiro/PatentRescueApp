@@ -155,15 +155,9 @@ export default function ThankYouPage() {
                 <Text>La conferencia se activará solo a la hora definida en la cita. ({appointmentData.selectedTime})</Text>
               </View>
 
-              <Button icon="message-video" mode="contained" onPress={() => navigation.navigate(Routes.Home)} style={[styles.button]}>
+              <Button icon="message-video" mode="contained" onPress={() => navigation.navigate(Routes.Appointments)} style={[styles.button]}>
                 <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Citas Programadas</Text>
               </Button>
-
-              {generateLink && (
-                <Button icon="message-video" mode="contained" onPress={abrirLinkLlamada} style={[styles.button]}>
-                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>ABRIR VIDEO CONFERENCIA</Text>
-                </Button>
-              )}
             </>
           )
           :

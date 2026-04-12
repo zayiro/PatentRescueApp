@@ -1,16 +1,30 @@
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { IconButton } from 'react-native-paper';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { IconButton, Searchbar } from 'react-native-paper';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Routes from '@/config/Routes';
+import axios from 'axios';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+interface Specialty {
+  id: number;
+  name: string;
+  icon?: string;
+  color?: string;
+  amount?: number;
+}
 
 export default function Specialties() {
   const navigation = useNavigation();
   const { saveAppointment } = useAppointmentStorage();
 
-  const specialties = [
+  const [loading, setLoading] = useState<boolean>(true);
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
+  const [search, setSearch] = useState<string>('');
+
+  const specialtiesList = [
     { id: 1, name: 'Medicina general', icon: 'heart', color: Colors.Violet, amount: 50000 },
     { id: 2, name: 'Cardiología', icon: 'heart', color: Colors.Violet, amount: 70000 },
     { id: 3, name: 'Dermatología', icon: 'hand-back-left', color: Colors.Violet, amount: 60000 },
@@ -28,8 +42,47 @@ export default function Specialties() {
      navigation.navigate(Routes.Doctors);
   }, [saveAppointment, specialties, navigation]);
 
+  const fetchSpecialties = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await axios.get('https://esdecali.com/truedoctor/api/specialties.php', {
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${token}`, // Si usas auth
+        },
+        timeout: 10000, // 10 segundos
+      });
+
+      const data = response.data;
+
+      setSpecialties(data.specialties);
+      console.log(data.specialties);
+    } catch (err) {
+      console.error('Error especialidades:', err);      
+      Alert.alert('Error', String(err));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar especialidades al montar el componente
+  useEffect(() => {
+    fetchSpecialties();
+  }, []);
+
+  if (loading) {
+    return (
+      <LoadingSpinner message="Cargando especialidades..." />
+    );
+  }
+
   return (
-    <View style={styles.container}>      
+    <View style={styles.container}>
+      <Text style={{ fontSize: 24, fontWeight: '700', color: Colors.Title, marginBottom: 20 }}>
+        ¿Qué especialidad necesitas?
+      </Text>
       <FlatList
         data={specialties}
         renderItem={({ item }) => (
@@ -37,7 +90,7 @@ export default function Specialties() {
             style={styles.specialtyCard}
             onPress={() => handleSelectSpecialty(item)}
           >
-            <IconButton icon={item.icon} size={40} style={{ backgroundColor: item.color + '20' }} />
+            <IconButton icon={'gesture-tap'} size={40} style={{ backgroundColor: item.color + '20' }} />
             <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
           </TouchableOpacity>          
         )}
@@ -56,17 +109,22 @@ const styles = StyleSheet.create({
     paddingVertical: 50,
     backgroundColor: '#FFF',
   },
+  searchbar: {
+    margin: 5,
+    marginBottom: 20 
+  },
   specialtyCard: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 20,
+    backgroundColor: '#F5F5F5',
+    padding: 5,
+    paddingBottom: 15,
     margin: 8,
-    borderRadius: 16,
+    borderRadius: 10,
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -74,7 +132,6 @@ const styles = StyleSheet.create({
   specialtyName: {
     fontSize: 14,
     fontWeight: '600',
-    marginTop: 10,
     textAlign: 'center',
   },
 });
