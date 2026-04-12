@@ -35,7 +35,7 @@ export function Login() {
 
   const follow = useCallback( async() => {
     const check = await checkBiometrics();
-    console.log(check);
+   
     if (check.available && check.enrolled) {
       requestBiometricSetup()
     }

@@ -44,19 +44,25 @@ export default function Doctors() {
   const {
     doctors,
     loading,
-    busqueda,
-    buscarDoctores,
-    refrescar,
-    cargarMas,
-    puedeCargarMas,
-    error,
-    refreshing,
   } = useDoctorsFilter(consultationType, specialtyId, search);
 
   const doctorAddress = doctors[0]?.address || [];
+
+  const limpiarString = (str: string | null | undefined): string => {
+    if (!str) return '';
   
-  const filteredDoctors = doctors.filter(doctor =>
-    doctor.name.toLowerCase().includes(search.toLowerCase())
+    return str
+      .trim()                    // Espacios
+      .toLowerCase()             // Minúsculas
+      .normalize('NFD')          // Descomponer acentos
+      .replace(/[\u0300-\u036f]/g, '')  // Quitar acentos
+      .replace(/[^a-z0-9\s]/g, '')     // Solo letras/números/espacios
+      .replace(/\s+/g, ' ');     // Espacios múltiples → uno
+  };
+  
+  const filteredDoctors = doctors.filter(doctor => {
+      return limpiarString(doctor.name).includes(limpiarString(search))
+    }
   );
   
   const handleSelectDoctor = useCallback((item: any) => {
@@ -86,7 +92,6 @@ export default function Doctors() {
 
     const maxVisible = 2;
     const mostrarMas = doctorAddress.length > maxVisible;
-
 
   const renderDoctor = ({ item }: { item: any}) => (
     <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectDoctor(item)}>
@@ -119,8 +124,8 @@ export default function Doctors() {
                   </View>
                   {doctorAddress.length > 0 && doctorAddress.slice(0, maxVisible).map((address) => (
                     <View key={address.id} style={{ marginBottom: 6, paddingLeft: 8 }}>
-                      <Text style={{ fontSize: 14 }}>{address.location}</Text>
-                      <Text style={{ fontSize: 14 }}>{address.name}</Text>
+                      <Text style={{ fontSize: 13 }}>{address.location}</Text>
+                      <Text style={{ fontSize: 13 }}>{address.name}</Text>
                     </View>
                   ))}
                   {mostrarMas && (
@@ -142,12 +147,12 @@ export default function Doctors() {
                     <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
                   </View>
                   {item.services.slice(0, 2).map((service: string, index: number) => (
-                    <View key={index} style={{ marginBottom: 6, paddingLeft: 8 }}>
-                      <Text style={{ fontSize: 14 }}>{service}</Text>
+                    <View key={index} style={{  paddingLeft: 8 }}>
+                      <Text style={{ fontSize: 13 }}>{service}</Text>
                     </View>    
                   ))}
                   {item.services.length > 2 && (
-                    <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                    <Text style={{ marginBottom: 6, fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
                       +{item.services.length - 3} servicios adicionales
                     </Text>
                   )}
@@ -190,7 +195,7 @@ export default function Doctors() {
     </TouchableOpacity>
   );
 
-  if (loading) return (<LoadingSpinner />);
+  if (loading) return (<LoadingSpinner message='Buscando coincidencias...' />);
 
   return (
     <>
@@ -206,23 +211,24 @@ export default function Doctors() {
         </Text>
         {filteredDoctors.length ? (
           <>
-            <Text style={{ marginTop: 5 }}>{filteredDoctors.length} {filteredDoctors.length > 1 ? 'especialistas disponibles' : 'especialista disponible' } para</Text>
-            <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>  
+            <Text style={{ fontWeight: '700', marginTop: 5 }}>{specialtyName || ''}</Text>  
+            <Text>{filteredDoctors.length} {filteredDoctors.length > 1 ? 'especialistas disponibles' : 'especialista disponible' }</Text>
+            
           </>        
         ): (null)}
       </View>
 
       <View style={{ flex: 1 }}>
-        {filteredDoctors.length ? (
-          <>        
-            {/* 🔹 Search */}
-            <Searchbar
-              placeholder="Buscar por nombre..."
-              onChangeText={setSearch}
-              value={search}
-              style={styles.searchbar}
-            />
+        {/* 🔹 Search */}
+        <Searchbar
+          placeholder="Buscar por nombre..."
+          onChangeText={setSearch}
+          value={search}
+          style={styles.searchbar}
+        />
 
+        {filteredDoctors.length ? (
+          <>                    
             <FlatList
               data={filteredDoctors}
               renderItem={renderDoctor}
@@ -243,7 +249,7 @@ export default function Doctors() {
             style={{ marginTop: 20, padding: 12, borderRadius: 5 }}
             onPress={() => navigation.navigate(Routes.Specialties) }
           >
-            <Text style={{ color: Colors.Violet, textDecorationLine: 'underline', alignItems: 'center', alignSelf: 'center' }}>Intentar nueva busqueda</Text>
+            <Text style={{ color: Colors.Violet, textDecorationLine: 'underline', alignItems: 'center', alignSelf: 'center' }}>nueva busqueda</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -327,6 +333,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: Colors.Gray400,
     borderWidth: 1,
+    shadowColor: '#9c9a9a',
+    shadowOffset: {
+      width: 0,
+      height: 1,          // Elevación vertical
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    
+    // 🌑 ELEVATION Android
+    elevation: 8,           // Equivalente iOS shadow
   },
   list: {
     padding: 3,

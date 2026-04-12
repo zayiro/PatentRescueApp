@@ -46,6 +46,7 @@ export function Home() {
   const handleAppointmentType = useCallback((consultationType: number) => {
     saveAppointment({
       consultationType,
+      address: consultationType === ConsultationTypes.Telemedicine ? null : undefined,
       status: 'draft',
      });
 

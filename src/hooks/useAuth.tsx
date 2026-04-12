@@ -26,7 +26,7 @@ export const useAuth = () => {
   const loginAuth = async (email: string, password: string) => {
     
     const result: any = await signInUserWithEmailAndPassword(email, password);
-    console.log("loginAuth");
+    
     await SecureStore.setItemAsync('userToken', result.token);
     await SecureStore.setItemAsync('userEmail', email);
     return result;

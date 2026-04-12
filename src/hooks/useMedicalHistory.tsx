@@ -28,8 +28,7 @@ export const useMedicalHistory = (userId: string, diseaseItem: string) => {
   const removeFromMedicalHistory = async (userId: string, diseaseId: string) => {
     try {
         const diseaseToRemove = diseasesList.find(d => d.id === diseaseId);
-        if (!diseaseToRemove) {
-          console.log('Regidtro no encontrado:', diseaseId);
+        if (!diseaseToRemove) {         
           return;
         }
 

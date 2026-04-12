@@ -74,7 +74,7 @@ const RootStack = createNativeStackNavigator({
     Calendar: {
       screen: Calendar,
       options: ({ navigation }) => ({
-        title: 'Selecciona una fecha',
+        title: 'Selecciona la fecha',
         headerRight: () => (          
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon

@@ -92,8 +92,7 @@ export function UnderlyingDiseases() {
     setMedicalHistoryList(diseasesList);
   }, [diseasesList]);
 
-  const handleDelete = (diseaseId: string) => {
-    console.log("diseaseId: "+ diseaseId);
+  const handleDelete = (diseaseId: string) => {  
     Alert.alert(
       'Eliminar',
       '¿Quitar enfermedad del historial?',

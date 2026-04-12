@@ -19,7 +19,7 @@ export default function Patient() {
   const { user } = useAuth();
   
   const { appointment, saveAppointment } = useAppointmentStorage();
-  console.log(appointment);
+  
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
@@ -151,7 +151,6 @@ export default function Patient() {
         createdAt,
       }
 
-      console.log(data);
       try {
         createDocument(NameCollection.Appointments, appointmentId, data);
         navigation.navigate(Routes.Summary);    
@@ -163,7 +162,7 @@ export default function Patient() {
 
   const onUserData = useCallback( async(userId: string) => {
       const result: any = await getUserData(userId)
-      console.log(result);
+     
       setFirstNameSaved(result.firstName || '');      
       setLastNameSaved(result.lastName || '');      
   }, [firstName]);  

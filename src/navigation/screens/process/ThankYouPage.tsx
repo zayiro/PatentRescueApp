@@ -67,8 +67,6 @@ export default function ThankYouPage() {
         timeout: 10000,
       });
 
-      console.log(response.data);
-
       let data = {
         link: response.data.link,
         expira: response.data.expira,

@@ -10,9 +10,8 @@ import { Text, Divider } from 'react-native-paper';
 export default function Calendar() {
     const navigation = useNavigation();
 
-    const { appointment, saveAppointment } = useAppointmentStorage();
-    console.log(appointment);
-    
+    const { appointment } = useAppointmentStorage();
+      
     const doctorId = appointment?.doctorId;
     const doctorName = appointment?.doctorName;
     const specialtyName = appointment?.specialty.name;
@@ -55,10 +54,12 @@ export default function Calendar() {
 
                 <Divider />
 
-                <View style={{ marginTop: 20 }}>
+                <View style={{ marginTop: 20 }}>                    
                     <Text variant="titleMedium" style={{ fontWeight: '700' }}>{doctorName}</Text>
-                    <Text>{address ? address.name + ' ' + address.location : ''}</Text>
-                    <Text style={{ fontSize:13, marginTop: 10, marginBottom: 20, color: Colors.Gray400 }}>Selecciona la fecha y hora que prefieras para tu cita. Si no ves la fecha que deseas, intenta actualizar la agenda.</Text>
+                    {consultationType == 2 && (
+                        <Text>{address ? address.name + ' ' + address.location : ''}</Text>
+                    )}
+                    <Text style={{ fontSize:13, marginTop: 5, marginBottom: 20, color: Colors.Gray400 }}>Selecciona la fecha y hora que prefieras para tu cita. Si no ves la fecha que deseas, intenta actualizar la agenda.</Text>
 
                     <AppCalendar
                         doctorId={doctorId || ''}
