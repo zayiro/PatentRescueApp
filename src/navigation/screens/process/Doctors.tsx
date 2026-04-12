@@ -41,8 +41,6 @@ export default function Doctors() {
   const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
   const specialtyId = parseInt(appointment?.specialty.id || '0');
   
-  //const { doctors, total, loading } = useDoctorsFilter(consultationType, specialtyId, search);
-
   const {
     doctors,
     loading,
@@ -100,7 +98,7 @@ export default function Doctors() {
               source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
           </View>
-          <View style={[styles.infoCol , { marginLeft: 10 }]}>
+          <View style={[styles.infoCol, { marginLeft: 10 }]}>
             <Text style={styles.doctorName}>{item.name}</Text>          
             <Text><StarRating rating={4} /></Text>
             <Text style={{ fontSize: 13, fontWeight: '700' }}>{formatPrice(item.price)}</Text>
@@ -126,24 +124,35 @@ export default function Doctors() {
                     </View>
                   ))}
                   {mostrarMas && (
-                    <Text style={{ fontSize: 13, color: Colors.Violet }}>
-                      +{doctorAddress.length - maxVisible} direcciones de consulta
+                    <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                      +{doctorAddress.length - maxVisible} direcciones adicionales
                     </Text>
                   )}
                 </>
               )}
               
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
-                <Icon
-                  source="heart-plus"
-                  color={Colors.Violet}
-                  size={20}
-                />
-                <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
-              </View>
-              <View style={{ marginBottom: 6, paddingLeft: 8 }}>
-                <Text style={{ fontSize: 14 }}>Visita nutricion y Dietetica, Asesoria nutricional, Alimentación del lactante</Text>
-              </View>
+              {item.services && item.services.length > 0 && (
+                <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
+                    <Icon
+                      source="heart-plus"
+                      color={Colors.Violet}
+                      size={20}
+                    />
+                    <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
+                  </View>
+                  {item.services.slice(0, 2).map((service: string, index: number) => (
+                    <View key={index} style={{ marginBottom: 6, paddingLeft: 8 }}>
+                      <Text style={{ fontSize: 14 }}>{service}</Text>
+                    </View>    
+                  ))}
+                  {item.services.length > 2 && (
+                    <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                      +{item.services.length - 3} servicios adicionales
+                    </Text>
+                  )}
+                </>
+              )}
           </View>
         </View>        
       </View>
@@ -197,7 +206,7 @@ export default function Doctors() {
         </Text>
         {filteredDoctors.length ? (
           <>
-            <Text style={{ marginTop: 5 }}>{filteredDoctors.length} especialistas disponibles en</Text>
+            <Text style={{ marginTop: 5 }}>{filteredDoctors.length} {filteredDoctors.length > 1 ? 'especialistas disponibles' : 'especialista disponible' } para</Text>
             <Text style={{ fontWeight: '700' }}>{specialtyName || ''}</Text>  
           </>        
         ): (null)}
@@ -330,7 +339,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   confirmButton: {
-    marginTop: 40,
+    marginTop: 5,
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',

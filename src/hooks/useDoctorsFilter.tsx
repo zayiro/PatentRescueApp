@@ -51,7 +51,6 @@ export const useDoctorsFilter = (consultationType: number, specialtyId: number, 
 
       const data = response.data;
 
-      console.log(params);
       console.log(data);
       
       if (data.success) {
@@ -98,8 +97,10 @@ export const useDoctorsFilter = (consultationType: number, specialtyId: number, 
 
   // Inicial
   useEffect(() => {
+    if (!specialtyId || !consultationType) return;
+
     cargarDoctores(1);
-  }, [specialtyId]);
+  }, [specialtyId, consultationType]);
 
   return {
     doctors,
