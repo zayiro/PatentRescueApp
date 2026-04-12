@@ -80,7 +80,7 @@ export default function Specialties() {
             onPress={() => handleSelectSpecialty(item)}
           >
             <IconButton icon={'gesture-tap'} size={40} style={{ backgroundColor: Colors.Violet + '20' }} />
-            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
+            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name} - {item.id}</Text>
           </TouchableOpacity>          
         )}
         numColumns={2}

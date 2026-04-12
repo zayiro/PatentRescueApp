@@ -58,7 +58,7 @@ export default function Calendar() {
                 <View style={{ marginTop: 20 }}>
                     <Text variant="titleMedium" style={{ fontWeight: '700' }}>{doctorName}</Text>
                     <Text>{address ? address.name + ' ' + address.location : ''}</Text>
-                    <Text style={{ marginTop: 10, marginBottom: 20, color: Colors.Gray400 }}>Selecciona la fecha y hora que prefieras para tu cita. Si no ves la fecha que deseas, intenta actualizar la agenda.</Text>
+                    <Text style={{ fontSize:13, marginTop: 10, marginBottom: 20, color: Colors.Gray400 }}>Selecciona la fecha y hora que prefieras para tu cita. Si no ves la fecha que deseas, intenta actualizar la agenda.</Text>
 
                     <AppCalendar
                         doctorId={doctorId || ''}

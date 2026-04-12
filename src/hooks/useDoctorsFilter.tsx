@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+// hooks/useDoctorsFilter.js
+import { useState, useEffect, useCallback, SetStateAction } from 'react';
+import axios from 'axios';
+import { Alert } from 'react-native';
 
-interface DoctorFilters {
-  consultationType: number;
-  specialtyId: number;
-  search?: string;
-}
+const API_URL = 'https://esdecali.com/truedoctor/api/doctors.php';
 
 interface Doctor {
   id: number;
@@ -14,98 +13,103 @@ interface Doctor {
   photo: string;
   rating: number;
   availableSlots: number;
-  price: number;
   consultationTypes: number[];
+  services?: string[];
 }
 
-const doctors: Doctor[] = [
-  {
-      id: 1,
-      name: 'Dra. Ana López',
-      specialties: [1, 2],
-      address: [
-        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
-        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
-        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
-        { id: 4, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
-        { id: 5, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
-        { id: 6, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
-        { id: 7, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },   
-        { id: 8, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
-      ],
-      photo: 'https://i.pravatar.cc/300',
-      rating: 4.9,
-      availableSlots: 5,
-      price: 35000,
-      consultationTypes: [1, 2],
-  },
-  {
-      id: 2,
-      name: 'Dr. Carlos Ruiz',
-      specialties: [1, 2],
-      address: [
-        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
-        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
-        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
-      ],
-      photo: 'https://i.pravatar.cc/300',
-      rating: 4.7,
-      availableSlots: 3,
-      price: 50000,
-      consultationTypes: [1, 2],
-  },
-  {
-      id: 3,
-      name: 'Dr. isabel molina',
-      specialties: [1, 2],
-      address: [
-        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
-        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
-        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
-      ],
-      photo: 'https://i.pravatar.cc/300',
-      rating: 4.7,
-      availableSlots: 3,
-      price: 50000,
-      consultationTypes: [1, 2],
-  },
-  {
-      id: 4,
-      name: 'Dr. jhoan castro',
-      specialties: [1, 2],
-      address: [
-        { id: 1, name: 'Clínica Central', location: 'Calle 123 # 45-67' },
-        { id: 2, name: 'Consultorio Privado', location: 'Avenida 89 # 12-34' },
-        { id: 3, name: 'Clinica inbanaco', location: 'Carrera 7E # 70-134' },        
-      ],
-      photo: 'https://i.pravatar.cc/300',
-      rating: 4.7,
-      availableSlots: 3,
-      price: 50000,
-      consultationTypes: [1, 2],
-  },
-];
+export const useDoctorsFilter = (consultationType: number, specialtyId: number, search: string) => {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-export const useDoctorsFilter = (
-  consultationType: DoctorFilters['consultationType'],
-  specialtyId: DoctorFilters['specialtyId'],
-  search: DoctorFilters['search']
-) => {
-  const filteredDoctors = useMemo(() => {
-    return doctors.filter(doctor => {
-      const result1 = doctor.specialties.includes(specialtyId);
-      if (!result1) return false;
+  // 🔄 Cargar doctores inicial
+  const cargarDoctores = useCallback(async (page = 1, search = '') => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const params = {
+        specialtyId,
+        consultationType,
+        page,
+        limit: 10,
+        ...(search && { doctorName: search }),
+      };
+      
+      const response = await axios.get(API_URL, { 
+        params, 
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${token}`, // Si usas auth
+        },
+        timeout: 10000 
+      });
 
-      const result2 =  doctor.consultationTypes.includes(consultationType);
-      if (!result2) return false;
+      const data = response.data;
 
-      return true;
-    });
-  }, [consultationType, specialtyId]);
+      console.log(params);
+      console.log(data);
+      
+      if (data.success) {
+        if (page === 1) {
+          setDoctors(data.doctors);
+        } else {
+          setDoctors(prev => [...prev, ...data.doctors]);
+        }
+        
+        setTotalPaginas(data.total_pages || 1);
+      }
+    } catch (err) {
+      console.error('Error doctors:', err);
+      const errorMessage = axios.isAxiosError(err) && err.response?.data?.message 
+        ? err.response.data.message 
+        : 'Error de conexión';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [specialtyId]);
+
+  // 🔍 Búsqueda
+  const buscarDoctores = useCallback((texto: string = '') => {
+    setBusqueda(texto);
+    setPagina(1);
+    cargarDoctores(1, texto);
+  }, [cargarDoctores]);
+
+  // 🔄 Refresh
+  const refrescar = useCallback(async () => {
+    setRefreshing(true);
+    await cargarDoctores(1, busqueda);
+    setRefreshing(false);
+  }, [cargarDoctores, busqueda]);
+
+  // 📄 Carga más (infinite scroll)
+  const cargarMas = useCallback(() => {
+    if (pagina < totalPaginas && !loading) {
+      setPagina(p => p + 1);
+      cargarDoctores(pagina + 1, busqueda);
+    }
+  }, [pagina, totalPaginas, loading, busqueda, cargarDoctores]);
+
+  // Inicial
+  useEffect(() => {
+    cargarDoctores(1);
+  }, [specialtyId]);
 
   return {
-    doctors: filteredDoctors,
-    total: filteredDoctors.length,
-    loading: false,
+    doctors,
+    loading,
+    busqueda,
+    buscarDoctores,
+    refrescar,
+    cargarMas,
+    puedeCargarMas: pagina < totalPaginas,
+    error,
+    refreshing,
   };
 };

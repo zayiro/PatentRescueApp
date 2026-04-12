@@ -151,10 +151,14 @@ export default function Patient() {
         createdAt,
       }
 
-      createDocument(NameCollection.Appointments, appointmentId, data);
-      //console.log("Appointment saved with ID:", appointmentId, "Data:", data);
-
-      navigation.navigate(Routes.Summary);    
+      console.log(data);
+      try {
+        createDocument(NameCollection.Appointments, appointmentId, data);
+        navigation.navigate(Routes.Summary);    
+      } catch (err) {
+        Alert.alert('Error', `No se pudo guardar la cita\n${String(err)}`);
+        return false;
+      }      
   }, [saveAppointment, navigation, firstName, lastName, firstNameSaved, lastNameSaved, description, user, termsAccepted, value]);
 
   const onUserData = useCallback( async(userId: string) => {

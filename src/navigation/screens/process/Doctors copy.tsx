@@ -18,7 +18,6 @@ import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
 import { Icon, Modal } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
-import { formatPrice } from '@/utils/priceUtils';
 
 export default function Doctors() {
   const theme = useTheme();
@@ -103,7 +102,7 @@ export default function Doctors() {
           <View style={[styles.infoCol , { marginLeft: 10 }]}>
             <Text style={styles.doctorName}>{item.name}</Text>          
             <Text><StarRating rating={4} /></Text>
-            <Text style={{ fontSize: 13, fontWeight: '700' }}>{formatPrice(item.price)}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '700' }}>$ 180.000</Text>
           </View>
         </View>
         <View style={styles.doctorRow}>                  
