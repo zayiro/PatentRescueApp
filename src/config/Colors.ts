@@ -1,5 +1,3 @@
-import { Title } from "react-native-paper";
-
 const Colors = {
   iconInput: "#520b94",
   link: "#5C4DB6",

@@ -17,8 +17,10 @@ import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
 import { Icon, Modal } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 export default function Doctors() {
+  const theme = useTheme();
   const navigation = useNavigation();
 
   const [doctorIdSelected, setDoctorIdSelected] = useState<string>('');
@@ -46,23 +48,37 @@ export default function Doctors() {
     doctor.name.toLowerCase().includes(search.toLowerCase())
   );
   
-  const handleSelectDoctor = useCallback((doctorId: string, doctorName: string) => {
-    setDoctorIdSelected(doctorId);
-    setDoctorNameSelected(doctorName);
+  const handleSelectDoctor = useCallback((item: any) => {
+    setDoctorIdSelected(item.id);
+    setDoctorNameSelected(item.name);
 
     if (consultationType === 2) {
-      showModal();
+      if (doctorAddress.length === 0) {
+        Alert.alert('Aviso', 'No hay direcciones disponibles para este doctor. Por favor selecciona otro doctor.');
+      } else if (doctorAddress.length === 1) {
+        saveAppointment({ 
+          doctorId: item.id,
+          doctorName: item.name
+        });
+        navigation.navigate(Routes.Calendar);
+      } else {
+        showModal();
+      }
     } else {
       saveAppointment({ 
-        doctorId,
-        doctorName
+        doctorId: item.id,
+        doctorName: item.name
       });
       navigation.navigate(Routes.Calendar);
     }
-  }, [saveAppointment, consultationType, navigation]);
+  }, [saveAppointment, consultationType, doctorAddress, navigation]);
+
+    const maxVisible = 2;
+    const mostrarMas = doctorAddress.length > maxVisible;
+
 
   const renderDoctor = ({ item }: { item: any}) => (
-    <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectDoctor(item.id, item.name)}>
+    <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectDoctor(item)}>
       <View>
         <View style={[styles.doctorRow, { marginBottom: 10 }]}>
           <View style={{ alignItems: 'center' }}>
@@ -71,7 +87,7 @@ export default function Doctors() {
               source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
           </View>
-          <View style={styles.infoCol}>
+          <View style={[styles.infoCol , { marginLeft: 10 }]}>
             <Text style={styles.doctorName}>{item.name}</Text>          
             <Text><StarRating rating={4} /></Text>
             <Text style={{ fontSize: 13, fontWeight: '700' }}>$ 180.000</Text>
@@ -90,14 +106,17 @@ export default function Doctors() {
                     />
                     <Text style={{ fontSize: 14, fontWeight: '700' }}>Direcciones</Text>                
                   </View>
-                  <View style={{ marginBottom: 6 }}>
-                    <Text style={{ fontSize: 14 }}>Cra 7E # 70-134</Text>
-                    <Text style={{ fontSize: 14 }}>Clínica inbanaco, consultorio 301</Text>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 14 }}>Cra 7E # 70-134</Text>
-                    <Text style={{ fontSize: 14 }}>Clínica inbanaco, consultorio 301</Text>
-                  </View>
+                  {doctorAddress.length > 0 && doctorAddress.slice(0, maxVisible).map((address) => (
+                    <View key={address.id} style={{ marginBottom: 6, paddingLeft: 8 }}>
+                      <Text style={{ fontSize: 14 }}>{address.location}</Text>
+                      <Text style={{ fontSize: 14 }}>{address.name}</Text>
+                    </View>
+                  ))}
+                  {mostrarMas && (
+                    <Text style={{ fontSize: 13, color: Colors.Violet }}>
+                      +{doctorAddress.length - maxVisible} direcciones de consulta
+                    </Text>
+                  )}
                 </>
               )}
               
@@ -109,7 +128,7 @@ export default function Doctors() {
                 />
                 <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
               </View>
-              <View>
+              <View style={{ marginBottom: 6, paddingLeft: 8 }}>
                 <Text style={{ fontSize: 14 }}>Visita nutricion y Dietetica, Asesoria nutricional, Alimentación del lactante</Text>
               </View>
           </View>
@@ -133,12 +152,12 @@ export default function Doctors() {
   }, [saveAppointment, checked, doctorIdSelected, doctorNameSelected, navigation]);
 
   const renderAddress = ({ item }: { item: any }) => (
-    <TouchableOpacity onPress={() => {setChecked(item.id); console.log(item.name);}}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 15, borderWidth: 1, borderColor: '#dbd8d8', padding: 10, borderRadius: 5 }}>
+    <TouchableOpacity onPress={() => {setChecked(item.id)}} activeOpacity={0.7}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 15, borderWidth: 1, borderColor: '#dbd8d8', backgroundColor: '#F3F4F6', padding: 10, borderRadius: 5 }}>
         <RadioButton
           value='first'
           status={ checked === item.id ? 'checked' : 'unchecked' } 
-          onPress={() => {setChecked(item.id); console.log(item.name);}}         
+          onPress={() => {setChecked(item.id)}}         
         />    
         <View>
           <Text style={{ fontSize: 16, fontWeight: '700' }}>{item.name}</Text>
@@ -211,6 +230,16 @@ export default function Doctors() {
         onDismiss={hideModal} 
         contentContainerStyle={containerStyle}
       >
+        <View style={styles.headerPaper}>
+          <Button 
+            mode="text" 
+            onPress={() => setVisible(false)}
+            style={styles.botonCerrarPaper}
+            icon="close"
+          >
+            Cerrar
+          </Button>
+        </View>
         <View style={{ padding: 20 }}>
           {doctorAddress.length > 0 && (
             <>
@@ -231,10 +260,13 @@ export default function Doctors() {
 
         <Divider  />
 
-        <View style={{ padding: 24 }}>  
-          <Button icon="calendar" mode="contained" style={{ width: '100%' }} onPress={handleConfirm}>
-            <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 10 }}>Confirmar</Text>
-          </Button>
+        <View style={{ padding: 24 }}>
+          <TouchableOpacity
+            style={[styles.confirmButton, { backgroundColor: checked ? theme.colors.primary : Colors.Gray400 }]}
+            onPress={handleConfirm}
+          >
+            <Text style={styles.confirmButtonText}>Confirmar</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
       </KeyboardAvoidingView>
@@ -256,6 +288,14 @@ const styles = StyleSheet.create({
   listaDirecciones: {
     flexGrow: 1,
   },
+   headerPaper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  botonCerrarPaper: {
+    margin: 0,
+    marginTop: 5
+  },
   doctorBox: {
     flex: 1,
     backgroundColor: Colors.White,
@@ -275,13 +315,23 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 0,
   },
+  confirmButton: {
+    marginTop: 40,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
   doctorRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   infoCol: {
     flex: 1,
-    marginLeft: 8,
   },
   doctorName: {
     fontSize: 18,

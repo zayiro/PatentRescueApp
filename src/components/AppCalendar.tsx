@@ -16,6 +16,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Routes from '@/config/Routes';
 import { useNavigation } from "@react-navigation/native";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
+import dayjs from 'dayjs';
 
 interface CalendarProps {
   doctorId: string;
@@ -58,7 +59,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const [loadingHours, setLoadingHours] = useState<boolean>(false);
 
   //const hoy = dayjs().format('YYYY-MM-DD');
-  const hoy = moment().format('DD-MM-YYYY');
+  const hoy = dayjs().format('YYYY-MM-DD');
 
   const { appointment, saveAppointment } = useAppointmentStorage();
 
@@ -184,7 +185,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <LoadingSpinner message={'Cargando...'} />        
+        <LoadingSpinner message={'Cargando Agenda...'} />        
       </View>
     );
   }
@@ -209,11 +210,12 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {moment(selectedDate).format('dddd, DD [de] MMMM [del] YYYY')}
+              {dayjs(selectedDate).format('dddd, DD [de] MMMM [del] YYYY')}
             </Text>            
             <Text style={styles.modalSubtitle}>
-              <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> consultas disponibles
+              <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> consultas disponibles              
             </Text>
+            <Text>Selecciona la hora</Text>
 
             <FlatList
               data={selectedHours}
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,    
     minHeight: 60,
     paddingTop: 10,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1.5,
     borderColor: '#E5E7EB',
     minWidth: 70,
