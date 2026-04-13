@@ -7,6 +7,7 @@ import {
   Modal,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import moment from 'moment';
@@ -17,6 +18,8 @@ import Routes from '@/config/Routes';
 import { useNavigation } from "@react-navigation/native";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import dayjs from 'dayjs';
+import { capitalizar } from '@/utils/utils';
+import { Button } from 'react-native-paper';
 
 interface CalendarProps {
   doctorId: string;
@@ -45,6 +48,7 @@ LocaleConfig.locales['es'] = {
 };
 
 LocaleConfig.defaultLocale = 'es';
+const { height: screenHeight } = Dimensions.get('window');
 
 const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const navigation = useNavigation();
@@ -139,10 +143,14 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const isPastTime = (fechaStr: string | number | dayjs.Dayjs | Date | null | undefined, horaStr: string) => {
     const ahora = dayjs();
     
+    console.log(horaStr);
     // Parse fecha + hora
+    let hourSplit = horaStr.split('-');
+    let startHour = hourSplit[0].trim(); // "14:30"
+
     const fechaHoraCita = dayjs(fechaStr)
-      .hour(parseInt(horaStr.split(':')[0]))  // 14
-      .minute(parseInt(horaStr.split(':')[1])); // 30
+      .hour(parseInt(startHour.split(':')[0]))  // 14
+      .minute(parseInt(startHour.split(':')[1])); // 30
     
     // Si pasó → return true
     return fechaHoraCita.isBefore(ahora);
@@ -227,8 +235,18 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            <View style={styles.headerPaper}>
+              <Button 
+                mode="text" 
+                onPress={() => setModalVisible(false)}
+                style={styles.botonCerrarPaper}
+                icon="close"
+              >
+                Cerrar
+              </Button>
+            </View>
             <Text style={styles.modalTitle}>
-              {dayjs(selectedDate).format('dddd, DD [de] MMMM [del] YYYY')}
+              {capitalizar(dayjs(selectedDate).format('dddd, DD [de] MMMM [del] YYYY'))}
             </Text>            
             <Text style={styles.modalSubtitle}>
               <Text style={{ fontWeight: '700' }}>{selectedHours.length}</Text> consultas disponibles              
@@ -239,27 +257,17 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
               data={selectedHours}
               renderItem={renderHourItem}
               keyExtractor={(item) => item}
-              horizontal={true}           // ← HORIZONTAL
-              showsHorizontalScrollIndicator={true}              
-              scrollIndicatorInsets={{ right: 20 }} // ← Indicador un poco más adentro
+              showsVerticalScrollIndicator={false}              
+              scrollIndicatorInsets={{ right: 2 }} // ← Indicador un poco más adentro
               contentContainerStyle={styles.horizontalHoursList}
               snapToInterval={110}        // ← Snap suave entre items
-              decelerationRate="fast"     // ← Scroll rápido
+              decelerationRate="normal"     // ← Scroll rápido
               bounces={true}
+              removeClippedSubviews={false}
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
               overScrollMode="never"
-              getItemLayout={(data, index) => ({
-                length: 100,
-                offset: 110 * index,
-                index,
-              })}
             />
-
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Cerrar</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -282,6 +290,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerPaper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  botonCerrarPaper: {
+    margin: 0,
+    marginTop: 5
   },
   loadingText: {
     marginTop: 10,
@@ -337,44 +353,34 @@ const styles = StyleSheet.create({
     elevation: 12,
     paddingBottom: 5
   },
-  horizontalHoursList: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    maxHeight: 80, // Altura fija para mejor UX
+  horizontalHoursList: {    
+    paddingHorizontal: 1,
+    paddingVertical: 10,
+    paddingBottom: 20,
   },
   hourItem: {
     backgroundColor: '#F3F4F6',
     color: '#374151',
-    paddingHorizontal: 16,    
-    minHeight: 60,
+    paddingHorizontal: 16,  
     paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    minWidth: 70,
+    borderColor: '#79d480',
     alignItems: 'center',
-    marginRight: 17,
-    shadowColor: '#94a3b8',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 2,
+    marginBottom: 20
   },
   hourItemPastTime: {
-    backgroundColor: '#f0e5e7',
-    color: '#e0e4eb',
-    paddingHorizontal: 16,    
-    minHeight: 60,
+    backgroundColor: '#F3F4F6',
+    color: '#374151',
+    paddingHorizontal: 16,  
     paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    minWidth: 70,
+    borderColor: '#e5ebe6',
     alignItems: 'center',
-    marginRight: 17,
-    shadowColor: '#94a3b8',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 2,
+    marginBottom: 20
   },
   hourText: {    
     fontSize: 22,        
@@ -382,9 +388,10 @@ const styles = StyleSheet.create({
   
   // Modal más compacto para horizontal
   modalContent: {
-    backgroundColor: 'white',    
-    padding: 20,
-    width: '95%',
-    elevation: 15,    
+    backgroundColor: Colors.White,    
+    padding: 15,
+    paddingBottom: 30,
+    width: '94%',
+    height: screenHeight * 0.8,
   },
 });

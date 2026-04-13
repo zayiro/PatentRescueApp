@@ -18,3 +18,8 @@ export const nameValidator = (name: string) => {
 
   return '';
 };
+
+export const capitalizar = (item: string) => {
+  if (!item) return '';
+  return item.charAt(0).toUpperCase() + item.slice(1).toLowerCase();
+};

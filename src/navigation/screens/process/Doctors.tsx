@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   listaDirecciones: {
     flexGrow: 1,
   },
-   headerPaper: {
+  headerPaper: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
