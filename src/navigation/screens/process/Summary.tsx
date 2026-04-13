@@ -61,11 +61,13 @@ export default function Summary() {
         >                     
           <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
               <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                {consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
               </Text>
               <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
               <Text>{specialtyName || ''}</Text>
-              <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
+              {address && consultationType === ConsultationTypes.MedicalConsultation ? (
+                <Text style={{ marginTop: 5 }}>{address.name + ' ' + address.location}</Text>
+              ): null}
               <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
               <Text>Hora: {selectedTime}</Text>             
           </View>

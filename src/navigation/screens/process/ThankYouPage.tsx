@@ -117,11 +117,13 @@ export default function ThankYouPage() {
             <>
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
                   <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                    {appointmentData.consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                    {appointmentData.consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
                   </Text>
                   <Text style={{ fontWeight: '700' }}>{appointmentData.doctorName || ''}</Text>
                   <Text>{appointmentData.specialty.name || ''}</Text>
-                  <Text style={{ marginTop: 5 }}>{appointmentData.address ? appointmentData.address.name + ' ' + appointmentData.address.location : ''}</Text>
+                  {appointmentData.address && appointmentData.consultationType === ConsultationTypes.MedicalConsultation ? (
+                    <Text style={{ marginTop: 5 }}>{appointmentData.address ? appointmentData.address.name + ' ' + appointmentData.address.location : ''}</Text>
+                  ): null}
                   <Text>{dayjs(appointmentData.selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
                   <Text>Hora: {appointmentData.selectedTime}</Text>     
               </View>
