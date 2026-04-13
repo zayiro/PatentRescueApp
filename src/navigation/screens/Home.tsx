@@ -186,7 +186,7 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
+                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
                   >
                     <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
                     <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta en línea</Text>    
@@ -198,7 +198,7 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
+                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation) }
                   >
                     <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
                     <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta presencial</Text>    
