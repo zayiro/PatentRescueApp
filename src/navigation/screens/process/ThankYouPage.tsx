@@ -128,16 +128,16 @@ export default function ThankYouPage() {
 
               <Divider /> 
 
-              <View style={{ marginTop: 40, marginBottom: 40 }}>
-                <Text variant="titleMedium" style={{ marginBottom: 10 }}>¡Gracias por reservar tu cita con nosotros!</Text>
+              <View style={{ marginTop: 20, marginBottom: 40 }}>
+                <Text variant="titleMedium" style={{ marginBottom: 20, color: Colors.Title }}>¡Gracias por reservar tu cita con nosotros!</Text>
                 {appointmentData.consultationType == ConsultationTypes.Telemedicine ? (
                   <>
-                  <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Para ingresar a la video conferencia, ingrese a la sección citas programadas y haga click en el enlace "Entrar a la video conferencia".</Text>
-                  <Text>Recuerde conectarse 15 minutos antes de la hora programada, para validar el video y el audio.</Text>
+                  <Text variant="bodyMedium" style={{ marginBottom: 10 }}>Para ingresar a la video conferencia, ingrese a la sección <Text style={{ fontWeight: '700' }}>citas programadas</Text> y haga click en el enlace "Entrar a la video conferencia".</Text>
+                  <Text style={{ marginBottom: 10 }}>Recuerde conectarse 15 minutos antes de la hora programada, para validar el video y el audio.</Text>
                   <Text>La conferencia se activará solo a la hora definida en la cita. ({appointmentData.selectedTime})</Text>
                   </>                  
                 ) : (
-                  <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Recuerde asistir a la dirección del consultorio, 15 minutos antes de la hora programada.</Text>
+                  <Text variant="bodyMedium" style={{ marginBottom: 10 }}>Recuerde asistir a la dirección del consultorio, 15 minutos antes de la hora programada.</Text>
                 )}                              
               </View>
 

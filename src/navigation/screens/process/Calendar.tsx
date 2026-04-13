@@ -1,6 +1,7 @@
 import AppCalendar from "@/components/AppCalendar";
 import Colors from "@/config/Colors";
 import Routes from "@/config/Routes";
+import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
@@ -47,7 +48,7 @@ export default function Calendar() {
             >
                 <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
                     <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                        {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                        {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
                     </Text>                    
                     <Text>{specialtyName || ''}</Text>                    
                 </View>

@@ -18,6 +18,7 @@ import StarRating from '@/components/StarRating';
 import { Icon, Modal } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 import { formatPrice } from '@/utils/priceUtils';
+import { ConsultationTypes } from '@/enums/ConsultationTypes';
 
 export default function Doctors() {
   const theme = useTheme();
@@ -209,7 +210,7 @@ export default function Doctors() {
       > 
       <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
         <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-          {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+          {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
         </Text>
         {filteredDoctors.length ? (
           <>

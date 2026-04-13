@@ -14,6 +14,7 @@ import { Button, TextInput, Text, Divider, Checkbox, RadioButton } from "react-n
 import uuid from 'react-native-uuid'
 import { formatDateTime } from '@/utils/formatDateTime';
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { ConsultationTypes } from "@/enums/ConsultationTypes";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -206,7 +207,7 @@ export default function Patient() {
             <>
               <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
                 <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                  {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                  {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
                 </Text>
                 <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
                 <Text>{specialtyName || ''}</Text>

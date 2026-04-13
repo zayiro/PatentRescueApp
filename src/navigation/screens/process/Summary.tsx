@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
+import { ConsultationTypes } from "@/enums/ConsultationTypes";
 
 export default function Summary() {
     const navigation = useNavigation();
@@ -60,7 +61,7 @@ export default function Summary() {
         >                     
           <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
               <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
               </Text>
               <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
               <Text>{specialtyName || ''}</Text>
