@@ -13,6 +13,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity
 import { Button, TextInput, Text, Divider, Checkbox, RadioButton } from "react-native-paper";
 import uuid from 'react-native-uuid'
 import { formatDateTime } from '@/utils/formatDateTime';
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -162,10 +163,19 @@ export default function Patient() {
   }, [saveAppointment, navigation, firstName, lastName, firstNameSaved, lastNameSaved, description, user, termsAccepted, value]);
 
   const onUserData = useCallback( async(userId: string) => {
+    setLoading(true);
+
+    try {
       const result: any = await getUserData(userId)
      
       setFirstNameSaved(result.firstName || '');      
-      setLastNameSaved(result.lastName || '');      
+      setLastNameSaved(result.lastName || '');
+    } catch (err) {
+      setLoading(false);
+      Alert.alert('Error', `No se pudo cargar la información del usuario\n${String(err)}`);
+    } finally {
+      setLoading(false);
+    }
   }, [firstName]);  
   
   useEffect(() => {
@@ -173,6 +183,8 @@ export default function Patient() {
       onUserData(user?.uid);
     }
   }, [user]);
+
+  if (loading) return (<LoadingSpinner message='Cargando información...' />);
 
   return (
     <>
@@ -190,157 +202,160 @@ export default function Patient() {
           scrollEnabled={true}
           nestedScrollEnabled={true}
         >
-          <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-            <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-              {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
-            </Text>
-            <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-            <Text>{specialtyName || ''}</Text>
-            <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
-            <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-            <Text>Hora: {selectedTime}</Text>
-          </View>
-
-          <Divider />
-
-          <View>
-            <View style={{ alignItems: 'flex-start', marginTop: 20, marginBottom: 10 }}>
-              <Text variant="headlineSmall">¿Para quién es la cita?</Text>
-            </View>
-
-            <View style={{ marginBottom: 10 }}>            
-              <RadioButton.Group onValueChange={newValue => { 
-                  setValue(newValue);
-                  toggleOtherPerson();
-                }} value={value}>
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>                
-                  <RadioButton value="first" />
-                  <Text style={{ paddingTop: 5 }}>{ firstNameSaved } { lastNameSaved }</Text>
-                </View>
-                <View style={{ flexDirection: 'row' }}>                
-                  <RadioButton value="second" />
-                  <Text style={{ paddingTop: 5 }}>Para otra persona</Text>
-                </View>
-              </RadioButton.Group>
-            </View>
-
-            <Animated.View 
-              style={[
-                styles.inputContainer,
-                {
-                  height: heightAnim,
-                  opacity: heightAnim.interpolate({
-                    inputRange: [0, 60],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}
-            >                    
-              <View style={{ marginTop: 10 }}>
-                <TextInput
-                  label="Nombre del paciente"        
-                  onChangeText={setFirstName}
-                  value={firstName}
-                  right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
-                  mode="outlined"
-                />
+          {firstNameSaved.length > 0 && lastNameSaved.length > 0 && (
+            <>
+              <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
+                <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+                  {consultationType == 1 ? 'Telemedicina' : 'Consulta Presencial' }
+                </Text>
+                <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+                <Text>{specialtyName || ''}</Text>
+                <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
+                <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+                <Text>Hora: {selectedTime}</Text>
               </View>
 
-              <View style={{ marginTop: 10 }}>
-                <TextInput
-                  label="Apellidos del paciente"        
-                  onChangeText={setFirstName}
-                  value={lastName}
-                  right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
-                  mode="outlined"
-                />
-              </View>
+              <Divider />
 
               <View>
-                <Text style={{ marginTop: 10 }}>Fecha de Nacimiento</Text>
-              </View>
-              <View style={styles.dateRow}>
+                <View style={{ alignItems: 'flex-start', marginTop: 20, marginBottom: 10 }}>
+                  <Text variant="headlineSmall">¿Para quién es la cita?</Text>
+                </View>
+
+                <View style={{ marginBottom: 10 }}>            
+                  <RadioButton.Group onValueChange={newValue => { 
+                      setValue(newValue);
+                      toggleOtherPerson();
+                    }} value={value}>
+                    <View style={{ flexDirection: 'row', marginBottom: 5 }}>                
+                      <RadioButton value="first" />
+                      <Text style={{ paddingTop: 5 }}>{ firstNameSaved } { lastNameSaved }</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>                
+                      <RadioButton value="second" />
+                      <Text style={{ paddingTop: 5 }}>Para otra persona</Text>
+                    </View>
+                  </RadioButton.Group>
+                </View>
+
+                <Animated.View 
+                  style={[
+                    styles.inputContainer,
+                    {
+                      height: heightAnim,
+                      opacity: heightAnim.interpolate({
+                        inputRange: [0, 60],
+                        outputRange: [0, 1],
+                      }),
+                    },
+                  ]}
+                >                    
+                  <View style={{ marginTop: 10 }}>
+                    <TextInput
+                      label="Nombre del paciente"        
+                      onChangeText={setFirstName}
+                      value={firstName}
+                      right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+                      mode="outlined"
+                    />
+                  </View>
+
+                  <View style={{ marginTop: 10 }}>
+                    <TextInput
+                      label="Apellidos del paciente"        
+                      onChangeText={setFirstName}
+                      value={lastName}
+                      right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
+                      mode="outlined"
+                    />
+                  </View>
+
+                  <View>
+                    <Text style={{ marginTop: 10 }}>Fecha de Nacimiento</Text>
+                  </View>
+                  <View style={styles.dateRow}>
+                    
+                    {/* 🔹 Día */}
+                    <TextInput
+                      style={styles.input}
+                      label="Día"
+                      value={day}
+                      onChangeText={(text) => {
+                        setDay(text.replace(/\D/g, '').slice(0, 2));
+                      }}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      mode="outlined"
+                    />
+                    
+                    {/* 🔹 Mes */}
+                    <TextInput
+                      style={styles.input}
+                      label="Mes"
+                      value={month}
+                      onChangeText={(text) => {
+                        setMonth(text.replace(/\D/g, '').slice(0, 2));
+                      }}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      mode="outlined"
+                    />
+                    
+                    {/* 🔹 Año */}
+                    <TextInput
+                      style={styles.input}
+                      label="Año"
+                      value={year}
+                      onChangeText={(text) => {
+                        setYear(text.replace(/\D/g, '').slice(0, 4));
+                      }}
+                      keyboardType="numeric"
+                      maxLength={4}
+                      mode="outlined"
+                    />
+                  </View>
+                </Animated.View>
                 
-                {/* 🔹 Día */}
-                <TextInput
-                  style={styles.input}
-                  label="Día"
-                  value={day}
-                  onChangeText={(text) => {
-                    setDay(text.replace(/\D/g, '').slice(0, 2));
-                  }}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  mode="outlined"
-                />
-                
-                {/* 🔹 Mes */}
-                <TextInput
-                  style={styles.input}
-                  label="Mes"
-                  value={month}
-                  onChangeText={(text) => {
-                    setMonth(text.replace(/\D/g, '').slice(0, 2));
-                  }}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  mode="outlined"
-                />
-                
-                {/* 🔹 Año */}
-                <TextInput
-                  style={styles.input}
-                  label="Año"
-                  value={year}
-                  onChangeText={(text) => {
-                    setYear(text.replace(/\D/g, '').slice(0, 4));
-                  }}
-                  keyboardType="numeric"
-                  maxLength={4}
-                  mode="outlined"
-                />
-              </View>
-            </Animated.View>
-            
-            <View style={{ marginTop: 15 }}>
-              <TextInput
-                label="Motivo de consulta"
-                value={description}
-                onChangeText={setDescription}
-                multiline={true}
-                numberOfLines={4}
-                style={styles.textArea}
-                mode="outlined"
-              />
-              <Text style={styles.label}>Describe brevemente los síntomas o el motivo de tu consulta para que el doctor pueda prepararse para la cita.</Text>
-            </View>
+                <View style={{ marginTop: 15 }}>
+                  <TextInput
+                    label="Motivo de consulta"
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline={true}
+                    numberOfLines={4}
+                    style={styles.textArea}
+                    mode="outlined"
+                  />
+                  <Text style={styles.label}>Describe brevemente los síntomas o el motivo de tu consulta para que el doctor pueda prepararse para la cita.</Text>
+                </View>
 
-            <View style={{ marginTop: 25 }}>
-              <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
-              </Button>
-            </View>
+                <View style={{ marginTop: 25 }}>
+                  <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
+                    <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Registrando...' : 'Agendar'}</Text>
+                  </Button>
+                </View>
 
-            <View style={{ marginTop: 20, alignSelf: 'center', paddingHorizontal: 15 }}>            
-              <TouchableOpacity
-                onPress={() => setShowTermsModal(true)}
-                style={{ flexDirection: 'row', alignItems: 'center' }}
-              >
-                <Checkbox
-                  status={termsAccepted ? 'checked' : 'unchecked'}
-                  color="#007AFF"
-                />
-                <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Acepto los Términos y Condiciones del servicio y Política de Privacidad</Text>
-              </TouchableOpacity>
+                <View style={{ marginTop: 20, alignSelf: 'center', paddingHorizontal: 15 }}>            
+                  <TouchableOpacity
+                    onPress={() => setShowTermsModal(true)}
+                    style={{ flexDirection: 'row', alignItems: 'center' }}
+                  >
+                    <Checkbox
+                      status={termsAccepted ? 'checked' : 'unchecked'}
+                      color="#007AFF"
+                    />
+                    <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Acepto los Términos y Condiciones del servicio y Política de Privacidad</Text>
+                  </TouchableOpacity>
 
-              <TermsModal
-                visible={showTermsModal}
-                onAccept={handleTermsAccept}
-                onClose={() => setShowTermsModal(false)}
-              />
-            </View>
-          </View>
-
+                  <TermsModal
+                    visible={showTermsModal}
+                    onAccept={handleTermsAccept}
+                    onClose={() => setShowTermsModal(false)}
+                  />
+                </View>
+              </View>            
+            </>  
+          )}
         </ScrollView>
       </KeyboardAvoidingView>    
     </>

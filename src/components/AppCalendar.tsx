@@ -55,7 +55,6 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const [selectedHours, setSelectedHours] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingHours, setLoadingHours] = useState<boolean>(false);
 
   //const hoy = dayjs().format('YYYY-MM-DD');
   const hoy = dayjs().format('YYYY-MM-DD');
@@ -137,6 +136,18 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     navigation.navigate(Routes.Patient);
   }, [selectedDate, navigation])
 
+  const isPastTime = (fechaStr: string | number | dayjs.Dayjs | Date | null | undefined, horaStr: string) => {
+    const ahora = dayjs();
+    
+    // Parse fecha + hora
+    const fechaHoraCita = dayjs(fechaStr)
+      .hour(parseInt(horaStr.split(':')[0]))  // 14
+      .minute(parseInt(horaStr.split(':')[1])); // 30
+    
+    // Si pasó → return true
+    return fechaHoraCita.isBefore(ahora);
+  };
+
   // Cargar datos cuando cambie el doctorId
   useEffect(() => {
     if (doctorId) {
@@ -146,9 +157,17 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
 
   const renderHourItem = ({ item }: any) => (
     <TouchableOpacity
-      style={styles.hourItem}
-      onPress={() => selectHour(item)}
+      style={isPastTime(selectedDate, item) ? styles.hourItemPastTime : styles.hourItem}
+      onPress={() => {
+        if (isPastTime(selectedDate, item)) {
+          Alert.alert('Hora no válida', 'No puedes seleccionar una hora que ya pasó, por favor elige otra hora disponible.');
+          return;
+        } else {
+          selectHour(item)
+        }
+      }}
       activeOpacity={0.7}
+      //disabled={isPastTime(selectedDate, item)} // Deshabilitar si es hora pasada
     >
       <Text style={[styles.hourText]}>{item}</Text>
     </TouchableOpacity>
@@ -325,6 +344,7 @@ const styles = StyleSheet.create({
   },
   hourItem: {
     backgroundColor: '#F3F4F6',
+    color: '#374151',
     paddingHorizontal: 16,    
     minHeight: 60,
     paddingTop: 10,
@@ -334,11 +354,30 @@ const styles = StyleSheet.create({
     minWidth: 70,
     alignItems: 'center',
     marginRight: 17,
+    shadowColor: '#94a3b8',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  hourItemPastTime: {
+    backgroundColor: '#f0e5e7',
+    color: '#e0e4eb',
+    paddingHorizontal: 16,    
+    minHeight: 60,
+    paddingTop: 10,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
+    minWidth: 70,
+    alignItems: 'center',
+    marginRight: 17,
+    shadowColor: '#94a3b8',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2,
   },
   hourText: {    
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#374151',
+    fontSize: 22,        
   },
   
   // Modal más compacto para horizontal
