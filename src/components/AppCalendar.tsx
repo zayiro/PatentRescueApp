@@ -203,7 +203,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <LoadingSpinner message={'Cargando Agenda...'} />        
+        <LoadingSpinner message={'Actualizando Agenda...'} />        
       </View>
     );
   }

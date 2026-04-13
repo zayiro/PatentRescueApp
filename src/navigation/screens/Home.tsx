@@ -94,13 +94,7 @@ export function Home() {
       useNativeDriver: true,
     }).start();
   };
-
-  if (loading) {
-    return (
-      <LoadingSpinner message="Cargando información..." />
-    );
-  }
-  
+    
   if (!isAuthenticated) {
     return (
       <>
@@ -149,6 +143,8 @@ export function Home() {
     );
   }
 
+  if (loading) return (<LoadingSpinner message='Cargando dashboard...' />);
+
   return (
     <>
       <StatusBar translucent barStyle="dark-content" backgroundColor="transparent" />
@@ -167,7 +163,7 @@ export function Home() {
         >
           <View>                        
               <View style={{ marginBottom: 30 }}>
-                <Text style={{ fontSize: 20 }}>Hola, <Text style={{ fontWeight: '700' }}>{userName}</Text></Text>
+                <Text style={{ fontSize: 20 }}>Hola, <Text style={{ fontWeight: '700', color: theme.colors.primary }}>{userName}</Text></Text>
               </View>
 
               <View>

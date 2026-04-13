@@ -359,7 +359,7 @@ const RootStack = createNativeStackNavigator({
       options: ({ navigation }) => ({
         title: 'Citas Programadas',
         headerRight: () => (
-          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Appointments)}>
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
               source="home"
               color={Colors.SlateGray}

@@ -71,8 +71,8 @@ export default function Doctors() {
     setDoctorNameSelected(item.name);
     setDoctorPrice(item.price)
 
-    if (consultationType === 2) {
-      if (doctorAddress.length === 0) {
+    if (consultationType == ConsultationTypes.MedicalConsultation) {
+      if (doctorAddress.length == 0) {
         Alert.alert('Aviso', 'No hay direcciones disponibles para este doctor. Por favor selecciona otro doctor.');
       } else if (doctorAddress.length === 1) {
         saveAppointment({ 
@@ -114,7 +114,7 @@ export default function Doctors() {
         <View style={styles.doctorRow}>                  
           {/* 🔹 Info */}
           <View style={styles.infoCol}>
-              {consultationType == 2 && (                                 
+              {consultationType === ConsultationTypes.MedicalConsultation && (                                 
                 <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
                     <Icon
@@ -198,7 +198,7 @@ export default function Doctors() {
     </TouchableOpacity>
   );
 
-  if (loading) return (<LoadingSpinner message='Buscando coincidencias...' />);
+  if (loading) return (<LoadingSpinner message='Buscando especialistas...' />);
 
   return (
     <>
@@ -216,7 +216,6 @@ export default function Doctors() {
           <>
             <Text style={{ fontWeight: '700', marginTop: 5 }}>{specialtyName || ''}</Text>  
             <Text>{filteredDoctors.length} {filteredDoctors.length > 1 ? 'especialistas disponibles' : 'especialista disponible' }</Text>
-            
           </>        
         ): (null)}
       </View>

@@ -13,7 +13,7 @@ const Colors = {
   specialityBoxGreen: "#32c54b",
   GreenLight: "#006A58",
   Red: "#EF4444",
-  Violet: "#8B5CF6",
+  Violet: "#600EE6",
   Teal: "#00a085",
 };
 

@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { IconButton, Searchbar } from 'react-native-paper';
+import { Divider, IconButton, List } from 'react-native-paper';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import { useCallback, useEffect, useState } from 'react';
@@ -22,7 +22,6 @@ export default function Specialties() {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [search, setSearch] = useState<string>('');
 
   const handleSelectSpecialty = useCallback((item: any) => {
     saveAppointment({ 
@@ -73,22 +72,42 @@ export default function Specialties() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: '700', color: Colors.Title, marginBottom: 20 }}>
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>
         ¿Qué especialidad necesitas?
       </Text>
+    
       <FlatList
         data={specialties}
         renderItem={({ item }) => (
           <TouchableOpacity 
-            style={styles.specialtyCard}
             onPress={() => handleSelectSpecialty(item)}
           >
-            <IconButton icon={'gesture-tap'} size={40} style={{ backgroundColor: Colors.Violet + '20' }} />
-            <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
+            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+              <List.Icon color={Colors.Gray400} icon={'dots-vertical'} />
+              <View style={{ flex: 1, alignItems: 'flex-start',  marginLeft: 15 }}>
+                <Text style={[styles.specialtyName, { color: Colors.Title }]}>{item.name}</Text>
+              </View>
+              <IconButton icon="chevron-right" size={20} iconColor={Colors.Gray400} />
+            </View>
+            <Divider style={{ marginVertical: 10 }} />
           </TouchableOpacity>          
         )}
-        numColumns={2}
+        numColumns={1}
         showsVerticalScrollIndicator={false}
+        scrollIndicatorInsets={{ right: 2 }}
+        
+        // UX esencial
+        contentContainerStyle={styles.listaContenido}
+        style={styles.flatList}
+        
+        // Scroll suave
+        decelerationRate="normal"
+        bounces={true}
+        
+        // Performance
+        removeClippedSubviews={false}
+        maxToRenderPerBatch={10}
+        windowSize={10}
       />
     </View>
   );
@@ -99,17 +118,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
-    backgroundColor: '#FFF',
+    paddingVertical: 30,
+    backgroundColor: Colors.White,
+  },
+  flatList: {
+    flex: 1,                  
+  },
+  listaContenido: {
+    padding: 20,
+    paddingBottom: 100,        
   },
   searchbar: {
     margin: 5,
     marginBottom: 20 
   },
   specialtyCard: {
-    flex: 1,
     backgroundColor: Colors.White,
-    padding: 5,
     paddingVertical: 15,
     margin: 8,
     borderRadius: 5,
@@ -120,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   specialtyName: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },
