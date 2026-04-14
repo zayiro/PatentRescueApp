@@ -73,7 +73,7 @@ export default function Specialties() {
   return (
     <View style={styles.container}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>
-        ¿Qué especialidad necesitas?
+        ¿Qué especialidad busca?
       </Text>
     
       <FlatList
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   specialtyName: {
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: '600',
     textAlign: 'center',
   },

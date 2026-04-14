@@ -1,5 +1,3 @@
-
-
 import {
   View,
   StyleSheet,
@@ -182,10 +180,10 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
+                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
                   >
-                    <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta en línea</Text>    
+                    <IconButton icon="calendar-check" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Agendar Cita Médica</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -194,10 +192,10 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation) }
+                    onPress={() => navigation.navigate(Routes.Appointments)}
                   >
-                    <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Consulta presencial</Text>    
+                    <IconButton icon="calendar-clock-outline" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Citas Programadas</Text>    
                   </TouchableOpacity>
                 </View>
               </View>

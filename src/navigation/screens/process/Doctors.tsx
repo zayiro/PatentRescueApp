@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import * as Sharing from 'expo-sharing';
+import * as Linking from 'expo-linking';
 import {
   Avatar,
   Text,
@@ -7,6 +9,8 @@ import {
   RadioButton,
   Button,
   Divider,
+  SegmentedButtons,
+  Chip,
 } from 'react-native-paper';
 import { useDoctorsFilter } from '@/hooks/useDoctorsFilter'
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +23,7 @@ import { Icon, Modal } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 import { formatPrice } from '@/utils/priceUtils';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
+import { limpiarString } from '@/utils/utils';
 
 export default function Doctors() {
   const theme = useTheme();
@@ -31,6 +36,7 @@ export default function Doctors() {
   const [search, setSearch] = useState<string>('');
   const [visible, setVisible] = useState<boolean>(false);
   const [checked, setChecked] = useState<string>('');
+  const [value, setValue] = useState<string>(ConsultationTypes.MedicalConsultation.toString());
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -48,23 +54,50 @@ export default function Doctors() {
   } = useDoctorsFilter(consultationType, specialtyId, search);
 
   const doctorAddress = doctors[0]?.address || [];
-
-  const limpiarString = (str: string | null | undefined): string => {
-    if (!str) return '';
-  
-    return str
-      .trim()                    // Espacios
-      .toLowerCase()             // Minúsculas
-      .normalize('NFD')          // Descomponer acentos
-      .replace(/[\u0300-\u036f]/g, '')  // Quitar acentos
-      .replace(/[^a-z0-9\s]/g, '')     // Solo letras/números/espacios
-      .replace(/\s+/g, ' ');     // Espacios múltiples → uno
-  };
   
   const filteredDoctors = doctors.filter(doctor => {
       return limpiarString(doctor.name).includes(limpiarString(search))
     }
   );
+
+  const selectConsultationType = useCallback((type: number) => {
+    if (consultationType === type) return;
+
+    setValue(type.toString());
+
+    saveAppointment({
+      consultationType: type,
+    });
+  }, [consultationType, value, saveAppointment]);
+
+  const shareToWhatsApp = async (item: any) => {
+    const data = `**${item.name}** 🫀
+      Cardióloga | COL
+      ✅ Consultas presenciales
+      ✅ Consultas en línea
+
+      📱 Agenda: ${item.link}`;
+
+    const message = encodeURIComponent(data);
+    
+    // WhatsApp URL Scheme
+    const whatsappUrl = `whatsapp://send?text=${message}`;
+    
+    try {
+      const supported = await Linking.canOpenURL(whatsappUrl);
+      
+      if (supported) {
+        await Linking.openURL(whatsappUrl);
+      } else {
+        // Fallback: WhatsApp Web
+        const webUrl = `https://wa.me/?text=${message}`;
+        await Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'WhatsApp no está instalado');
+    }
+  };
+
   
   const handleSelectDoctor = useCallback((item: any) => {    
     setDoctorIdSelected(item.id);
@@ -101,65 +134,63 @@ export default function Doctors() {
         <View style={[styles.doctorRow, { marginBottom: 10 }]}>
           <View style={{ alignItems: 'center' }}>
             <Avatar.Image 
-              size={75} 
+              size={85} 
               source={{ uri: 'https://i.pravatar.cc/300' }} 
             />
           </View>
           <View style={[styles.infoCol, { marginLeft: 10 }]}>
             <Text style={styles.doctorName}>{item.name}</Text>          
             <Text><StarRating rating={4} /></Text>
-            <Text style={{ fontSize: 13, fontWeight: '700' }}>{formatPrice(item.price)}</Text>
-          </View>
+            <View style={{ width: 140 }}>                       
+              <Chip icon="share" onPress={() => shareToWhatsApp(item)}>Compartir</Chip>   
+            </View>
+          </View>          
         </View>
         <View style={styles.doctorRow}>                  
           {/* 🔹 Info */}
-          <View style={styles.infoCol}>
-              {consultationType === ConsultationTypes.MedicalConsultation && (                                 
-                <>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
-                    <Icon
-                      source="google-maps"
-                      color={Colors.Violet}
-                      size={20}
-                    />
-                    <Text style={{ fontSize: 14, fontWeight: '700' }}>Direcciones</Text>                
-                  </View>
-                  {doctorAddress.length > 0 && doctorAddress.slice(0, maxVisible).map((address) => (
-                    <View key={address.id} style={{ marginBottom: 6, paddingLeft: 8 }}>
-                      <Text style={{ fontSize: 13 }}>{address.location}</Text>
-                      <Text style={{ fontSize: 13 }}>{address.name}</Text>
-                    </View>
-                  ))}
-                  {mostrarMas && (
-                    <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
-                      +{doctorAddress.length - maxVisible} direcciones adicionales
-                    </Text>
-                  )}
-                </>
-              )}
-              
-              {item.services && item.services.length > 0 && (
-                <>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
-                    <Icon
-                      source="heart-plus"
-                      color={Colors.Violet}
-                      size={20}
-                    />
-                    <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
-                  </View>
-                  {item.services.slice(0, 2).map((service: string, index: number) => (
-                    <View key={index} style={{  paddingLeft: 8 }}>
-                      <Text style={{ fontSize: 13 }}>{service}</Text>
-                    </View>    
-                  ))}
-                  {item.services.length > 2 && (
-                    <Text style={{ marginBottom: 6, fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
-                      +{item.services.length - 3} servicios adicionales
-                    </Text>
-                  )}
-                </>
-              )}
+          <View style={styles.infoCol}>                              
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
+              <Icon
+                source="google-maps"
+                color={Colors.Violet}
+                size={20}
+              />
+              <Text style={{ fontSize: 14, fontWeight: '700' }}>Consultorios</Text>                           
+            </View>
+            {doctorAddress.length > 0 && doctorAddress.slice(0, maxVisible).map((address) => (
+              <View key={address.id} style={{ marginBottom: 6, paddingLeft: 8 }}>
+                <Text style={{ fontSize: 13 }}>{address.location}</Text>
+                <Text style={{ fontSize: 13 }}>{address.name}</Text>
+              </View>
+            ))}
+            {mostrarMas && (
+              <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                +{doctorAddress.length - maxVisible} direcciones adicionales
+              </Text>
+            )}
+            
+            {item.services && item.services.length > 0 && (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
+                  <Icon
+                    source="heart-plus"
+                    color={Colors.Violet}
+                    size={20}
+                  />
+                  <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
+                </View>
+                {item.services.slice(0, 2).map((service: string, index: number) => (
+                  <View key={index} style={{  paddingLeft: 8 }}>
+                    <Text style={{ fontSize: 13 }}>{service}</Text>
+                  </View>    
+                ))}
+                {item.services.length > 2 && (
+                  <Text style={{ marginBottom: 6, fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                    +{item.services.length - 3} servicios adicionales
+                  </Text>
+                )}
+              </>
+            )}
           </View>
         </View>        
       </View>
@@ -208,27 +239,58 @@ export default function Doctors() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       > 
-      <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-        <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-          {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
-        </Text>
+      <View style={{ alignItems: 'flex-start', marginHorizontal: 20, marginBottom: 20 }}>        
         {filteredDoctors.length ? (
           <>
-            <Text style={{ fontWeight: '700', marginTop: 5 }}>{specialtyName || ''}</Text>  
+            <Text style={{ fontSize: 17, fontWeight: '700', marginTop: 5 }}>{specialtyName || ''}</Text>  
             <Text>{filteredDoctors.length} {filteredDoctors.length > 1 ? 'especialistas disponibles' : 'especialista disponible' }</Text>
           </>        
         ): (null)}
       </View>
 
       <View style={{ flex: 1 }}>
-        {/* 🔹 Search */}
+        <View style={{ marginHorizontal: 15, marginBottom: 30, justifyContent: 'center' }}>
+          <SegmentedButtons
+            value={value}
+            onValueChange={(value) => {
+                if (consultationType === parseInt(value)) return;
+                selectConsultationType(consultationType === ConsultationTypes.MedicalConsultation ? ConsultationTypes.Telemedicine : ConsultationTypes.MedicalConsultation)
+              }
+            }
+            buttons={[
+              {
+                value: ConsultationTypes.MedicalConsultation.toString(),
+                label: 'Presencial',
+                labelStyle: {
+                  color: theme.colors.primary,
+                  fontSize: 16,
+                  fontWeight: '600'
+                },
+                checkedColor: theme.colors.primary, // Selected text color
+                uncheckedColor: Colors.Gray400, // Unselected text color
+              },
+              {
+                value: ConsultationTypes.Telemedicine.toString(),
+                label: 'Telemedicina',
+                labelStyle: {
+                  color: theme.colors.primary,
+                  fontSize: 16,
+                  fontWeight: '600'
+                },
+                checkedColor: theme.colors.primary, // Selected text color
+                uncheckedColor: Colors.Gray400, // Unselected text color
+              },
+            ]}
+          />
+        </View>
+
         <Searchbar
           placeholder="Buscar por nombre..."
           onChangeText={setSearch}
           value={search}
           style={styles.searchbar}
         />
-
+        
         {filteredDoctors.length ? (
           <>                    
             <FlatList
@@ -309,7 +371,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 15,
     paddingVertical: 30,
     backgroundColor: Colors.White,    
   },
@@ -330,9 +391,9 @@ const styles = StyleSheet.create({
   doctorBox: {
     flex: 1,
     backgroundColor: Colors.White,
-    padding: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 15,
     marginBottom: 20,
-    borderRadius: 5,
     borderColor: Colors.Gray400,
     borderWidth: 1,
     shadowColor: '#9c9a9a',
@@ -347,7 +408,6 @@ const styles = StyleSheet.create({
     elevation: 8,           // Equivalente iOS shadow
   },
   list: {
-    padding: 3,
   },
   card: {
     backgroundColor: Colors.White,
@@ -398,7 +458,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   searchbar: {
-    margin: 5,
+    marginHorizontal: 15,
     marginBottom: 20
   },
 });
