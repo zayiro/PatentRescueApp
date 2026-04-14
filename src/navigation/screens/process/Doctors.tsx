@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Alert } from 'react-native';
-import * as Sharing from 'expo-sharing';
 import * as Linking from 'expo-linking';
 import {
   Avatar,
