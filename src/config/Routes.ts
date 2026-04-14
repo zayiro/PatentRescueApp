@@ -23,6 +23,7 @@ const Routes: any = {
   MedicalInsurance: "MedicalInsurance",
   ThankYouPage: "ThankYouPage",
   Appointments: "Appointments",
+  CollaboratorDetail: "CollaboratorDetail"
 };
 
 export default Routes;

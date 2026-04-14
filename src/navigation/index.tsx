@@ -26,14 +26,14 @@ import { Allergies } from './screens/profile/Allergies';
 import { Medication } from './screens/profile/Medication';
 import { MedicalInsurance } from './screens/profile/MedicalInsurance';
 import Doctors from './screens/process/Doctors';
-import { Icon, IconButton, useTheme } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 import Routes from '@/config/Routes';
-import { theme } from '@/config/theme'
 import Colors from '@/config/Colors';
 import ThankYouPage from './screens/process/ThankYouPage';
 import { TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Appointments } from './screens/Appointments';
+import { CollaboratorDetail } from './screens/CollaboratorDetail';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -358,6 +358,21 @@ const RootStack = createNativeStackNavigator({
       screen: Appointments,
       options: ({ navigation }) => ({
         title: 'Citas Programadas',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
+        ),
+      }),
+    },
+    CollaboratorDetail: {
+      screen: CollaboratorDetail,
+      options: ({ navigation }) => ({
+        title: 'Perfil socio',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
