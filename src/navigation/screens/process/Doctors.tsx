@@ -20,7 +20,6 @@ import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
 import { Icon, Modal } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
-import { formatPrice } from '@/utils/priceUtils';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import { limpiarString } from '@/utils/utils';
 
@@ -111,7 +110,7 @@ export default function Doctors() {
           doctorId: item.id,
           doctorName: item.name
         });
-        navigation.navigate(Routes.Calendar);
+        navigation.navigate(Routes.CollaboratorDetail);
       } else {
         showModal();
       }
@@ -120,7 +119,7 @@ export default function Doctors() {
         doctorId: item.id,
         doctorName: item.name
       });
-      navigation.navigate(Routes.Calendar);
+      navigation.navigate(Routes.CollaboratorDetail);
     }
   }, [saveAppointment, consultationType, doctorAddress, navigation]);
 
@@ -206,7 +205,7 @@ export default function Doctors() {
       });
 
       hideModal();
-      navigation.navigate(Routes.Calendar);
+      navigation.navigate(Routes.CollaboratorDetail);
     } else {
       Alert.alert('Aviso', 'Por favor selecciona una dirección para continuar');
     }
