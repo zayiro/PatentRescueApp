@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 10,
+    borderRadius: 12
   },  
   twoColumns: {
     flexDirection: 'row',  

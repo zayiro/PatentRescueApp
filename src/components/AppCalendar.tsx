@@ -208,13 +208,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     textDayHeaderFontWeight: 600 as const,
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <LoadingSpinner message={'Actualizando Agenda...'} />        
-      </View>
-    );
-  }
+  if (loading) return (<LoadingSpinner message={'Actualizando Agenda...'} />);
 
   return (
     <View style={styles.container}>

@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,                  
   },
   listaContenido: {
-    padding: 20,
+    paddingTop: 15,
     paddingBottom: 100,        
   },
   searchbar: {
