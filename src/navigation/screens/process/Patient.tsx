@@ -143,7 +143,6 @@ export default function Patient() {
         name: patientName,
         description: appointment?.patientData.description,
         specialty: appointment?.specialty || null,
-        price: appointment?.service.price,
         doctorId: appointment?.doctorId,
         doctorName: appointment?.doctorName,
         consultationType: appointment?.consultationType,
