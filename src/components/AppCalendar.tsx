@@ -82,6 +82,10 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
       const response = await axios.post('https://esdecali.com/truedoctor/api/available-dates.php', formData, {
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          // 'Authorization': `Bearer ${token}`, // Si usas auth
         },
         timeout: 10000,
       });
@@ -143,7 +147,6 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const isPastTime = (fechaStr: string | number | dayjs.Dayjs | Date | null | undefined, horaStr: string) => {
     const ahora = dayjs();
     
-    console.log(horaStr);
     // Parse fecha + hora
     let hourSplit = horaStr.split('-');
     let startHour = hourSplit[0].trim(); // "14:30"

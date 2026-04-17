@@ -27,18 +27,8 @@ export default function Doctors() {
   const theme = useTheme();
   const navigation = useNavigation();
 
-  const [doctorIdSelected, setDoctorIdSelected] = useState<string>('');
-  const [doctorNameSelected, setDoctorNameSelected] = useState<string>('');
-  const [doctorPrice, setDoctorPrice] = useState<string>('');
-
   const [search, setSearch] = useState<string>('');
-  const [visible, setVisible] = useState<boolean>(false);
-  const [checked, setChecked] = useState<string>('');
   const [value, setValue] = useState<string>(ConsultationTypes.MedicalConsultation.toString());
-
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle: any = { backgroundColor: 'white', width: '92%', alignSelf: 'center', borderRadius: 8 };
 
   const { saveAppointment, appointment } = useAppointmentStorage();
 
@@ -97,30 +87,8 @@ export default function Doctors() {
   };
 
   
-  const handleSelectDoctor = useCallback((item: any) => {    
-    setDoctorIdSelected(item.id);
-    setDoctorNameSelected(item.name);
-    setDoctorPrice(item.price)
-
-    if (consultationType == ConsultationTypes.MedicalConsultation) {
-      if (doctorAddress.length == 0) {
-        Alert.alert('Aviso', 'No hay direcciones disponibles para este doctor. Por favor selecciona otro doctor.');
-      } else if (doctorAddress.length === 1) {
-        saveAppointment({ 
-          doctorId: item.id,
-          doctorName: item.name
-        });
-        navigation.navigate(Routes.CollaboratorDetail);
-      } else {
-        showModal();
-      }
-    } else {
-      saveAppointment({ 
-        doctorId: item.id,
-        doctorName: item.name
-      });
-      navigation.navigate(Routes.CollaboratorDetail);
-    }
+  const handleSelectDoctor = useCallback((item: any) => {
+    navigation.navigate(Routes.CollaboratorDetail);
   }, [saveAppointment, consultationType, doctorAddress, navigation]);
 
     const maxVisible = 2;
@@ -191,38 +159,6 @@ export default function Doctors() {
             )}
           </View>
         </View>        
-      </View>
-    </TouchableOpacity>
-  );
-
-  const handleConfirm = useCallback(() => {
-    if (checked) {      
-      saveAppointment({ 
-        doctorId: doctorIdSelected,
-        doctorName: doctorNameSelected,
-        price: doctorPrice,
-        address: doctorAddress.find((addr: any) => addr.id === checked)
-      });
-
-      hideModal();
-      navigation.navigate(Routes.CollaboratorDetail);
-    } else {
-      Alert.alert('Aviso', 'Por favor selecciona una dirección para continuar');
-    }
-  }, [saveAppointment, checked, doctorIdSelected, doctorNameSelected, doctorPrice, navigation]);
-
-  const renderAddress = ({ item }: { item: any }) => (
-    <TouchableOpacity onPress={() => {setChecked(item.id)}} activeOpacity={0.7}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 15, borderWidth: 1, borderColor: '#dbd8d8', backgroundColor: '#F3F4F6', padding: 10, borderRadius: 5 }}>
-        <RadioButton
-          value='first'
-          status={ checked === item.id ? 'checked' : 'unchecked' } 
-          onPress={() => {setChecked(item.id)}}         
-        />    
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: '700' }}>{item.name}</Text>
-          <Text style={{ fontSize: 14 }}>{item.location}</Text>
-        </View>
       </View>
     </TouchableOpacity>
   );
@@ -316,50 +252,6 @@ export default function Doctors() {
         </View>
       )}
       </View>
-      <Modal 
-        visible={visible} 
-        onDismiss={hideModal} 
-        contentContainerStyle={containerStyle}
-      >
-        <View style={styles.headerPaper}>
-          <Button 
-            mode="text" 
-            onPress={() => setVisible(false)}
-            style={styles.botonCerrarPaper}
-            icon="close"
-          >
-            Cerrar
-          </Button>
-        </View>
-        <View style={{ padding: 20 }}>
-          {doctorAddress.length > 0 && (
-            <>
-              <Text style={{ fontSize: 20, fontWeight: '700' }}>Elige el lugar de la consulta?</Text>
-              <Text style={{ fontSize: 14, marginBottom: 25 }}>{doctorAddress.length} direcciones habilitadas</Text>
-              <FlatList
-                data={doctors[0].address}
-                renderItem={renderAddress}
-                keyExtractor={(item) => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listaDirecciones}
-                style={{ maxHeight: 300 }}
-                keyboardShouldPersistTaps="handled"
-              />
-            </>
-          )}
-        </View>
-
-        <Divider  />
-
-        <View style={{ padding: 24 }}>
-          <TouchableOpacity
-            style={[styles.confirmButton, { backgroundColor: checked ? theme.colors.primary : Colors.Gray400 }]}
-            onPress={handleConfirm}
-          >
-            <Text style={styles.confirmButtonText}>Confirmar</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
       </KeyboardAvoidingView>
     </>
   );

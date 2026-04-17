@@ -6,22 +6,21 @@ const APPOINTMENT_KEY = '@appointment:draft';
 interface AppointmentData {
   appointmentId: string;
   consultationType: number;
+  doctorId: string;
+  doctorName: string;
   specialty: {
     id: string;
     name: string;
-    price: string;
-  };
-  doctorId: string;
-  doctorName: string;
-  price: string;
-  address?: any;
-  selectedDate: string;
-  selectedTime: string;  
+  };  
   patientData: {
     name: string;
     userId: string;
     description: string;
   };
+  address?: any;
+  service?: any;
+  selectedDate: string;
+  selectedTime: string;  
   status: 'draft' | 'confirmed' | 'completed';
   createdAt: string;
 }

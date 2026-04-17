@@ -1,30 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
   StatusBar,
   Platform,
   View,
-  FlatList,
   ScrollView,
-  Pressable,
   Alert,
-  Linking
+  Linking,
+  TouchableOpacity
 } from 'react-native';
 import {
   Avatar,
   Button,
   Chip,
-  Divider,
   Icon,
-  IconButton,
   List,
+  RadioButton,
+  SegmentedButtons,
   Text,
   TouchableRipple,
 } from 'react-native-paper';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigation } from '@react-navigation/native';
-import Routes from '@/config/Routes';
 import BottomSheetCustom from '@/components/BottomSheetCustom';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import axios from 'axios';
@@ -32,61 +30,64 @@ import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import Colors from '@/config/Colors';
 import { formatPrice } from '@/utils/priceUtils';
 import StarRating from '@/components/StarRating';
-
-const tabs = [
-  { id: "section_1", title: 'Experiencia' },
-  { id: "section_2", title: 'Servicios y precios' },
-  { id: "section_3", title: 'Consultorios' },
-  { id: "section_4", title: 'Opiniones' },
-];
+import { theme } from '@/config/theme';
+import { ConsultationTypes } from '@/enums/ConsultationTypes';
+import Routes from '@/config/Routes';
 
 export function CollaboratorDetail() {
   const { user } = useAuth();
   const navigation = useNavigation();
 
-  const { appointment } = useAppointmentStorage();
+  const { appointment, saveAppointment } = useAppointmentStorage();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: appointment?.doctorName,
+      headerShadowVisible: false,
+      headerTitleStyle: { fontWeight: 'bold' },
+    });
+  }, [appointment]);
 
   const doctorId = appointment?.doctorId;
- 
+  const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
+  
   const [userId, setUserId] = useState<string>('');
   const [visible, setVisible] = useState<boolean>(false);
-  const scrollViewRef = useRef(null);
-  const [selectedTab, setSelectedTab] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [collaboratorDetail, setCollaboratorDetail] = useState<any>({});
+  const [addressSelected, setAddressSelected] = useState<any>({});
+  const [serviceSelected, setServiceSelected] = useState<any>({});  
+  const [value, setValue] = useState<string>('1');
 
-  const scrollToSelectedSection = (index: number) => {
-    (scrollViewRef.current as FlatList<any> | null)?.scrollToIndex?.({
-      index,
-      animated: true,
+  const handleCalendar = useCallback((item: any) => {        
+    if (consultationType == ConsultationTypes.MedicalConsultation) {
+      if (collaboratorDetail.address.length == 0) {
+        Alert.alert('Aviso', 'No hay direcciones disponibles para este doctor. Por favor selecciona otro doctor.');
+        return;
+      }
+
+      if (Object.keys(serviceSelected).length === 0) {
+        Alert.alert('Aviso', 'Seleccione un servicio');
+        return;
+      }
+
+      if (Object.keys(addressSelected).length === 0) {
+        Alert.alert('Aviso', 'Seleccione un consultorio');
+        return;
+      }
+    }
+
+    saveAppointment({ 
+      doctorId: collaboratorDetail.id,
+      doctorName: collaboratorDetail.name,
+      address: addressSelected,
+      service: serviceSelected,
     });
-  };
 
-  const TabButton = ({ item, index }: { item: any, index: any}) => {
-    const isSelected = index === selectedTab;
-    return (
-      <Pressable
-        style={[
-          styles.tab,
-          { backgroundColor: isSelected ? '#4ECDC4' : '#F8F9FA' },
-        ]}
-        onPress={() => { 
-          setSelectedTab(index)
-          scrollToSelectedSection(item?.id)
-        }
-      }>
-        <Text style={[styles.tabText, isSelected && styles.selectedText]}>
-          {item.title}
-        </Text>
-      </Pressable>
-    );
-  };
-
-  const handleCalendar = useCallback(() => {
     navigation.navigate(Routes.Calendar);
-  }, [])  
+  }, [saveAppointment, consultationType, collaboratorDetail, serviceSelected, addressSelected, serviceSelected, navigation]);
 
-  const fetchCollaboratorDetail = async (doctorId: any) => {    
+  const fetchCollaboratorDetail = useCallback(async (doctorId: any) => {    
     if (!doctorId) {
       Alert.alert('Error', 'ID del colaborador requerido');
       return;
@@ -102,12 +103,13 @@ export function CollaboratorDetail() {
       const response = await axios.post('https://esdecali.com/truedoctor/api/collaboratorDetail.php', formData, {
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          // 'Authorization': `Bearer ${token}`, // Si usas auth
         },
         timeout: 10000,
       });
-
-      console.log(response.data.photo);
-      //console.log(response.data);
       
       setCollaboratorDetail(response.data);
     } catch (err) {
@@ -116,13 +118,25 @@ export function CollaboratorDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+   const selectConsultationType = useCallback((type: number) => {
+    if (consultationType === type) return;
+
+    setValue(type.toString());
+
+    saveAppointment({
+      consultationType: type,
+    });
+  }, [consultationType, value, saveAppointment]);
 
   useEffect(() => {
+    setValue(consultationType.toString());
+
     if (doctorId) {
       fetchCollaboratorDetail(doctorId);
     }
-  }, [doctorId]);
+  }, [consultationType, doctorId]);
 
   if (loading) return (<LoadingSpinner message={'Cargando información...'} />);
 
@@ -153,25 +167,45 @@ export function CollaboratorDetail() {
                     
               <List.Section>
                 <List.Subheader>
-                  <Chip icon="message-check-outline" onPress={() => Alert.alert("Aviso", "Chat")}>Enviar mensaje</Chip>
-                  <TouchableRipple onPress={() => Linking.openURL(collaboratorDetail.link)} style={{ marginLeft: 5 }}>
-                    <Text style={{ color: Colors.link }}>
-                      {' '} Visitar pagina web
-                    </Text>
-                  </TouchableRipple>
-                </List.Subheader>
-                <List.Item title={collaboratorDetail.phoneMain} right={() => <List.Icon icon="phone" color={Colors.SlateGray} />} />
-                <List.Item title={collaboratorDetail.email} right={() => <List.Icon icon="email" color={Colors.SlateGray} />} />
-              </List.Section>              
-
-              <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-                <Button 
-                  mode="contained" 
-                  onPress={() => setVisible(true)}
-                  style={styles.btn}
-                >
-                  🩺 Abrir Dra. López (60%)
-                </Button>        
+                  <Chip icon="send" onPress={() => Alert.alert("Aviso", "Chat")}>Enviar mensaje</Chip>                  
+                </List.Subheader>                
+              </List.Section>  
+              
+              <View style={{ paddingHorizontal: 15 }}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Icon
+                    source="phone"
+                    color={Colors.SlateGray}
+                    size={24}              
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 16 }}>
+                    {collaboratorDetail.phoneMain}
+                  </Text>  
+                </View>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Icon
+                    source="email"
+                    color={Colors.SlateGray}
+                    size={24}
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 16 }}>
+                    {collaboratorDetail.email}
+                  </Text>  
+                </View>    
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Icon
+                    source="web"
+                    color={Colors.SlateGray}
+                    size={24}
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 16 }}>
+                    <TouchableRipple onPress={() => Linking.openURL(collaboratorDetail.link)} style={{ marginLeft: 5 }}>
+                      <Text style={{ color: Colors.link }}>
+                        {' '} Ver pagina web
+                      </Text>
+                    </TouchableRipple>
+                  </Text>  
+                </View>         
               </View>
 
               <BottomSheetCustom
@@ -179,67 +213,174 @@ export function CollaboratorDetail() {
                 onClose={() => setVisible(false)}
                 title="Dra. María González 🩺"
                 height={630} // 60% ≈ 400px
-              >
-                
+              >                
               </BottomSheetCustom>
             </View>
-
-            <View>
-              {/* 🔘 BOTONES HORIZONTALES */}
-              <FlatList
-                data={tabs}
-                renderItem={({ item, index }) => (
-                  <TabButton item={item} index={index} />               
-                )}
-                keyExtractor={item => item.id.toString()}
-                horizontal
-                style={styles.tabList}
-                contentContainerStyle={styles.tabListContent}
-                showsHorizontalScrollIndicator={false}
-              />
-        
-              <View style={{ paddingHorizontal: 15, paddingVertical: 20 }}>
-                <View key={"section_1"} style={styles.section}>
+           
+            <View style={{ marginHorizontal: 15, paddingVertical: 20 }}>
+                    
+              <View>
+                <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Experiencia</Text>
                   <Text>{collaboratorDetail.experience}</Text> 
-                </View>    
-                <View key={"section_2"} style={styles.section}>
-                  <Text style={styles.sectionTitle}>Servicios y precios</Text>
-                  {collaboratorDetail.services && collaboratorDetail.services.length > 0 && (
-                    <>                    
-                      {collaboratorDetail.services.map((service: any, index: number) => (
-                        <View key={index} style={{  flexDirection: 'row' }}>
-                          <Text>{service.name}</Text>
-                          {service.price ? (
-                            <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                              <Text>{formatPrice(service.price)}</Text>
+                </View> 
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={{ fontWeight: '700' }}>Expecialista en</Text>
+                  <Text style={{ marginLeft: 5}}>
+                    Epidemia, Epidemia, Epidemia, Epidemia, Epidemia
+                  </Text>
+                </View>
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={{ fontWeight: '700' }}>Enfermedades tratadas</Text>
+                  <Text style={{ marginLeft: 5}}>
+                    Epidemia, Epidemia, Epidemia, Epidemia, Epidemia
+                  </Text>
+                </View>  
+              </View>
+
+              <View style={{ justifyContent: 'center', marginTop: 15, marginBottom: 20 }}>
+                <Text style={[styles.sectionTitle, { marginBottom: 20 }]}>Tipo de Consulta</Text>  
+                <SegmentedButtons
+                  value={value}
+                  onValueChange={(value) => {
+                      if (consultationType === parseInt(value)) return;
+                      selectConsultationType(consultationType === ConsultationTypes.MedicalConsultation ? ConsultationTypes.Telemedicine : ConsultationTypes.MedicalConsultation)
+                    }
+                  }
+                  buttons={[
+                    {
+                      value: ConsultationTypes.MedicalConsultation.toString(),
+                      label: 'Presencial',
+                      labelStyle: {
+                        color: theme.colors.primary,
+                        fontSize: 16,
+                        fontWeight: '600'
+                      },
+                      checkedColor: theme.colors.primary, // Selected text color
+                      uncheckedColor: Colors.Gray400, // Unselected text color
+                    },
+                    {
+                      value: ConsultationTypes.Telemedicine.toString(),
+                      label: 'Telemedicina',
+                      labelStyle: {
+                        color: theme.colors.primary,
+                        fontSize: 16,
+                        fontWeight: '600'
+                      },
+                      checkedColor: theme.colors.primary, // Selected text color
+                      uncheckedColor: Colors.Gray400, // Unselected text color
+                    },
+                  ]}
+                />
+              </View>
+
+              <View style={{ paddingVertical: 20 }}>  
+
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Servicios</Text>
+
+                  {consultationType === ConsultationTypes.MedicalConsultation ? (
+                    <>
+                      {collaboratorDetail.services && collaboratorDetail.services.length > 0 && (
+                        <>                    
+                          {collaboratorDetail.services.map((item: any, index: number) => (
+                            <TouchableOpacity 
+                              key={index}
+                              onPress={() => setServiceSelected(item)} 
+                              activeOpacity={0.7}
+                            >
+                              <View style={{  flexDirection: 'row', marginBottom: 10, marginLeft: 10 }}>
+                                <RadioButton
+                                  value={item.id.toString()}
+                                  status={serviceSelected.id === item.id ? 'checked' : 'unchecked'}
+                                  onPress={() => setServiceSelected(item)} 
+                                />
+                                <View>
+                                  <Text style={{ paddingTop: 5 }}>{item.name}</Text>
+                                  {item.price ? (
+                                    <Text style={{ fontWeight: '700' }}>{formatPrice(item.price)}</Text>
+                                  ) : null}
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          ))}
+                        </>
+                      )}                    
+                    </>
+                  ) : (
+                    <View style={{ flexDirection: 'row', marginBottom: 5, marginLeft: 10 }}>
+                      <Icon
+                        source="check"
+                        color={Colors.GreenLight}
+                        size={24}              
+                      />
+                      <Text style={{ marginLeft: 5 }}>
+                        Consulta por telemedicina
+                      </Text>  
+                    </View>
+                  )}
+                  
+                  
+                </View>  
+                
+                <View style={styles.section}>
+                  
+                  <Text style={styles.sectionTitle}>Consultorios</Text>
+
+                  {consultationType === ConsultationTypes.MedicalConsultation ? (
+                    <>
+                      {collaboratorDetail.address.length > 0 && collaboratorDetail.address.map((item: { id: number; name: string; location: string; phone: any; }) => {
+                        const phoneAddress = item.phone.map((s: any) => s.phone);
+                        return (
+                          <TouchableOpacity 
+                            key={item.id}
+                            onPress={() => setAddressSelected(item)} 
+                            activeOpacity={0.7}
+                          >
+                            <View style={{ flexDirection: 'row', marginBottom: 10, marginLeft: 10 }}>
+                              <RadioButton
+                                value={item.id.toString()}
+                                status={addressSelected.id === item.id ? 'checked' : 'unchecked'}
+                                onPress={() => setAddressSelected(item)} 
+                              />                        
+                                <View>
+                                  <Text style={{ fontWeight: '700', paddingTop: 5 }}>{item.name}</Text>
+                                  <Text>{item.location}</Text>                        
+                                  <Text>{phoneAddress}</Text>
+                                </View>                           
                             </View>
-                          ) : null}
-                          <Divider />
-                        </View>
-                      ))}
+                          </TouchableOpacity>
+                        )
+                      })}
+                    </>
+                  ) : (
+                    <>
+                      {collaboratorDetail.address.length > 0 && collaboratorDetail.address.map((item: { id: number; name: string; location: string; phone: any; }) => {                        
+                        return (
+                          <View key={item.id} style={{ marginLeft: 10, marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row' }}>
+                              <Icon
+                                source="check"
+                                color={Colors.GreenLight}
+                                size={24}              
+                              />
+                              <Text style={{ fontWeight: '700', marginLeft: 5 }}>{item.name}</Text>
+                            </View>
+                            <Text>{item.location}</Text>  
+                          </View>  
+                        )
+                      })}
                     </>
                   )}
                 </View>  
-                <View key={"section_3"} style={styles.section}>
-                  <Text style={styles.sectionTitle}>Consultorios</Text>
-                  {collaboratorDetail.address.length > 0 && collaboratorDetail.address.map((item: { id: number; name: string; location: string; phone: any; }) => {
-                    const phoneAddress = item.phone.map((s: any) => s.phone);
-                    return (
-                      <View key={item.id} style={{ marginBottom: 6 }}>
-                        <Text style={{ fontWeight: '700' }}>{item.name}</Text>
-                        <Text>{item.location}</Text>                        
-                        <Text>{phoneAddress}</Text>
-                      </View>
-                    )
-                  })}
-                </View>  
-                <View key={"section_4"} style={styles.section}>
+
+                <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Opiniones</Text>
                   <Text>data informacion</Text> 
                 </View>
               </View>
-            </View>          
+
+            </View>       
           </ScrollView>
         )}
 

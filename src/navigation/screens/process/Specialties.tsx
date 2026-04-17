@@ -28,7 +28,6 @@ export default function Specialties() {
       specialty: {
         id: item.id,
         name: item.name,
-        price: item.price || '0',
       }
      });
 
@@ -42,6 +41,9 @@ export default function Specialties() {
       const response = await axios.get('https://esdecali.com/truedoctor/api/specialties.php', {
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
           // 'Authorization': `Bearer ${token}`, // Si usas auth
         },
         timeout: 10000, // 10 segundos

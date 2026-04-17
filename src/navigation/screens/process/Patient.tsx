@@ -22,6 +22,8 @@ export default function Patient() {
   
   const { appointment, saveAppointment } = useAppointmentStorage();
 
+  console.log(appointment);
+
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
@@ -141,14 +143,15 @@ export default function Patient() {
         name: patientName,
         description: appointment?.patientData.description,
         specialty: appointment?.specialty || null,
-        price: appointment?.price,
+        price: appointment?.service.price,
         doctorId: appointment?.doctorId,
         doctorName: appointment?.doctorName,
         consultationType: appointment?.consultationType,
+        service: appointment?.service || null,
         address: appointment?.address || null,        
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
-        link: '',
+        link: null,
         isPay: 'Pending',
         createdAt,
       }
