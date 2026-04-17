@@ -29,6 +29,8 @@ export default function Doctors() {
 
   const [search, setSearch] = useState<string>('');
   const [value, setValue] = useState<string>(ConsultationTypes.MedicalConsultation.toString());
+  const [doctorIdSelected, setDoctorIdSelected] = useState<string>('');
+  const [doctorNameSelected, setDoctorNameSelected] = useState<string>('');
 
   const { saveAppointment, appointment } = useAppointmentStorage();
 
@@ -85,9 +87,16 @@ export default function Doctors() {
       Alert.alert('Error', 'WhatsApp no está instalado');
     }
   };
-
   
-  const handleSelectDoctor = useCallback((item: any) => {
+  const handleSelectDoctor = useCallback(async (item: any) => {
+    setDoctorIdSelected(item.id);
+    setDoctorNameSelected(item.name);
+
+    await saveAppointment({ 
+        doctorId: item.id,
+        doctorName: item.name
+    });    
+
     navigation.navigate(Routes.CollaboratorDetail);
   }, [saveAppointment, consultationType, doctorAddress, navigation]);
 

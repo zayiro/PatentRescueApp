@@ -22,8 +22,6 @@ export default function Patient() {
   
   const { appointment, saveAppointment } = useAppointmentStorage();
 
-  console.log(appointment);
-
   const specialtyId = appointment?.specialty.id;
   const specialtyName = appointment?.specialty.name;
   const selectedDate = appointment?.selectedDate;
