@@ -10,7 +10,7 @@ interface StarRatingProps {
 
 export default function StarRating({
   rating = 0,
-  size = 12,
+  size = 13,
 }: StarRatingProps) {
     return(
         <View style={styles.starsContainer}>

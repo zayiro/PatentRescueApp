@@ -278,49 +278,27 @@ export function CollaboratorDetail() {
 
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Servicios</Text>
-
-                  {consultationType === ConsultationTypes.MedicalConsultation ? (
-                    <>
-                      {collaboratorDetail.services && collaboratorDetail.services.length > 0 && (
-                        <>                    
-                          {collaboratorDetail.services.map((item: any, index: number) => (
-                            <TouchableOpacity 
-                              key={index}
-                              onPress={() => setServiceSelected(item)} 
-                              activeOpacity={0.7}
-                            >
-                              <View style={{  flexDirection: 'row', marginBottom: 10, marginLeft: 10 }}>
-                                <RadioButton
-                                  value={item.id.toString()}
-                                  status={serviceSelected.id === item.id ? 'checked' : 'unchecked'}
-                                  onPress={() => setServiceSelected(item)} 
-                                />
-                                <View>
-                                  <Text style={{ paddingTop: 5 }}>{item.name}</Text>
-                                  {item.price ? (
-                                    <Text style={{ fontWeight: '700' }}>{formatPrice(item.price)}</Text>
-                                  ) : null}
-                                </View>
-                              </View>
-                            </TouchableOpacity>
-                          ))}
-                        </>
-                      )}                    
-                    </>
-                  ) : (
-                    <View style={{ flexDirection: 'row', marginBottom: 5, marginLeft: 10 }}>
-                      <Icon
-                        source="check"
-                        color={Colors.GreenLight}
-                        size={24}              
-                      />
-                      <Text style={{ marginLeft: 5 }}>
-                        Consulta por telemedicina
-                      </Text>  
-                    </View>
-                  )}
-                  
-                  
+                  {collaboratorDetail.services.map((item: any, index: number) => (
+                    <TouchableOpacity 
+                      key={index}
+                      onPress={() => setServiceSelected(item)} 
+                      activeOpacity={0.7}
+                    >
+                      <View style={{  flexDirection: 'row', marginBottom: 10, marginLeft: 10 }}>
+                        <RadioButton
+                          value={item.id.toString()}
+                          status={serviceSelected.id === item.id ? 'checked' : 'unchecked'}
+                          onPress={() => setServiceSelected(item)} 
+                        />
+                        <View>
+                          <Text style={{ paddingTop: 5 }}>{item.name}</Text>
+                          {item.price ? (
+                            <Text style={{ fontWeight: '700' }}>{formatPrice(item.price)}</Text>
+                          ) : null}
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
                 </View>  
                 
                 <View style={styles.section}>

@@ -43,6 +43,9 @@ export const useDoctorsFilter = (consultationType: number, specialtyId: number, 
         params, 
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
           // 'Authorization': `Bearer ${token}`, // Si usas auth
         },
         timeout: 10000 

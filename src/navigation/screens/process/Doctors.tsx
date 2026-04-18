@@ -1,15 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Alert } from 'react-native';
-import * as Linking from 'expo-linking';
+import { FlatList, View, StyleSheet, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   Avatar,
   Text,
   Searchbar,
-  RadioButton,
-  Button,
-  Divider,
   SegmentedButtons,
-  Chip,
+  IconButton,
 } from 'react-native-paper';
 import { useDoctorsFilter } from '@/hooks/useDoctorsFilter'
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +14,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import StarRating from '@/components/StarRating';
-import { Icon, Modal } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import { limpiarString } from '@/utils/utils';
@@ -43,6 +39,8 @@ export default function Doctors() {
     loading,
   } = useDoctorsFilter(consultationType, specialtyId, search);
 
+  console.log(doctors);
+
   const doctorAddress = doctors[0]?.address || [];
   
   const filteredDoctors = doctors.filter(doctor => {
@@ -59,34 +57,6 @@ export default function Doctors() {
       consultationType: type,
     });
   }, [consultationType, value, saveAppointment]);
-
-  const shareToWhatsApp = async (item: any) => {
-    const data = `**${item.name}** 🫀
-      Cardióloga | COL
-      ✅ Consultas presenciales
-      ✅ Consultas en línea
-
-      📱 Agenda: ${item.link}`;
-
-    const message = encodeURIComponent(data);
-    
-    // WhatsApp URL Scheme
-    const whatsappUrl = `whatsapp://send?text=${message}`;
-    
-    try {
-      const supported = await Linking.canOpenURL(whatsappUrl);
-      
-      if (supported) {
-        await Linking.openURL(whatsappUrl);
-      } else {
-        // Fallback: WhatsApp Web
-        const webUrl = `https://wa.me/?text=${message}`;
-        await Linking.openURL(webUrl);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'WhatsApp no está instalado');
-    }
-  };
   
   const handleSelectDoctor = useCallback(async (item: any) => {
     setDoctorIdSelected(item.id);
@@ -100,74 +70,74 @@ export default function Doctors() {
     navigation.navigate(Routes.CollaboratorDetail);
   }, [saveAppointment, consultationType, doctorAddress, navigation]);
 
-    const maxVisible = 2;
+    const maxVisible = 1;
     const mostrarMas = doctorAddress.length > maxVisible;
 
   const renderDoctor = ({ item }: { item: any}) => (
     <TouchableOpacity style={styles.doctorBox} onPress={() => handleSelectDoctor(item)}>
       <View>
-        <View style={[styles.doctorRow, { marginBottom: 10 }]}>
-          <View style={{ alignItems: 'center' }}>
+        <View style={[styles.doctorRow]}>
+          <View style={{ position: 'relative', alignItems: 'center' }}>
             <Avatar.Image 
               size={85} 
-              source={{ uri: 'https://i.pravatar.cc/300' }} 
+              source={{ uri: item.photo }} 
             />
+            {item.isVerified && (
+              <IconButton
+                icon="check-circle"
+                size={20}
+                iconColor="#4CAF50"
+                style={styles.checkIcon}
+              />
+            )}
           </View>
           <View style={[styles.infoCol, { marginLeft: 10 }]}>
-            <Text style={styles.doctorName}>{item.name}</Text>          
+            <Text style={styles.doctorName}>{item.name}</Text>
+            <Text style={{ color: '#565f5f' }}>{specialtyName}</Text>
+            <Text style={{ fontWeight: '700', color: '#565f5f' }}>{item.yearsExperience} { item.yearsExperience > 1 ? ' años' : ' año' } de experiencia</Text>
             <Text><StarRating rating={4} /></Text>
-            <View style={{ width: 140 }}>                       
-              <Chip icon="share" onPress={() => shareToWhatsApp(item)}>Compartir</Chip>   
-            </View>
-          </View>          
+          </View>
         </View>
-        <View style={styles.doctorRow}>                  
-          {/* 🔹 Info */}
-          <View style={styles.infoCol}>                              
+        <View>
+          <View style={styles.infoCol}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
               <Icon
-                source="google-maps"
+                source="account-check"
                 color={Colors.Violet}
-                size={20}
+                size={25}
               />
-              <Text style={{ fontSize: 14, fontWeight: '700' }}>Consultorios</Text>                           
+              <Text style={{ fontSize: 16, fontWeight: '700' }}>Especialista en</Text>
             </View>
-            {doctorAddress.length > 0 && doctorAddress.slice(0, maxVisible).map((address) => (
-              <View key={address.id} style={{ marginBottom: 6, paddingLeft: 8 }}>
-                <Text style={{ fontSize: 13 }}>{address.location}</Text>
-                <Text style={{ fontSize: 13 }}>{address.name}</Text>
-              </View>
-            ))}
-            {mostrarMas && (
-              <Text style={{ fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
-                +{doctorAddress.length - maxVisible} direcciones adicionales
-              </Text>
-            )}
-            
+            <View style={{  paddingLeft: 8 }}>
+              <Text>Diabetes tipo 1</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoCol}>
             {item.services && item.services.length > 0 && (
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 }}>
                   <Icon
-                    source="heart-plus"
+                    source="check-bold"
                     color={Colors.Violet}
-                    size={20}
+                    size={21}
                   />
-                  <Text style={{ fontSize: 14, fontWeight: '700' }}>Servicios</Text>                
+                  <Text style={{ fontSize: 16, fontWeight: '700' }}>Servicios</Text>
                 </View>
                 {item.services.slice(0, 2).map((service: string, index: number) => (
                   <View key={index} style={{  paddingLeft: 8 }}>
-                    <Text style={{ fontSize: 13 }}>{service}</Text>
-                  </View>    
+                    <Text>{service}</Text>
+                  </View>
                 ))}
                 {item.services.length > 2 && (
-                  <Text style={{ marginBottom: 6, fontSize: 12, color: Colors.Violet, paddingLeft: 8 }}>
+                  <Text style={{ marginBottom: 6, fontSize: 13, color: Colors.Violet, paddingLeft: 8 }}>
                     +{item.services.length - 3} servicios adicionales
                   </Text>
                 )}
               </>
             )}
           </View>
-        </View>        
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -235,31 +205,30 @@ export default function Doctors() {
         />
         
         {filteredDoctors.length ? (
-          <>                    
+          <View style={{ backgroundColor: Colors.LightGray }}>                    
             <FlatList
               data={filteredDoctors}
               renderItem={renderDoctor}
               keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={styles.list}
               showsVerticalScrollIndicator={false}
               numColumns={1}
             />
-          </>
+          </View>
         )
       :
-      (
-        <View>
-          <Text style={{ fontSize: 18, fontWeight: '600', textAlign: 'center', marginTop: 30 }}>
-            No se encontrarón especialistas para {specialtyName}
-          </Text>
-          <TouchableOpacity
-            style={{ marginTop: 20, padding: 12, borderRadius: 5 }}
-            onPress={() => navigation.navigate(Routes.Specialties) }
-          >
-            <Text style={{ color: Colors.Violet, textDecorationLine: 'underline', alignItems: 'center', alignSelf: 'center' }}>nueva busqueda</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        (
+          <View>
+            <Text style={{ fontSize: 18, fontWeight: '600', textAlign: 'center', marginTop: 30 }}>
+              No se encontrarón especialistas para {specialtyName}
+            </Text>
+            <TouchableOpacity
+              style={{ marginTop: 20, padding: 12, borderRadius: 5 }}
+              onPress={() => navigation.navigate(Routes.Specialties) }
+            >
+              <Text style={{ color: Colors.Violet, textDecorationLine: 'underline', alignItems: 'center', alignSelf: 'center' }}>nueva busqueda</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       </KeyboardAvoidingView>
     </>
@@ -273,20 +242,6 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     backgroundColor: Colors.White,    
   },
-  button: {
-    marginVertical: 10,
-  }, 
-  listaDirecciones: {
-    flexGrow: 1,
-  },
-  headerPaper: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  botonCerrarPaper: {
-    margin: 0,
-    marginTop: 5
-  },
   doctorBox: {
     flex: 1,
     backgroundColor: Colors.White,
@@ -295,36 +250,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderColor: Colors.Gray400,
     borderWidth: 1,
-    shadowColor: '#9c9a9a',
-    shadowOffset: {
-      width: 0,
-      height: 1,          // Elevación vertical
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 3,
-    
-    // 🌑 ELEVATION Android
-    elevation: 8,           // Equivalente iOS shadow
-  },
-  list: {
-  },
-  card: {
-    backgroundColor: Colors.White,
-    marginVertical: 10,
-  },
-  cardContent: {
-    padding: 0,
-  },
-  confirmButton: {
-    marginTop: 5,
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  confirmButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
   },
   doctorRow: {
     flexDirection: 'row',
@@ -334,30 +259,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   doctorName: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
   },
   specialty: {
     marginBottom: 8,
-    fontSize: 14,
+    fontSize: 18,
     color: Colors.Violet,
-  },
-  detailsRow: {
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 8,
-  },
-  priceChip: {
-    backgroundColor: '#10B981',
-  },
-  slotsChip: {
-    backgroundColor: '#3B82F6',
-  },
-  actionBtn: {
-    marginLeft: 16,
   },
   searchbar: {
     marginHorizontal: 15,
     marginBottom: 20
+  },
+  checkIcon: {
+    position: 'absolute',
+    bottom: -8,   // ✅ Justo abajo
+    right: -8,    // ✅ Justo derecha
+    margin: 0,
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: 'white',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
