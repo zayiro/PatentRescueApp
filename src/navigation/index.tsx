@@ -34,6 +34,7 @@ import { TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Appointments } from './screens/Appointments';
 import { CollaboratorDetail } from './screens/CollaboratorDetail';
+import MedicaAssistant from './screens/MedicalAssistant';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -373,6 +374,21 @@ const RootStack = createNativeStackNavigator({
       screen: CollaboratorDetail,
       options: ({ navigation }) => ({
         title: 'Perfil socio',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
+        ),
+      }),
+    },
+    MedicaAssistant: {
+      screen: MedicaAssistant,
+      options: ({ navigation }) => ({
+        title: 'DrIA',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon

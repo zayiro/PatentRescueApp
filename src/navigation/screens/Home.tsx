@@ -221,10 +221,10 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.Telemedicine)}
+                    onPress={() => navigation.navigate(Routes.MedicaAssistant)}
                   >
                     <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Notificaciones</Text>    
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>DrIA</Text>    
                   </TouchableOpacity>
                 </View>
               </View>

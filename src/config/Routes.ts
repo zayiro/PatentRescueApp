@@ -23,7 +23,8 @@ const Routes: any = {
   MedicalInsurance: "MedicalInsurance",
   ThankYouPage: "ThankYouPage",
   Appointments: "Appointments",
-  CollaboratorDetail: "CollaboratorDetail"
+  CollaboratorDetail: "CollaboratorDetail",
+  MedicaAssistant: "MedicaAssistant"
 };
 
 export default Routes;
