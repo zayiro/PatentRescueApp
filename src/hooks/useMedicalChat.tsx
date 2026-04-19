@@ -69,7 +69,7 @@ export const useMedicalChat = () => {
         user: { 
           _id: 2, 
           name: 'Dr. IA', 
-          avatar: '🩺🤖' 
+          avatar: '🩺' 
         },
       };
 

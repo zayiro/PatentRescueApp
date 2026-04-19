@@ -23,6 +23,7 @@ import { UserDataType } from '@/type/UserDataType';
 import Genders from '@/config/Gender';
 import PhoneInput from '@/components/PhoneInput';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { capitalizar } from '@/utils/utils';
 
 export function BasicInformation() {
   const navigation = useNavigation();
@@ -82,12 +83,12 @@ export function BasicInformation() {
     const updateUser = await updateDocumentCollection(NameCollection.Users, user?.uid, userData)
             
     if (updateUser.isSuccess) {      
-      let update = {
-          displayName: firstName.trim() + " " + lastName.trim(),
-          photoURL: photoURL ?? ""
+      let profileData = {
+        displayName: capitalizar(firstName.trim()) + " " + capitalizar(lastName.trim()),
+        phoneNumber: phone
       }
       
-      updateProfileUser(update)
+      await updateProfileUser(profileData)
 
       setLoading(false)
       Alert.alert("Éxito", "Perfil actualizado correctamente.")
@@ -157,7 +158,7 @@ export function BasicInformation() {
           (
             <>
               <View style={{ marginTop: 25 }}>
-                <Text style={{ marginBottom: 30 }}>Tu nombre y apellidos se comparten siempre con tu especialista al reservar tus citas</Text>
+                <Text style={{ marginBottom: 30, color: Colors.SlateGray }}>Tu nombre y apellidos se comparten siempre con tu especialista al reservar tus citas</Text>
                 <TextInput
                   label="Nombres"        
                   onChangeText={setFirstName}
@@ -246,12 +247,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 40,
+    paddingVertical: 30,
     backgroundColor: '#FFF',
   },
   button: {
     paddingVertical: 10,
     shadowColor: '#000',
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

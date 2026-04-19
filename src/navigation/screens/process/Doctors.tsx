@@ -39,8 +39,6 @@ export default function Doctors() {
     loading,
   } = useDoctorsFilter(consultationType, specialtyId, search);
 
-  console.log(doctors);
-
   const doctorAddress = doctors[0]?.address || [];
   
   const filteredDoctors = doctors.filter(doctor => {

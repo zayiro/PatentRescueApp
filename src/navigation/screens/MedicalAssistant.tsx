@@ -1,29 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Modal, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { IMessage, SendProps, GiftedChat } from 'react-native-gifted-chat';
-import { IconButton } from 'react-native-paper';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { Icon, IconButton } from 'react-native-paper';
 import { useMedicalChat } from '@/hooks/useMedicalChat'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/config/Colors';
-
-interface MedicalMessage extends IMessage {
-  text: string;
-  tokens?: number;
-}
-
-interface ChatLimits {
-  maxMensajes: number;
-  maxTokens: number;
-  maxInputChars: number;
-}
-
-const LIMITES: ChatLimits = {
-  maxMensajes: 25,
-  maxTokens: 4000,
-  maxInputChars: 300,
-};
-
-const contarTokens = (text: string): number => Math.ceil(text.length / 2.5);
 
 export default function MedicaAssistant() {  
   const [tokensUsed, setTokensUsed] = useState(0);
@@ -57,7 +38,7 @@ export default function MedicaAssistant() {
         <View style={styles.disclaimerContainer}>
           <Text style={styles.disclaimerTitle}>⚠️ AVISO LEGAL</Text>
           <Text style={styles.disclaimerText}>
-            Dr. IA es un asistente de{' '}
+            Asistente médico de{' '}
             <Text style={styles.bold}>INFORMACIÓN GENERAL</Text>
             {'\n\n'}
             ❌ NO diagnostica enfermedades
@@ -66,7 +47,7 @@ export default function MedicaAssistant() {
             {'\n'}
             ✅ Te ayuda a entender síntomas comunes
             {'\n\n'}
-            🚨 EMERGENCIAS: Llama al 911 inmediatamente
+            🩺 20 chats al mes gratis!
           </Text>
           <TouchableOpacity style={styles.btnAceptar} onPress={aceptarDisclaimer}>
             <Text style={styles.btnText}>Acepto y continuar</Text>
@@ -90,7 +71,13 @@ export default function MedicaAssistant() {
           onSend={msg => enviarMensaje(msg[0].text)}
           renderSend={(props) => (
             <TouchableOpacity style={styles.sendBtn}>
-              <Text style={styles.sendText}>Enviar</Text>
+              <Text style={styles.sendText}>
+                <Icon
+                  source="send"
+                  color={Colors.Violet}
+                  size={24}              
+                />
+              </Text>
             </TouchableOpacity>
           )}
           user={{ 
@@ -109,7 +96,7 @@ export default function MedicaAssistant() {
           scrollToBottom={true}  
           keyboardShouldPersistTaps="handled"   
           showUserAvatar={false}
-       
+          placeholder="Describe los síntomas"
         />
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -123,15 +110,10 @@ const styles = StyleSheet.create({
   },
   sendText: {
     flex: 1,
-    color: Colors.Violet,
-    fontSize: 16,
-    fontWeight: '700',
-    paddingTop: 11,
+    paddingTop: 13,
     paddingRight: 15
   },
-  sendBtn: {
-
-  },
+  sendBtn: {},
   disclaimerContainer: {
     flex: 1,
     justifyContent: 'center',

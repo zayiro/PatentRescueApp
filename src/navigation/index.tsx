@@ -35,17 +35,18 @@ import React from 'react';
 import { Appointments } from './screens/Appointments';
 import { CollaboratorDetail } from './screens/CollaboratorDetail';
 import MedicaAssistant from './screens/MedicalAssistant';
+import { Menu } from './screens/Menu';
 
 const RootStack = createNativeStackNavigator({
   screens: {
     Home: {
       screen: Home,
       options: ({ navigation }) => ({
-        title: 'Inicio',
+        title: 'True Doctor',
         headerRight: () => (         
-          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Profile)}>
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Menu)}>
             <Icon
-              source="account"
+              source="menu"
               color={Colors.SlateGray}
               size={28}              
             />
@@ -78,7 +79,7 @@ const RootStack = createNativeStackNavigator({
         headerRight: () => (          
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
-              source="home"
+              source="menu"
               color={Colors.SlateGray}
               size={28}              
             />
@@ -388,7 +389,22 @@ const RootStack = createNativeStackNavigator({
     MedicaAssistant: {
       screen: MedicaAssistant,
       options: ({ navigation }) => ({
-        title: 'DrIA',
+        title: 'Asistente Médico',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
+        ),
+      }),
+    },
+    Menu: {
+      screen: Menu,
+      options: ({ navigation }) => ({
+        title: 'Menu',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon

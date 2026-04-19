@@ -200,8 +200,6 @@ export function Home() {
                 </View>
               </View>
             
-              <Divider style={{ marginTop: 10, marginBottom: 30 }} />
-
               <View style={styles.twoColumns}>                
                 <View style={styles.column}>              
                   <TouchableOpacity 
@@ -212,7 +210,7 @@ export function Home() {
                     onPress={() => navigation.navigate(Routes.Appointments)}
                   >
                     <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Citas programadas</Text>    
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Mensajes</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -223,17 +221,11 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => navigation.navigate(Routes.MedicaAssistant)}
                   >
-                    <IconButton icon="hospital-building" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>DrIA</Text>    
+                    <IconButton icon="wechat" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Asistente Médico</Text>
                   </TouchableOpacity>
                 </View>
               </View>
-
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>  
-                <Button icon="logout" mode="contained" onPress={handleLogout} style={styles.button}>
-                  <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 10 }}>Cerrar sesión</Text>
-                </Button>
-              </View> 
             </View> 
         </ScrollView>
       </KeyboardAvoidingView>   

@@ -129,7 +129,12 @@ export const updateDocumentCollection = async (path, uid, data) => {
 export const updateProfileUser = async(data) => {
     const result = {isSuccess: true, response: null, errorCode: 0, errorMessage: ''}
     try {
-        await firebase.auth().currentUser.updateProfile(data)
+         updateProfile(auth.currentUser, {
+            displayName: data.displayName, 
+            phoneNumber: data.phoneNumber
+        }).then(() => {            
+        }).catch((error) => {
+        });
     } catch (error) {
         result.errorCode = 1
         result.isSuccess = false
