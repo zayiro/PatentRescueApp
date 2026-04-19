@@ -13,6 +13,7 @@ import dayjs from "@/utils/dayjs";
 import Routes from "@/config/Routes";
 import { useRoute } from '@react-navigation/native';
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
+import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -66,11 +67,10 @@ export default function ThankYouPage() {
         fechaHora: result.selectedDate+""+result.selectedTime,
       };
 
-      const response = await axios.post('https://esdecali.com/truedoctor/create-link.php', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        timeout: 10000,
+      const response = await axios.post(
+        `${APP_BASE_URL}/create-link.php`, formData, {
+        headers: headerAxiosApp,
+        timeout: timeoutAxios,
       });
 
       let data = {

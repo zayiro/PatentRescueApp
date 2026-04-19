@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import Routes from '@/config/Routes';
 import axios from 'axios';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 
 interface Specialty {
   id: number;
@@ -38,15 +39,10 @@ export default function Specialties() {
     try {
       setLoading(true);
       
-      const response = await axios.get('https://esdecali.com/truedoctor/api/specialties.php', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          // 'Authorization': `Bearer ${token}`, // Si usas auth
-        },
-        timeout: 10000, // 10 segundos
+      const response = await axios.get(
+        `${APP_BASE_URL}/api/specialties.php`, {
+        headers: headerAxiosApp,
+        timeout: timeoutAxios,
       });
 
       const data = response.data;

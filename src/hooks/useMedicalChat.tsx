@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { enviarConsultaMedica } from '@/services/openaiService'
 import { IMessage } from 'react-native-gifted-chat';
+import { Alert } from 'react-native';
 
 interface Message extends IMessage {
   text: string;
@@ -17,6 +18,8 @@ export const useMedicalChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [disclaimerAceptado, setDisclaimerAceptado] = useState(false);
+
+  const MAX_MSGS_CHAT = 20; // 20 intercambios
 
   // Cargar historial
   useEffect(() => {
@@ -36,6 +39,16 @@ export const useMedicalChat = () => {
 
   const enviarMensaje = useCallback(async (mensaje: string) => {
     if (!disclaimerAceptado || loading) return;
+
+    // Límite mensajes por chat
+    if (messages.length >= MAX_MSGS_CHAT * 2) {
+      Alert.alert(
+        'Límite alcanzado',
+        `Chat completo (${MAX_MSGS_CHAT} intercambios). Inicia nuevo.`,
+        [{ text: 'Nuevo chat', onPress: () => setMessages([]) }]
+      );
+      return;
+    }
 
     const userMessage = {
       _id: Math.random().toString(),
@@ -78,8 +91,14 @@ export const useMedicalChat = () => {
   const aceptarDisclaimer = () => setDisclaimerAceptado(true);
 
   const limpiarChat = () => {
-    setMessages([]);
-    AsyncStorage.removeItem('medicalChat');
+    Alert.alert('Limpiar', '¿Borrar conversación?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Limpiar', onPress: () => { 
+          setMessages([])
+          AsyncStorage.removeItem('medicalChat');
+        }
+      }
+    ]);
   };
 
   return {

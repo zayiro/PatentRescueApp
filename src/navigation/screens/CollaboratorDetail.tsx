@@ -33,6 +33,7 @@ import StarRating from '@/components/StarRating';
 import { theme } from '@/config/theme';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import Routes from '@/config/Routes';
+import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 
 export function CollaboratorDetail() {
   const { user } = useAuth();
@@ -100,15 +101,10 @@ export function CollaboratorDetail() {
         doctorId: doctorId,
       };
 
-      const response = await axios.post('https://esdecali.com/truedoctor/api/collaboratorDetail.php', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          // 'Authorization': `Bearer ${token}`, // Si usas auth
-        },
-        timeout: 10000,
+      const response = await axios.post(
+        `${APP_BASE_URL}/api/collaboratorDetail.php`, formData, {
+        headers: headerAxiosApp,
+        timeout: timeoutAxios,
       });
       
       setCollaboratorDetail(response.data);

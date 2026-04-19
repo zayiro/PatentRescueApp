@@ -2,8 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Alert } from 'react-native';
-
-const API_URL = 'https://esdecali.com/truedoctor/api/doctors.php';
+import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 
 interface Doctor {
   id: number;
@@ -39,16 +38,11 @@ export const useDoctorsFilter = (consultationType: number, specialtyId: number, 
         ...(search && { doctorName: search }),
       };
       
-      const response = await axios.get(API_URL, { 
+      const response = await axios.get(
+        `${APP_BASE_URL}/api/doctors.php`, { 
         params, 
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          // 'Authorization': `Bearer ${token}`, // Si usas auth
-        },
-        timeout: 10000 
+        headers: headerAxiosApp,
+        timeout: timeoutAxios,
       });
 
       const data = response.data;

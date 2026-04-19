@@ -6,7 +6,18 @@ interface ChatMessage {
   content: string;
 }
 
+let lastRequest = 0;
+const MIN_DELAY = 1000; // 1 segundo entre reque
+
 export const enviarConsultaMedica = async (mensaje: string): Promise<string> => {
+  // ✅ Esperar rate limit
+  const now = Date.now();
+  const delay = Math.max(0, MIN_DELAY - (now - lastRequest));
+  if (delay > 0) {
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  lastRequest = Date.now();
+  
   const messages: ChatMessage[] = [
     { role: 'system', content: MEDICAL_SYSTEM_PROMPT },
     { role: 'user', content: mensaje },
@@ -16,15 +27,15 @@ export const enviarConsultaMedica = async (mensaje: string): Promise<string> => 
     const response = await axios.post(
       `${OPENAI_BASE_URL}/chat/completions`,
       {
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o-mini', 
         messages,
-        temperature: 0.1,
-        max_tokens: 500,
+        max_tokens: 150,
       },
       {
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
+          'User-Agent': 'TrueDoctor/1.0',
         },
         params: { _t: Date.now() }, // No cache
       }

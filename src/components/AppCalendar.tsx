@@ -20,6 +20,7 @@ import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import dayjs from 'dayjs';
 import { capitalizar } from '@/utils/utils';
 import { Button } from 'react-native-paper';
+import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 
 interface CalendarProps {
   doctorId: string;
@@ -79,15 +80,10 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         doctorId: doctorId,
       };
 
-      const response = await axios.post('https://esdecali.com/truedoctor/api/available-dates.php', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          // 'Authorization': `Bearer ${token}`, // Si usas auth
-        },
-        timeout: 10000,
+      const response = await axios.post(
+        `${APP_BASE_URL}/api/available-dates.php`, formData, {
+        headers: headerAxiosApp,
+        timeout: timeoutAxios,
       });
       
       const data = response.data;
