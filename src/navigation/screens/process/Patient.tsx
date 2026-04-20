@@ -97,6 +97,13 @@ export default function Patient() {
         return false;
       }
 
+      const userId = user?.uid;
+
+      if (!userId) {
+        Alert.alert("Error", "Usuario no cargado.")          
+        return false;
+      }
+
       let patientName = firstNameSaved+" "+lastNameSaved;      
       if (value !== 'first') {
         if (!firstName.length) {
@@ -127,7 +134,7 @@ export default function Patient() {
           appointmentId: appointmentId,
           patientData: {
               name: patientName,
-              userId: user?.uid || '',
+              userId,
               description: description.trim(),
           },
           status: 'completed',
@@ -178,7 +185,7 @@ export default function Patient() {
     } finally {
       setLoading(false);
     }
-  }, [firstName]);  
+  }, [firstName, lastName]);  
   
   useEffect(() => {
     if (user) {

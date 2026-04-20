@@ -7,7 +7,7 @@ import { getAppoinments } from "@/service/firestore";
 import { formatCOP } from "@/utils/priceUtils";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, TouchableOpacity } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
@@ -75,12 +75,19 @@ export default function Summary() {
           <Divider /> 
 
           <View style={{ marginTop: 40 }}>
-            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>El valor de la consulta por especialidad es de {formatCOP(appointmentData?.price)} COP</Text>
-            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
-            <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>
-            <Button icon="calendar" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Pagar'}</Text>
-            </Button>
+            <Text style={{ fontWeight: '700', fontSize: 28, color: Colors.Title }}>Servico seleccionado</Text>
+            <Text>{appointmentData?.service.name}</Text>
+            <Text variant="bodyMedium" style={{ marginBottom: 20 }}><Text style={{ fontWeight: '700' }}>{formatCOP(appointmentData?.service.price)} COP</Text></Text>
+            {consultationType === ConsultationTypes.Telemedicine && (
+              <>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>              
+              </>
+            )}
+            
+            <Button icon="check" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
+              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Confirmar cita'}</Text>
+            </Button>            
           </View>          
         </ScrollView>
       </KeyboardAvoidingView>    
@@ -97,8 +104,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   button: {
+    marginTop: 30,
     paddingVertical: 10,
     shadowColor: '#000',
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

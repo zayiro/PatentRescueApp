@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getAppoinments, updateDocumentCollection } from "@/service/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, Alert } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Text, Divider, Button } from "react-native-paper";
 import axios from 'axios';
 import { NameCollection } from "@/enums/NameCollection";
@@ -130,8 +130,14 @@ export default function ThankYouPage() {
 
               <Divider /> 
 
-              <View style={{ marginTop: 20, marginBottom: 40 }}>
-                <Text variant="titleMedium" style={{ marginBottom: 20, color: Colors.Title }}>¡Gracias por reservar tu cita con nosotros!</Text>
+              <View style={{ marginTop: 20 }}>
+                <Text variant="titleMedium" style={{ marginBottom: 20, fontWeight: '700', color: Colors.Title }}>¡Gracias por reservar con nosotros!</Text>
+                <Text>Puedes ver los detalles de la cita en</Text>
+                <Text style={{ marginBottom: 20 }}> 
+                  <TouchableOpacity onPress={() => navigation.navigate(Routes.Appointments)}>
+                    <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>citas programadas</Text>
+                  </TouchableOpacity>
+                </Text>
                 {appointmentData.consultationType == ConsultationTypes.Telemedicine ? (
                   <>
                   <Text variant="bodyMedium" style={{ marginBottom: 10 }}>Para ingresar a la video conferencia, ingrese a la sección <Text style={{ fontWeight: '700' }}>citas programadas</Text> y haga click en el enlace "Entrar a la video conferencia".</Text>
@@ -143,9 +149,22 @@ export default function ThankYouPage() {
                 )}                              
               </View>
 
-              <Button icon="message-video" mode="contained" onPress={() => navigation.navigate(Routes.Appointments)} style={[styles.button]}>
-                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Citas Programadas</Text>
+              {appointmentData?.service.payOnline && (
+                <>
+                  <Text style={{ marginTop: 10 }}>Este servicio lo puedes pagar en línea</Text>
+                  <Text>PSE, Tarjetas de Crédito y Débito, Nequi</Text>                
+                </>
+              )}
+
+              <Button icon="credit-card-check" mode="contained" onPress={() => navigation.navigate(Routes.Appointments)} style={[styles.button]}>
+                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Pagan en línea</Text>
               </Button> 
+
+              <View style={styles.footer}>
+                <Text style={styles.securityText}>
+                  🔒 Pago seguro cifrado SSL
+                </Text>
+            </View>
             </>
           )}                 
         </ScrollView>
@@ -162,8 +181,22 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     backgroundColor: '#FFF',
   },
+   footer: {
+    padding: 25,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  securityText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   button: {
+    marginTop: 30,
     paddingVertical: 10,
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,

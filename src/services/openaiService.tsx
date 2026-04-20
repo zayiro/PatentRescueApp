@@ -26,8 +26,6 @@ export const enviarConsultaMedica = async (mensaje: string): Promise<string> => 
 
   const { config, loading } = useOpenAIConfig();
 
-  console.log(config);
-
   if (loading || !config.apiKey) {
     throw new Error('Configuración no lista');
   }
