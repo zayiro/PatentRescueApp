@@ -25,7 +25,8 @@ const Routes: any = {
   Appointments: "Appointments",
   CollaboratorDetail: "CollaboratorDetail",
   MedicaAssistant: "MedicaAssistant",
-  Menu: "Menu"
+  Menu: "Menu",
+  COnfiguration: "Configuration"
 };
 
 export default Routes;

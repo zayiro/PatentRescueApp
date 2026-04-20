@@ -61,6 +61,11 @@ const menuItems: MenuItem[] = [
     name: 'Perfil',
     route: Routes.ProfileSegment,
   },
+  {
+    id: 6,
+    name: 'Configuración',
+    route: Routes.Configuration,
+  },
 ];
 
 export function Menu() {

@@ -1,9 +1,4 @@
-/*import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const cached: any = await AsyncStorage.getItem('configurationApp');
-const { data: cachedData } = JSON.parse(cached);*/
-
-export const OPENAI_API_KEY = ''; //cachedData.openAIKey;
 export const OPENAI_BASE_URL = 'https://api.openai.com/v1';
 
 export const MEDICAL_SYSTEM_PROMPT = `

@@ -37,30 +37,6 @@ export function Login() {
   const { authenticate, checkBiometrics, requestBiometricSetup } = useBiometricAuth();
   const { user, loginAuth } = useAuth();
 
-  const onConfigApp = useCallback( async() => {        
-    const cached = await AsyncStorage.getItem('configurationApp');
-    if (cached) {
-      const { timestamp } = JSON.parse(cached);
-      const now = Date.now();
-      
-      if (now - timestamp < 10 * 60 * 1000) { // 5 minutos        
-        
-      } 
-
-      const response = await getConfiguration();
-
-      await AsyncStorage.setItem('configurationApp', JSON.stringify({
-        data: response,
-        timestamp: Date.now(),
-      }));
-    }
-    
-
-    
-
-    navigation.navigate(Routes.Home);
-  }, [])
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', (e) => {
        getCredentials()
@@ -149,7 +125,7 @@ export function Login() {
         if (rememberMe)
           saveCredentials(email, password)
 
-        onConfigApp()        
+        navigation.navigate(Routes.Home);        
       } else {
         Alert.alert("Error", resp.errorMessage)        
         return false;

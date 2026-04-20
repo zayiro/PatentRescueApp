@@ -48,7 +48,7 @@ export default function ThankYouPage() {
     }
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (appointmentId) {
       getAppointmentDetails(appointmentId);
     }
@@ -56,7 +56,7 @@ export default function ThankYouPage() {
     if (appointment) {
       clearAppointment();
     }    
-  }, [appointmentId]);
+  }, [appointment, appointmentId]);
 
   const onGenerateLink = useCallback( async(result: any, appointmentId: string) => {   
     setLoading(true);       

@@ -330,7 +330,7 @@ export const getCountNotifications = async (userId) => {
     return count;
 }
 
-export const getConfiguration = async (userId) => {
+export const getConfiguration = async () => {
     let collectionData;
     try {
         const colRef = collection(db, "configuration")

@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { MEDICAL_SYSTEM_PROMPT, OPENAI_API_KEY, OPENAI_BASE_URL } from '@/config/configOpenAI'
+import { MEDICAL_SYSTEM_PROMPT, OPENAI_BASE_URL } from '@/config/configOpenAI'
+import { useOpenAIConfig } from '@/hooks/useOpenAIConfig'
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -23,17 +24,25 @@ export const enviarConsultaMedica = async (mensaje: string): Promise<string> => 
     { role: 'user', content: mensaje },
   ];
 
+  const { config, loading } = useOpenAIConfig();
+
+  console.log(config);
+
+  if (loading || !config.apiKey) {
+    throw new Error('Configuración no lista');
+  }
+
   try {
     const response = await axios.post(
       `${OPENAI_BASE_URL}/chat/completions`,
       {
-        model: 'gpt-4o-mini', 
+        model: config.model, 
         messages,
-        max_tokens: 150,
+        max_tokens: config.maxTokens,
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${config.apiKey}`,
           'Content-Type': 'application/json',
           'User-Agent': 'TrueDoctor/1.0',
         },

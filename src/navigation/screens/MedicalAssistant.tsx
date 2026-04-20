@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Modal, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, SendProps } from 'react-native-gifted-chat';
 import { Icon, IconButton } from 'react-native-paper';
 import { useMedicalChat } from '@/hooks/useMedicalChat'
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,6 +31,7 @@ export default function MedicaAssistant() {
       <IconButton icon="delete" iconColor={Colors.Violet} onPress={limpiarChat} size={24} />
     </View>
   );
+
 
   if (!disclaimerAceptado) {
     return (
@@ -69,17 +70,7 @@ export default function MedicaAssistant() {
           messages={messages}
           alwaysShowSend={true}  // ✅ Send SIEMPRE visible
           onSend={msg => enviarMensaje(msg[0].text)}
-          renderSend={(props) => (
-            <TouchableOpacity style={styles.sendBtn}>
-              <Text style={styles.sendText}>
-                <Icon
-                  source="send"
-                  color={Colors.Violet}
-                  size={24}              
-                />
-              </Text>
-            </TouchableOpacity>
-          )}
+          
           user={{ 
             _id: 1,
             name: 'Paciente',
@@ -92,11 +83,15 @@ export default function MedicaAssistant() {
               <Text>Dr. IA está pensando...</Text>
             </View>
           )}
-          inverted={false}  // ✅ Abajo arriba (estándar chat)
+          inverted={false}  // ✅ Abajo arriba (estándar chat)          
           scrollToBottom={true}  
           keyboardShouldPersistTaps="handled"   
           showUserAvatar={false}
           placeholder="Describe los síntomas"
+          listViewProps={{
+            removeClippedSubviews: false,
+            style: styles.messagesList,
+          }}
         />
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -107,6 +102,10 @@ const styles = StyleSheet.create({
     chatContainer: {
     backgroundColor: '#f5f7fa',
     flex: 1,
+  },
+  messagesList: {
+    flex: 1,
+    backgroundColor: '#f5f7fa',
   },
   sendText: {
     flex: 1,

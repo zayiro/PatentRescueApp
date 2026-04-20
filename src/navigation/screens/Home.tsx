@@ -165,7 +165,7 @@ export function Home() {
                 <Text style={{ fontSize: 16, fontWeight: '700' }}>
                   Encuentra tu especialista y pide cita
                 </Text>
-                <Text variant='labelMedium' style={{ marginTop: 10, marginBottom: 30, color: Colors.SlateGray }}>
+                <Text style={{ marginTop: 10, marginBottom: 30, color: Colors.SlateGray }}>
                   Más de 60 mil profesionales están aquí para ayudarte.
                 </Text>
               </View>
@@ -215,8 +215,8 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => navigation.navigate(Routes.Appointments)}
                   >
-                    <IconButton icon="message-video" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Mensajes</Text>    
+                    <IconButton icon="bell-badge-outline" size={40} iconColor={theme.colors.primary} />
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Notificaciones</Text>    
                   </TouchableOpacity>
                 </View>
                 <View style={styles.column}>
@@ -228,7 +228,7 @@ export function Home() {
                     onPress={() => navigation.navigate(Routes.MedicaAssistant)}
                   >
                     <IconButton icon="wechat" size={40} iconColor={theme.colors.primary} />
-                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Asistente Médico</Text>
+                    <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Dr. AI</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
+    paddingVertical: 40,
     backgroundColor: Colors.White,
   },
   backgroundImage: {

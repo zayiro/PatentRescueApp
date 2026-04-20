@@ -36,6 +36,7 @@ import { Appointments } from './screens/Appointments';
 import { CollaboratorDetail } from './screens/CollaboratorDetail';
 import MedicaAssistant from './screens/MedicalAssistant';
 import { Menu } from './screens/Menu';
+import { Configuration } from './screens/Configuration';
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -414,6 +415,21 @@ const RootStack = createNativeStackNavigator({
       screen: Menu,
       options: ({ navigation }) => ({
         title: 'Menu',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity>
+        ),
+      }),
+    },
+    Configuration: {
+      screen: Configuration,
+      options: ({ navigation }) => ({
+        title: 'Configuración',
         headerRight: () => (
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
