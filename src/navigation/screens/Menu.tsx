@@ -39,7 +39,7 @@ const menuItems: MenuItem[] = [
   {
     id: 1,
     name: 'Agendar Cita Médica',
-    route: Routes.MedicalConsultation,
+    route: Routes.Specialties,
   },
   {
     id: 2,
@@ -98,9 +98,9 @@ export function Menu() {
     navigation.navigate(Routes.Login);
   }, []);
 
-  const handleMenu = useCallback((item: MenuItem) => {    
+  const handleMenu = useCallback((item: MenuItem) => {
     navigation.navigate(item.route);
-  }, []);
+  }, [navigation]);
 
   if (loading) return (<LoadingSpinner message='Cargando...' />);
 

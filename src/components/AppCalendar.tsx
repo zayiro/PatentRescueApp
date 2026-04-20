@@ -132,7 +132,8 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
   const selectHour = useCallback( async(hour: string) => {
     await saveAppointment({
         selectedDate: selectedDate,
-        selectedTime: hour
+        selectedTime: hour,
+        step: 4
     });
 
     setModalVisible(false);

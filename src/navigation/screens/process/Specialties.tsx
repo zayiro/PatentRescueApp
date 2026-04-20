@@ -8,6 +8,7 @@ import Routes from '@/config/Routes';
 import axios from 'axios';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
+import { ConsultationTypes } from '@/enums/ConsultationTypes';
 
 interface Specialty {
   id: number;
@@ -26,10 +27,13 @@ export default function Specialties() {
 
   const handleSelectSpecialty = useCallback((item: any) => {
     saveAppointment({ 
+      consultationType: ConsultationTypes.MedicalConsultation,
       specialty: {
         id: item.id,
         name: item.name,
-      }
+      },
+      status: 'draft',
+      step: 1
      });
 
      navigation.navigate(Routes.Doctors);

@@ -27,29 +27,18 @@ import { getUserData } from '@/service/firestore';
 import Colors from '@/config/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
-import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import { theme } from '@/config/theme'
 
 const { width, height } = Dimensions.get('window');
 
 export function Home() {
   const navigation = useNavigation();
-  const { saveAppointment } = useAppointmentStorage();
+  const { appointment, saveAppointment } = useAppointmentStorage();
 
   const { user, isAuthenticated, logout } = useAuth();
 
   const [userName, setUserName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  const handleAppointmentType = useCallback((consultationType: number) => {
-    saveAppointment({
-      consultationType,
-      address: consultationType === ConsultationTypes.Telemedicine ? null : undefined,
-      status: 'draft',
-     });
-
-    navigation.navigate(Routes.Specialties);
-  }, [saveAppointment, navigation]);
 
   const onUserData = useCallback( async(userId: string) => {
     try {
@@ -69,13 +58,8 @@ export function Home() {
   useEffect(() => {
     if (user?.uid) {
       onUserData(user.uid)
-    }
-  }, [user, onUserData]);
-
-  const handleLogout = useCallback( async () => {
-    logout();
-    navigation.navigate(Routes.Login);
-  }, []);
+    }    
+  }, [user, onUserData, appointment]);
 
   const scaleValue = new Animated.Value(1);
 
@@ -92,6 +76,19 @@ export function Home() {
       useNativeDriver: true,
     }).start();
   };
+
+  const followAppointment = useCallback(() => {    
+    switch(appointment?.step) {
+      case 1: navigation.navigate(Routes.Doctors) 
+      break;
+      case 2: navigation.navigate(Routes.CollaboratorDetail) 
+      break;
+      case 3: navigation.navigate(Routes.Calendar) 
+      break;
+      case 4: navigation.navigate(Routes.Patient) 
+      break;
+    }
+  }, [appointment, navigation])
     
   if (!isAuthenticated) {
     return (
@@ -173,6 +170,15 @@ export function Home() {
                 </Text>
               </View>
 
+              {appointment && (
+                <View style={{ marginBottom: 30, alignItems: 'center' }}>
+                  <Text style={{ fontWeight: '700', fontSize: 18 }}>¿Necesitas ayuda con tu reserva? 🤔</Text> 
+                  <TouchableOpacity onPress={followAppointment}>
+                    <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Completa el proceso con un solo clic.</Text>                
+                  </TouchableOpacity>
+                </View>
+              )}
+
               <View style={styles.twoColumns}>                
                 <View style={styles.column}>              
                   <TouchableOpacity 
@@ -180,7 +186,7 @@ export function Home() {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     activeOpacity={0.8}
-                    onPress={() => handleAppointmentType(ConsultationTypes.MedicalConsultation)}
+                    onPress={() => navigation.navigate(Routes.Specialties)}
                   >
                     <IconButton icon="calendar-check" size={40} iconColor={theme.colors.primary} />
                     <Text style={[styles.cardName, { color: Colors.SlateGray }]}>Agendar Cita Médica</Text>    
@@ -243,7 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 30,
+    paddingVertical: 50,
     backgroundColor: Colors.White,
   },
   backgroundImage: {

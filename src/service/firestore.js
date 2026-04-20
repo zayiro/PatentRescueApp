@@ -329,3 +329,20 @@ export const getCountNotifications = async (userId) => {
 
     return count;
 }
+
+export const getConfiguration = async (userId) => {
+    let collectionData;
+    try {
+        const colRef = collection(db, "configuration")
+        const q = query(colRef);
+        const Snapshot = await getDocs(q)
+
+        Snapshot.forEach(doc => {
+            collectionData = doc.data()
+        })
+    } catch (err) {
+        handleEmail("Error", "Error on getConfiguration firebase: ", err);
+    }
+
+    return collectionData;
+}

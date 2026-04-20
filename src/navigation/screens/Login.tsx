@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  Platform
+  Platform,
+  Switch
 } from 'react-native';
 import {
   Button,
@@ -20,6 +21,8 @@ import Routes from '@/config/Routes';
 import Colors from '@/config/Colors';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth'
 import { useAuth } from '@/hooks/useAuth'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getConfiguration } from '@/service/firestore';
 
 export function Login() {
   const navigation = useNavigation();
@@ -29,9 +32,75 @@ export function Login() {
   const [loading, setLoading] = useState<boolean>(false);
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const { authenticate, checkBiometrics, requestBiometricSetup } = useBiometricAuth();
   const { user, loginAuth } = useAuth();
+
+  const onConfigApp = useCallback( async() => {        
+    const cached = await AsyncStorage.getItem('configurationApp');
+    if (cached) {
+      const { timestamp } = JSON.parse(cached);
+      const now = Date.now();
+      
+      if (now - timestamp < 10 * 60 * 1000) { // 5 minutos        
+        
+      } 
+
+      const response = await getConfiguration();
+
+      await AsyncStorage.setItem('configurationApp', JSON.stringify({
+        data: response,
+        timestamp: Date.now(),
+      }));
+    }
+    
+
+    
+
+    navigation.navigate(Routes.Home);
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', (e) => {
+       getCredentials()
+    });
+
+    return () => unsubscribe();
+  }, [navigation]);
+
+  const toggleRememberMe = () => {
+    setRememberMe(previousState => !previousState);
+    if (rememberMe) {
+      clearCredentials()      
+    }
+  }
+
+  const saveCredentials = async (email: any, password: any) => {
+     try {
+      await AsyncStorage.setItem('userData', JSON.stringify({ email, password }));
+    } catch (error) {}
+  };
+
+  const getCredentials = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('userData');
+      const userData = jsonValue != null ? JSON.parse(jsonValue) : null;
+      if (userData) {
+        setEmail(userData.email)
+        setPassword(userData.password)
+        setRememberMe(true)
+      } else {
+        setRememberMe(false)
+      }
+    } catch (error) {}
+  };
+
+  const clearCredentials = async () => {
+    try {
+      await AsyncStorage.removeItem('userData');
+    } catch (error) {}
+  };
 
   const follow = useCallback( async() => {
     const check = await checkBiometrics();
@@ -42,9 +111,10 @@ export function Login() {
   }, [])
   // 🔹 Biometría auto al cargar
   useEffect(() => {
-    if (!user) {
+    getCredentials()
+    /*if (!user) {
       follow();
-    }
+    }*/
   }, [user]);
 
   const checkBiometricLogin = async () => {
@@ -75,8 +145,11 @@ export function Login() {
       setLoading(true);
 
       const resp: any = await loginAuth(email, password);
-      if (resp.isSuccess) {        
-        navigation.navigate(Routes.Home);
+      if (resp.isSuccess) {
+        if (rememberMe)
+          saveCredentials(email, password)
+
+        onConfigApp()        
       } else {
         Alert.alert("Error", resp.errorMessage)        
         return false;
@@ -86,7 +159,7 @@ export function Login() {
     } finally {
       setLoading(false);
     }        
-  }, [email, password]);
+  }, [email, password, rememberMe]);
   
   return (
     <>
@@ -140,6 +213,19 @@ export function Login() {
             </TouchableOpacity>
           </View>
 
+          <View style={styles.switchContainer}>
+            <Text>
+              Recordarme
+            </Text>
+            <Switch
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+              thumbColor={rememberMe ? '#f5dd4b' : '#f4f3f4'}
+              ios_backgroundColor={Colors.GreenLight}
+              onValueChange={toggleRememberMe}
+              value={rememberMe}
+            />
+          </View>
+
           <View style={{ marginTop: 15 }}>
             <Button icon="account" mode="contained" onPress={handleLogin} loading={loading} disabled={loading} style={[styles.button]}>
               <Text style={{ fontSize: 20, color: '#fff', paddingVertical: 10 }}>{loading ? 'Validando...' : 'Iniciar sesión'}</Text>
@@ -174,11 +260,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.White,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   button: {
     paddingVertical: 10,
     shadowColor: '#000',
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

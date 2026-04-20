@@ -83,6 +83,7 @@ export function CollaboratorDetail() {
       doctorName: collaboratorDetail.name,
       address: addressSelected,
       service: serviceSelected,
+      step: 3
     });
 
     navigation.navigate(Routes.Calendar);

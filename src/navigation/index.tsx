@@ -42,7 +42,7 @@ const RootStack = createNativeStackNavigator({
     Home: {
       screen: Home,
       options: ({ navigation }) => ({
-        title: 'True Doctor',
+        title: 'TrueDoctor',
         headerRight: () => (         
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Menu)}>
             <Icon
@@ -68,9 +68,18 @@ const RootStack = createNativeStackNavigator({
     },
     Specialties: {
       screen: Specialties,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Especialidades',
-      },
+        headerRight: () => (         
+          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
+            <Icon
+              source="home"
+              color={Colors.SlateGray}
+              size={28}              
+            />
+          </TouchableOpacity> 
+        ),
+      }),
     },
     Calendar: {
       screen: Calendar,
@@ -79,7 +88,7 @@ const RootStack = createNativeStackNavigator({
         headerRight: () => (          
           <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Home)}>
             <Icon
-              source="menu"
+              source="home"
               color={Colors.SlateGray}
               size={28}              
             />

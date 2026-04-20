@@ -1,7 +1,6 @@
 // hooks/useBiometricAuth.ts
 import Routes from '@/config/Routes';
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 

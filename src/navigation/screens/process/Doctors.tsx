@@ -61,8 +61,9 @@ export default function Doctors() {
     setDoctorNameSelected(item.name);
 
     await saveAppointment({ 
-        doctorId: item.id,
-        doctorName: item.name
+      doctorId: item.id,
+      doctorName: item.name,
+      step: 2
     });    
 
     navigation.navigate(Routes.CollaboratorDetail);

@@ -23,6 +23,7 @@ interface AppointmentData {
   selectedTime: string;  
   status: 'draft' | 'confirmed' | 'completed';
   createdAt: string;
+  step: number;
 }
 
 export const useAppointmentStorage = () => {

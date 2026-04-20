@@ -7,6 +7,16 @@ import { createURL } from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import { Navigation } from './navigation';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface CachedData {
+  data: any;
+  lastUpdated: number;
+  isExpired: boolean;
+}
+
+const CACHE_KEY = 'firestore_doctor_list';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 Asset.loadAsync([
   ...NavigationAssets,
@@ -19,7 +29,8 @@ SplashScreen.preventAutoHideAsync();
 const prefix = createURL('/');
 
 export function App() {
-
+  const [data, setData] = useState<CachedData[]>([]);
+  const [lastUpdated, setLastUpdated] = useState(0);
     
   return (
     <PaperProvider theme={theme}>
