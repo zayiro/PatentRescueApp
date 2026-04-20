@@ -7,7 +7,7 @@ import { getAppoinments } from "@/service/firestore";
 import { formatCOP } from "@/utils/priceUtils";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, TouchableOpacity } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
