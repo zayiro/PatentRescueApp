@@ -258,15 +258,15 @@ export const getMedicationData = async (userId) => {
     return collectionData;
 }
 
-export const getAppoinments = async (id) => {
-    let collectionData;
+export const getAppoinments = async (patientId) => {
+    let collectionData = [];
     try {
         const colRef = collection(db, "appointments")
-        const q = query(colRef, where("id", "==", id));
+        const q = query(colRef, where("userId", "==", patientId));
         const Snapshot = await getDocs(q)
 
         Snapshot.forEach(doc => {
-            collectionData = doc.data()
+            collectionData.push(doc.data())
         })
     } catch (err) {
         handleEmail("Error", "Error on getAppoinments firebase: ", err);

@@ -61,23 +61,23 @@ export function CollaboratorDetail() {
   const [value, setValue] = useState<string>('1');
 
   const handleCalendar = useCallback((item: any) => {        
+    if (Object.keys(serviceSelected).length === 0) {
+      Alert.alert('Consulta presencial', 'Por favor seleccione el servicio que necesitas para la consulta');
+      return;
+    }
+    
     if (consultationType == ConsultationTypes.MedicalConsultation) {
       if (collaboratorDetail.address.length == 0) {
         Alert.alert('Aviso', 'No hay direcciones disponibles para este doctor. Por favor selecciona otro doctor.');
         return;
       }
-
-      if (Object.keys(serviceSelected).length === 0) {
-        Alert.alert('Aviso', 'Seleccione un servicio');
-        return;
-      }
-
+      
       if (Object.keys(addressSelected).length === 0) {
-        Alert.alert('Aviso', 'Seleccione un consultorio');
+        Alert.alert('Consulta presencial', 'Por favor seleccione el consultorio y el servicio que necesitas para la consulta');
         return;
       }
     }
-
+    
     saveAppointment({ 
       doctorId: collaboratorDetail.id,
       doctorName: collaboratorDetail.name,

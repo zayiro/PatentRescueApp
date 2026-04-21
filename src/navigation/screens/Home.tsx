@@ -77,7 +77,7 @@ export function Home() {
     }).start();
   };
 
-  const followAppointment = useCallback(() => {    
+  const followAppointment = useCallback(() => { 
     switch(appointment?.step) {
       case 1: navigation.navigate(Routes.Doctors) 
       break;

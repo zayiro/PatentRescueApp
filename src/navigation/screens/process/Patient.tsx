@@ -15,6 +15,7 @@ import uuid from 'react-native-uuid'
 import { formatDateTime } from '@/utils/formatDateTime';
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
+import { capitalizar } from "@/utils/utils";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -93,13 +94,13 @@ export default function Patient() {
 
   const handleSubmit = useCallback(async () => {
       if (!termsAccepted) {
-        Alert.alert('Error', 'Debes aceptar los Términos y Condiciones para continuar.');
+        Alert.alert('Error', 'Debes aceptar los Términos y Condiciones de la reservación para continuar.');
         return false;
       }
 
-      const userId = user?.uid;
+      let userId = user?.uid || '';
 
-      if (!userId) {
+      if (userId == '' || undefined) {
         Alert.alert("Error", "Usuario no cargado.")          
         return false;
       }
@@ -142,10 +143,15 @@ export default function Patient() {
           step: 5
       });      
 
+      let address = appointment?.address;
+      if (appointment?.consultationType === ConsultationTypes.Telemedicine) {
+        address = null
+      }
+
       let data = {
         id: appointmentId,
         creationDate: appointment?.createdAt,
-        userId: appointment?.patientData.userId,
+        userId,
         name: patientName,
         description: appointment?.patientData.description,
         specialty: appointment?.specialty || null,
@@ -153,13 +159,15 @@ export default function Patient() {
         doctorName: appointment?.doctorName,
         consultationType: appointment?.consultationType,
         service: appointment?.service || null,
-        address: appointment?.address || null,        
+        address,        
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
         link: null,
         isPay: 'Pending',
         createdAt,
       }
+
+      console.log(data);
 
       try {
         createDocument(NameCollection.Appointments, appointmentId, data);
@@ -219,8 +227,10 @@ export default function Patient() {
                 </Text>
                 <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
                 <Text>{specialtyName || ''}</Text>
-                <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>
-                <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
+                {consultationType == ConsultationTypes.MedicalConsultation && (
+                  <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>  
+                )}
+                <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
                 <Text>Hora: {selectedTime}</Text>
               </View>
 
@@ -389,6 +399,7 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 10,
     shadowColor: '#000',
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -406,7 +417,7 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 5,
     color: Colors.Gray400,
-    fontSize: 13,
+    fontSize: 16,
     lineHeight: 20,
   },
   inputContainer: {

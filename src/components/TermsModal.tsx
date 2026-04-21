@@ -50,6 +50,7 @@ export default function TermsModal({ visible, onAccept, onClose }: TermsModalPro
           <Text style={styles.sectionTitle}>3. Pagos</Text>
           <Text style={styles.paragraph}>
             El pago se realiza al reservar. Aceptamos tarjetas de crédito y débito. Los precios pueden cambiar, pero te notificaremos antes de cobrar.
+            El doctor o clinica es el responsable de establecer el valor del servicio prestado.
           </Text>
           
           {/* Más secciones... */}

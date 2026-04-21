@@ -23,7 +23,11 @@ export default function Summary() {
     const selectedDate = appointment?.selectedDate;
     const selectedTime = appointment?.selectedTime;
     const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
-    const address = appointment?.address || null;
+    let address = appointment?.address;
+
+    if (consultationType === ConsultationTypes.Telemedicine) {
+      address = null
+    }
     
     const [loading, setLoading] = useState<boolean>(false);
     const [appointmentData, setAppointmentData] = useState<any>(null);
@@ -65,8 +69,8 @@ export default function Summary() {
               </Text>
               <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
               <Text>{specialtyName || ''}</Text>
-              {address && consultationType === ConsultationTypes.MedicalConsultation ? (
-                <Text style={{ marginTop: 5 }}>{address.name + ' ' + address.location}</Text>
+              {consultationType === ConsultationTypes.MedicalConsultation ? (
+                <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : '' }</Text>
               ): null}
               <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
               <Text>Hora: {selectedTime}</Text>             
@@ -84,6 +88,8 @@ export default function Summary() {
                 <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>              
               </>
             )}
+
+            <Text variant="bodyMedium" style={{ marginBottom: 20, color: Colors.Teal }}>Es muy importante que nos confirmes tu asistencia.</Text>
             
             <Button icon="check" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
               <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Confirmar cita'}</Text>

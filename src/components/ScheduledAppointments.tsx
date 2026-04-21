@@ -14,6 +14,9 @@ import dayjs from 'dayjs';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Colors from '@/config/Colors';
 import { Button, Divider } from 'react-native-paper';
+import { getAppoinments } from '@/service/firestore';
+import { ConsultationTypes } from '@/enums/ConsultationTypes';
+import { formatPrice } from '@/utils/priceUtils';
 
 interface Cita {
   id: string;
@@ -32,7 +35,7 @@ interface DetalleCitaProps {
 }
 
 const ScheduledAppointments = ({ patientId }: any) => {
-  const [citas, setCitas] = useState<Cita[]>([]);
+  const [citas, setCitas] = useState<any>([]);
   const [modalDetalleVisible, setModalDetalleVisible] = useState(false);
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,8 +80,14 @@ const ScheduledAppointments = ({ patientId }: any) => {
           doctorImage: 'https://via.placeholder.com/80/4CAF50/FFFFFF?text=CL',
         },
       ];
-      
-      setCitas(datosPrueba);
+
+      console.log(patientId);
+      const response = await getAppoinments(patientId);
+      if (response) {
+        console.log(response);      
+        setCitas(response);
+
+      }
     } catch (error) {
       Alert.alert('Error', 'No se pudieron cargar las citas');
     } finally {
@@ -102,7 +111,7 @@ const ScheduledAppointments = ({ patientId }: any) => {
           onPress: async () => {
             try {
               // await fetch(`https://tu-api.com/appointments/${citaId}/cancel`, { method: 'POST' });
-              setCitas(citas.filter(cita => cita.id !== citaId));
+              setCitas(citas.filter((cita: { id: any; }) => cita.id !== citaId));
               Alert.alert('Cancelada', 'Cita cancelada exitosamente');
             } catch (error) {
               Alert.alert('Error', 'No se pudo cancelar');
@@ -114,57 +123,79 @@ const ScheduledAppointments = ({ patientId }: any) => {
   };
 
   const renderCita = ({ item }: { item: any }) => {
-    const fechaFormateada = dayjs(item.fecha).format('DD/MM/YYYY');
-    const esProxima = dayjs(item.fecha).isAfter(dayjs(), 'day');
+    const fechaFormateada = dayjs(item.selectedDate).format('DD/MM/YYYY');
+    const esProxima = dayjs(item.selectedDate).isAfter(dayjs(), 'day');
+    const estado = 'confirmada';
     
     return (
       <View style={{ borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, marginBottom: 16, backgroundColor: 'white' }}>
         <View style={{ padding: 16 }}>
-            <View style={styles.citaHeader}>
-            <View style={[styles.iconoEstado, { backgroundColor: getColorEstado(item.estado) }]}>
+          <View style={styles.citaHeader}>
+            <View style={[styles.iconoEstado, { backgroundColor: getColorEstado(estado) }]}>
                 <Ionicons 
-                name={getIconoEstado(item.estado)} 
+                name={getIconoEstado(estado)} 
                 size={20} 
-                color="white" 
+                color={Colors.White} 
                 />
             </View>
-            <Text style={styles.estadoTexto}>{item.estado.toUpperCase()}</Text>
-            </View>
+            <Text style={styles.estadoTexto}>{estado.toUpperCase()}</Text>
+          </View>
 
-            <View style={styles.citaInfo}>
-            <Text style={styles.doctorNombre}>{item.doctor}</Text>
-            <Text style={styles.especialidad}>{item.especialidad}</Text>
+          <View style={styles.citaInfo}>
+            <Text style={styles.doctorNombre}>{item.name}</Text>
+            <Text style={{ marginTop: 5, fontWeight: '700', color: Colors.SlateGray }}>{item.doctorName}</Text>
+            <Text style={styles.especialidad}>{item.specialty.name}</Text>
+            <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 3 }}>{item.consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }</Text>
             <View style={styles.fechaHora}>
-                <Ionicons name="calendar-outline" size={16} color="#6b7280" />
-                <Text style={styles.fechaTexto}>{fechaFormateada} - {item.hora}</Text>
+              <Ionicons name="calendar-outline" size={16} color="#6b7280" />              
+              <Text style={styles.fechaTexto}>{fechaFormateada} - {item.selectedTime}</Text>
             </View>
-            <Text style={styles.ubicacion}>{item.ubicacion}</Text>
-            </View>
-
-            {esProxima && (
-            <TouchableOpacity 
-                style={styles.botonCancelar} 
-                onPress={() => cancelarCita(item.id)}
-            >
-                <Ionicons name="close-circle" size={20} color="#ef4444" />
-                <Text style={styles.textoCancelar}>Cancelar</Text>
-            </TouchableOpacity>
+            
+            {item.consultationType == ConsultationTypes.MedicalConsultation && (
+              <>
+                <Text style={[styles.ubicacion, { fontWeight: '700' }]}>{item.address.name}</Text>
+                <Text style={styles.ubicacion}>{item.address.location}</Text>              
+              </>
             )}
+          </View>
 
-            <View style={{ marginTop: 12, marginBottom: 20 }}>
-                <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Ingresar a la conferencia</Text>
+          <Text style={{ paddingHorizontal: 12, marginTop: 10, fontSize: 16, fontWeight: '700', marginBottom: 3 }}>Servicio seleccionado</Text>
+          <Text style={{ paddingHorizontal: 12, color: '#9ca3af', fontSize: 16 }}>{item.service.name}</Text>
+          <Text style={{ paddingHorizontal: 12, color: '#9ca3af', fontWeight: '700' }}>{formatPrice(item.service.price)}</Text>
+
+          <TouchableOpacity 
+            style={styles.botonCancelar} 
+            onPress={() => cancelarCita(item.id)}
+          >
+            <Ionicons name="calendar" size={20} color={Colors.Violet} />
+            <Text style={styles.textoModificar}>Modificar cita</Text>
+          </TouchableOpacity>
+
+          {item.consultationType == ConsultationTypes.Telemedicine && (
+            <View style={{ marginTop: 12, marginBottom: 20, paddingHorizontal: 12 }}>
+              <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Ingresar a la conferencia</Text>
             </View>
+          )}                    
         </View>
 
         <Divider />
 
         <View style={{ marginVertical: 18, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
+          {item.isPay === 'Pending' && (
             <Button icon="cart-check" mode="contained" onPress={() => Alert.alert('Pago', 'Funcionalidad de pago en desarrollo')}>
-                Pagar
+              Pagar
             </Button>
-            <Button icon="cart-check" mode="contained" onPress={() => Alert.alert('Cancelar', 'Funcionalidad de cancelación en desarrollo')}>
-                Cancelar
+          )}
+
+          {item.isPay === 'Paid' && (
+            <Text style={{ color: Colors.Teal, fontWeight: '700' }}>Reserva pagada</Text>
+          )}
+
+          {esProxima && (
+            <Button icon="close-circle" buttonColor={Colors.Red} mode="contained" onPress={() => cancelarCita(item.id)}>
+              Cancelar
             </Button>
+          )}
         </View>
       </View>
     );
@@ -188,18 +219,14 @@ const ScheduledAppointments = ({ patientId }: any) => {
     }
   };
 
-  if (loading) {
-    return (
-      <LoadingSpinner message="Cargando..." />
-    );
-  }
+  if (loading) return (<LoadingSpinner message="Cargando información..." />);
 
   return (
     <View style={styles.container}>      
       <FlatList
         data={citas}
         renderItem={renderCita}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         scrollIndicatorInsets={{ right: 2 }}
         contentContainerStyle={styles.listaContenido}
@@ -226,7 +253,7 @@ const styles = StyleSheet.create({
     flex: 1,                    // Ocupa espacio disponible
     marginLeft: 12,             // Espacio desde icono estado
 },
-    vacioSubtexto: {
+  vacioSubtexto: {
   fontSize: 16,
   color: '#9ca3af',
   textAlign: 'center',
@@ -309,6 +336,13 @@ const styles = StyleSheet.create({
     color: '#ef4444',
     fontSize: 14,
     fontWeight: '600',
+  },
+  textoModificar: {
+    marginLeft: 6,
+    color: Colors.Violet,
+    fontSize: 14,
+    fontWeight: '600',
+    textDecorationLine: 'underline'
   },
   listaContenido: {
     paddingBottom: 100,
