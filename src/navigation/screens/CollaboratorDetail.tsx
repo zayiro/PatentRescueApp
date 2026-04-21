@@ -34,6 +34,7 @@ import { theme } from '@/config/theme';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import Routes from '@/config/Routes';
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
+import { AppointmentStep } from '@/enums/AppointmentStep';
 
 export function CollaboratorDetail() {
   const { user } = useAuth();
@@ -83,7 +84,7 @@ export function CollaboratorDetail() {
       doctorName: collaboratorDetail.name,
       address: addressSelected,
       service: serviceSelected,
-      step: 3
+      step: AppointmentStep.Calendar
     });
 
     navigation.navigate(Routes.Calendar);

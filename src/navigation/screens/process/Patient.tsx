@@ -16,6 +16,7 @@ import { formatDateTime } from '@/utils/formatDateTime';
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { capitalizar } from "@/utils/utils";
+import { AppointmentStep } from "@/enums/AppointmentStep";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -140,7 +141,7 @@ export default function Patient() {
           },
           status: 'completed',
           createdAt: formatDateTime(new Date(), undefined, 'YYYY-MM-DDTHH:mm:ssZ'),
-          step: 5
+          step: AppointmentStep.Summary
       });      
 
       let address = appointment?.address;

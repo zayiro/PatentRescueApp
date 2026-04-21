@@ -28,6 +28,7 @@ import Colors from '@/config/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
 import { theme } from '@/config/theme'
+import { AppointmentStep } from '@/enums/AppointmentStep';
 
 const { width, height } = Dimensions.get('window');
 
@@ -79,13 +80,13 @@ export function Home() {
 
   const followAppointment = useCallback(() => { 
     switch(appointment?.step) {
-      case 1: navigation.navigate(Routes.Doctors) 
+      case AppointmentStep.Doctors: navigation.navigate(Routes.Doctors) 
       break;
-      case 2: navigation.navigate(Routes.CollaboratorDetail) 
+      case AppointmentStep.CollaboratorDetail: navigation.navigate(Routes.CollaboratorDetail) 
       break;
-      case 3: navigation.navigate(Routes.Calendar) 
+      case AppointmentStep.Calendar: navigation.navigate(Routes.Calendar) 
       break;
-      case 4: navigation.navigate(Routes.Patient) 
+      case AppointmentStep.Patient: navigation.navigate(Routes.Patient) 
       break;
     }
   }, [appointment, navigation])
@@ -171,12 +172,16 @@ export function Home() {
               </View>
 
               {appointment && (
-                <View style={{ marginBottom: 30, alignItems: 'center' }}>
-                  <Text style={{ fontWeight: '700', fontSize: 18 }}>¿Necesitas ayuda con tu reserva? 🤔</Text> 
-                  <TouchableOpacity onPress={followAppointment}>
-                    <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Completa el proceso con un solo clic.</Text>                
-                  </TouchableOpacity>
-                </View>
+                <>
+                {appointment?.step < 5 && (
+                  <View style={{ marginBottom: 30, alignItems: 'center' }}>
+                    <Text style={{ fontWeight: '700', fontSize: 18 }}>¿Necesitas ayuda con tu reserva? 🤔</Text> 
+                    <TouchableOpacity onPress={followAppointment}>
+                      <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>Completa el proceso con un solo clic.</Text>                
+                    </TouchableOpacity>
+                  </View>                
+                )}
+                </>
               )}
 
               <View style={styles.twoColumns}>                

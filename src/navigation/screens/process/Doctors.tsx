@@ -18,6 +18,7 @@ import { Icon } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import { limpiarString } from '@/utils/utils';
+import { AppointmentStep } from '@/enums/AppointmentStep';
 
 export default function Doctors() {
   const theme = useTheme();
@@ -63,7 +64,7 @@ export default function Doctors() {
     await saveAppointment({ 
       doctorId: item.id,
       doctorName: item.name,
-      step: 2
+      step: AppointmentStep.CollaboratorDetail
     });    
 
     navigation.navigate(Routes.CollaboratorDetail);

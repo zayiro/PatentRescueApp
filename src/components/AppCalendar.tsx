@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import { capitalizar } from '@/utils/utils';
 import { Button } from 'react-native-paper';
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
+import { AppointmentStep } from '@/enums/AppointmentStep';
 
 interface CalendarProps {
   doctorId: string;
@@ -133,7 +134,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     await saveAppointment({
         selectedDate: selectedDate,
         selectedTime: hour,
-        step: 4
+        step: AppointmentStep.Patient
     });
 
     setModalVisible(false);
