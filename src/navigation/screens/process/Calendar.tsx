@@ -11,6 +11,8 @@ export default function Calendar() {
     const navigation = useNavigation();
 
     const { appointment } = useAppointmentStorage();
+
+    console.log(appointment);
       
     const doctorId = appointment?.doctorId;
     const doctorName = appointment?.doctorName;

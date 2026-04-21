@@ -3,7 +3,7 @@ import Colors from "@/config/Colors";
 import Routes from "@/config/Routes";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
-import { getAppoinments } from "@/service/firestore";
+import { getAppoinmentById } from "@/service/firestore";
 import { formatCOP } from "@/utils/priceUtils";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet
 import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
+import { capitalizar } from "@/utils/utils";
 
 export default function Summary() {
     const navigation = useNavigation();
@@ -18,16 +19,12 @@ export default function Summary() {
 
     const { appointment } = useAppointmentStorage();
 
-    const appointmentId = appointment?.appointmentId || '';
+    const appointmentId = appointment?.appointmentId;
     const specialtyName = appointment?.specialty.name;
     const selectedDate = appointment?.selectedDate;
     const selectedTime = appointment?.selectedTime;
     const consultationType = appointment?.consultationType ? parseInt(appointment?.consultationType.toString()) : 0;
     let address = appointment?.address;
-
-    if (consultationType === ConsultationTypes.Telemedicine) {
-      address = null
-    }
     
     const [loading, setLoading] = useState<boolean>(false);
     const [appointmentData, setAppointmentData] = useState<any>(null);
@@ -36,9 +33,16 @@ export default function Summary() {
       navigation.navigate(Routes.ThankYouPage, { appointmentId: appointmentId }); 
     }, [appointmentId, navigation]);
 
-  const getAppointmentDetails = useCallback( async(appointmentId: string) => {
-    const result: any = await getAppoinments(appointmentId)    
-    setAppointmentData(result);
+  const getAppointmentDetails = useCallback( async(appointmentId: any) => {
+    setLoading(true)
+    try {
+      const result: any = await getAppoinmentById(appointmentId)    
+      setAppointmentData(result);
+    } catch(error) {
+      console.log('Un error se presento cargando la información')
+    } finally {
+      setLoading(false)
+    }
   }, []);
 
   useEffect(() => {
@@ -62,39 +66,50 @@ export default function Summary() {
           showsVerticalScrollIndicator={false}
           scrollEnabled={true}
           nestedScrollEnabled={true}
-        >                     
-          <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                {consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
-              </Text>
-              <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-              <Text>{specialtyName || ''}</Text>
-              {consultationType === ConsultationTypes.MedicalConsultation ? (
-                <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : '' }</Text>
-              ): null}
-              <Text>{dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-              <Text>Hora: {selectedTime}</Text>             
-          </View>
+        >
+          {appointmentData ? (
+            <>
+              <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
+                  <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
+                    {consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                  </Text>
+                  <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
+                  <Text>{specialtyName || ''}</Text>
+                  
+                  {address && (
+                    <>
+                      <Text style={{ marginTop: 10, fontWeight: '700' }}>{address.name}</Text>
+                      <Text style={{ marginBottom: 5 }}>{address.location}</Text>
+                    </>
+                  )}
 
-          <Divider /> 
+                  <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
+                  <Text>Hora: {selectedTime}</Text>             
+              </View>
 
-          <View style={{ marginTop: 40 }}>
-            <Text style={{ fontWeight: '700', fontSize: 28, color: Colors.Title }}>Servico seleccionado</Text>
-            <Text>{appointmentData?.service.name}</Text>
-            <Text variant="bodyMedium" style={{ marginBottom: 20 }}><Text style={{ fontWeight: '700' }}>{formatCOP(appointmentData?.service.price)} COP</Text></Text>
-            {consultationType === ConsultationTypes.Telemedicine && (
-              <>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
-                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>              
-              </>
-            )}
+              <Divider /> 
 
-            <Text variant="bodyMedium" style={{ marginBottom: 20, color: Colors.Teal }}>Es muy importante que nos confirmes tu asistencia.</Text>
-            
-            <Button icon="check" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
-              <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Confirmar cita'}</Text>
-            </Button>            
-          </View>          
+              <View style={{ marginTop: 40 }}>
+                <Text style={{ fontWeight: '700', fontSize: 28, color: Colors.Title }}>Servico seleccionado</Text>
+                <Text>{appointmentData?.service.name}</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}><Text style={{ fontWeight: '700' }}>{formatCOP(appointmentData?.service.price)} COP</Text></Text>
+                {consultationType === ConsultationTypes.Telemedicine && (
+                  <>
+                    <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Confirmado el pago, se generara el link de la video llamada.</Text>
+                    <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Lo puedes ver en la sección citas programadas</Text>              
+                  </>
+                )}
+
+                <Text variant="bodyMedium" style={{ marginBottom: 20, color: Colors.Teal }}>Es muy importante que nos confirmes tu asistencia.</Text>
+                
+                <Button icon="check" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
+                  <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Confirmar cita'}</Text>
+                </Button>            
+              </View>                      
+            </>
+          ) : (
+            <Text>Cargando información, espere...</Text>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>    
     </>

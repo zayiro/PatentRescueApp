@@ -146,5 +146,6 @@ const styles = StyleSheet.create({
   acceptBtn: {
     marginTop: 10,
     paddingVertical: 8,
+    borderRadius: 12
   },
 });

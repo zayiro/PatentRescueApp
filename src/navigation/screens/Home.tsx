@@ -34,7 +34,7 @@ const { width, height } = Dimensions.get('window');
 
 export function Home() {
   const navigation = useNavigation();
-  const { appointment, saveAppointment } = useAppointmentStorage();
+  const { appointment, clearAppointment } = useAppointmentStorage();
 
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -57,6 +57,10 @@ export function Home() {
   }, []);  
 
   useEffect(() => {
+    if (appointment && appointment?.step === AppointmentStep.Summary) {
+      clearAppointment()
+    }
+
     if (user?.uid) {
       onUserData(user.uid)
     }    

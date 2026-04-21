@@ -2,7 +2,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import Colors from "@/config/Colors";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import { useAuth } from "@/hooks/useAuth";
-import { getAppoinments, updateDocumentCollection } from "@/service/firestore";
+import { getAppoinmentById, updateDocumentCollection } from "@/service/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View, StyleSheet, Alert, TouchableOpacity } from "react-native";
@@ -14,6 +14,7 @@ import Routes from "@/config/Routes";
 import { useRoute } from '@react-navigation/native';
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
+import { PaymentState } from "@/enums/paymentState";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -31,18 +32,18 @@ export default function ThankYouPage() {
     setLoading(true);
 
     try {
-      const result: any = await getAppoinments(appointmentId)
+      const result: any = await getAppoinmentById(appointmentId)
       
       if (result) {
         setAppointmentData(result);
-        const isPay = 'Confirmed'; //si el pago salio confirmado, cambiar por el resultado del response del gateway de pagos
+        const isPay = PaymentState.Paid; //si el pago salio confirmado, cambiar por el resultado del response del gateway de pagos
         
-        if (result.link == '' && result.consultationType == ConsultationTypes.Telemedicine && isPay == 'Confirmed') {
+        if (result.link == null && result.consultationType === ConsultationTypes.Telemedicine && isPay == PaymentState.Paid) {
           onGenerateLink(result, appointmentId);          
         }
       }
     } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar los detalles de la cita. Por favor, intente nuevamente.');
+      Alert.alert('Error', 'No se cargarón los detalles de la cita. Por favor, intente nuevamente.');
     } finally {
       setLoading(false);
     }

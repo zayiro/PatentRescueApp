@@ -17,6 +17,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { capitalizar } from "@/utils/utils";
 import { AppointmentStep } from "@/enums/AppointmentStep";
+import { PaymentState } from "@/enums/paymentState";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -143,32 +144,25 @@ export default function Patient() {
           createdAt: formatDateTime(new Date(), undefined, 'YYYY-MM-DDTHH:mm:ssZ'),
           step: AppointmentStep.Summary
       });      
-
-      let address = appointment?.address;
-      if (appointment?.consultationType === ConsultationTypes.Telemedicine) {
-        address = null
-      }
-
+      
       let data = {
         id: appointmentId,
         creationDate: appointment?.createdAt,
         userId,
         name: patientName,
-        description: appointment?.patientData.description,
-        specialty: appointment?.specialty || null,
+        description,
+        specialty: appointment?.specialty,
         doctorId: appointment?.doctorId,
         doctorName: appointment?.doctorName,
         consultationType: appointment?.consultationType,
-        service: appointment?.service || null,
-        address,        
+        service: appointment?.service,
+        address: appointment?.address,        
         selectedDate: appointment?.selectedDate,
         selectedTime: appointment?.selectedTime,
         link: null,
-        isPay: 'Pending',
+        isPay: PaymentState.Pending,
         createdAt,
       }
-
-      console.log(data);
 
       try {
         createDocument(NameCollection.Appointments, appointmentId, data);

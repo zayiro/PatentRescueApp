@@ -18,19 +18,15 @@ interface Props {
 }
 
 export default function Payments() {
-    const navigation = useNavigation();
-    const { user } = useAuth();
+  const navigation = useNavigation();
+  const { user } = useAuth();
 
-    const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
-    const { appointmentId } = route.params;
-    
-    const [loading, setLoading] = useState<boolean>(false);
-    const [appointment, setAppointment] = useState<any>(null);
+  const route = useRoute<RouteProp<{ Detail: Props }, 'Detail'>>();
+  const { appointmentId } = route.params;
+  
+  const [loading, setLoading] = useState<boolean>(false);
+  const [appointment, setAppointment] = useState<any>(null);
    
-    const handleSubmit = useCallback(async () => {               
-      navigation.navigate(Routes.payment);    
-  }, [navigation]);
-
   const getAppointmentDetails = useCallback( async(appointmentId: string) => {
     setLoading(true)
     const result: any = await getAppoinments(appointmentId)

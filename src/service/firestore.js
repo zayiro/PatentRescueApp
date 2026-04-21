@@ -275,6 +275,24 @@ export const getAppoinments = async (patientId) => {
     return collectionData;
 }
 
+
+export const getAppoinmentById = async (appointmentId) => {
+    let collectionData;
+    try {
+        const colRef = collection(db, "appointments")
+        const q = query(colRef, where("id", "==", appointmentId));
+        const Snapshot = await getDocs(q)
+
+        Snapshot.forEach(doc => {
+            collectionData = doc.data()
+        })
+    } catch (err) {
+        handleEmail("Error", "Error on getAppoinmentById firebase: ", err);
+    }
+
+    return collectionData;
+}
+
 export const userAsyncFunction = async (item) => {
     const docRefUser = doc(db, "users", item.userId);
     const docSnap = await getDoc(docRefUser);

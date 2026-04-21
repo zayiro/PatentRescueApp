@@ -63,7 +63,7 @@ export function CollaboratorDetail() {
 
   const handleCalendar = useCallback((item: any) => {        
     if (Object.keys(serviceSelected).length === 0) {
-      Alert.alert('Consulta presencial', 'Por favor seleccione el servicio que necesitas para la consulta');
+      Alert.alert('Consulta presencial', 'Por favor selecciona el servicio que necesitas para la consulta');
       return;
     }
     
@@ -74,15 +74,15 @@ export function CollaboratorDetail() {
       }
       
       if (Object.keys(addressSelected).length === 0) {
-        Alert.alert('Consulta presencial', 'Por favor seleccione el consultorio y el servicio que necesitas para la consulta');
+        Alert.alert('Consulta presencial', 'Por favor selecciona el consultorio y el servicio que necesitas para la consulta');
         return;
       }
     }
     
-    saveAppointment({ 
+    saveAppointment({
       doctorId: collaboratorDetail.id,
       doctorName: collaboratorDetail.name,
-      address: addressSelected,
+      address: consultationType == ConsultationTypes.MedicalConsultation ? addressSelected : {},
       service: serviceSelected,
       step: AppointmentStep.Calendar
     });
@@ -205,14 +205,6 @@ export function CollaboratorDetail() {
                   </Text>  
                 </View>         
               </View>
-
-              <BottomSheetCustom
-                visible={visible}
-                onClose={() => setVisible(false)}
-                title="Dra. María González 🩺"
-                height={630} // 60% ≈ 400px
-              >                
-              </BottomSheetCustom>
             </View>
            
             <View style={{ marginHorizontal: 15, paddingVertical: 20 }}>
@@ -271,6 +263,12 @@ export function CollaboratorDetail() {
                   ]}
                 />
               </View>
+
+              {consultationType === ConsultationTypes.MedicalConsultation ? (
+                <Text style={{ color:Colors.Violet }}>Selecciona el servicio y el consultorio</Text>
+              ) : (
+                <Text style={{ color:Colors.Violet }}>Selecciona el servicio</Text>
+              )}
 
               <View style={{ paddingVertical: 20 }}>  
 
