@@ -37,6 +37,7 @@ import { CollaboratorDetail } from './screens/CollaboratorDetail';
 import MedicaAssistant from './screens/MedicalAssistant';
 import { Menu } from './screens/Menu';
 import { Configuration } from './screens/Configuration';
+import HeaderRightIcons from '@/components/HeaderRightIcons'
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -44,15 +45,7 @@ const RootStack = createNativeStackNavigator({
       screen: Home,
       options: ({ navigation }) => ({
         title: 'TrueDoctor',
-        headerRight: () => (         
-          <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate(Routes.Menu)}>
-            <Icon
-              source="menu"
-              color={Colors.SlateGray}
-              size={28}              
-            />
-          </TouchableOpacity> 
-        ),
+        headerRight: () => <HeaderRightIcons />,
       }),
     },
     Login: {

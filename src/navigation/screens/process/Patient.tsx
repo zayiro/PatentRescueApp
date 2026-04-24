@@ -277,7 +277,7 @@ export default function Patient() {
                   <View style={{ marginTop: 10 }}>
                     <TextInput
                       label="Apellidos del paciente"        
-                      onChangeText={setFirstName}
+                      onChangeText={setLastName}
                       value={lastName}
                       right={<TextInput.Icon icon="account" color={Colors.iconInput} />}
                       mode="outlined"
