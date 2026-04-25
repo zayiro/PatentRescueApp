@@ -15,6 +15,8 @@ const Colors = {
   Red: "#EF4444",
   Violet: "#600EE6",
   Teal: "#00a085",
+  text: "#30194D",
+  backgroundContent: "#FFFFFF"
 };
 
 export default Colors;

@@ -154,7 +154,7 @@ export function Home() {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
         <ScrollView
-          style={{ flex: 1, backgroundColor: Colors.White }}
+          style={{ flex: 1, backgroundColor: Colors.backgroundContent }}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -252,14 +252,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: Colors.White,
+    backgroundColor: Colors.backgroundContent
   },
   container2: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 40,
-    backgroundColor: Colors.White,
+    backgroundColor: Colors.backgroundContent
   },
   backgroundImage: {
     position: 'absolute',

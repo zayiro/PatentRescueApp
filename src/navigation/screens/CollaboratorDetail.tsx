@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -23,7 +23,6 @@ import {
 } from 'react-native-paper';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigation } from '@react-navigation/native';
-import BottomSheetCustom from '@/components/BottomSheetCustom';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import axios from 'axios';
 import { useAppointmentStorage } from '@/hooks/useAppointmentStorage';
@@ -35,6 +34,7 @@ import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import Routes from '@/config/Routes';
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 import { AppointmentStep } from '@/enums/AppointmentStep';
+import PatientReviews from '@/components/PatientReviews';
 
 export function CollaboratorDetail() {
   const { user } = useAuth();
@@ -349,8 +349,7 @@ export function CollaboratorDetail() {
                 </View>  
 
                 <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Opiniones</Text>
-                  <Text>data informacion</Text> 
+                  <PatientReviews />
                 </View>
               </View>
 
