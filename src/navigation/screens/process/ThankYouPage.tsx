@@ -142,6 +142,13 @@ export default function ThankYouPage() {
                 <Text style={{ marginBottom: 20, fontWeight: '700', fontSize: 28, color: Colors.Title }}>
                   ¡Gracias por reservar con nosotros!
                 </Text>
+                
+                <TouchableOpacity onPress={() => navigation.navigate(Routes.Appointments)}>
+                  <Text>
+                    Podrás encontrar el listado de todos tus cursos matriculados en la siguiente <Text style={{ textDecorationLine: 'underline' }}>sección</Text>
+                  </Text>
+                </TouchableOpacity>
+
                 {appointmentData.consultationType == ConsultationTypes.Telemedicine ? (
                   <>
                   <Text style={{ marginBottom: 10 }}>Para ingresar a la video conferencia, ingrese a la sección <Text style={{ fontWeight: '700' }}>citas programadas</Text> y haga click en el enlace "Entrar a la video conferencia".</Text>

@@ -82,8 +82,8 @@ const ScheduledAppointments = ({ patientId }: any) => {
         },
       ];
 
-      console.log(patientId);
       const response = await getAppoinments(patientId);
+      
       if (response) {
         console.log(response);      
         setCitas(response);

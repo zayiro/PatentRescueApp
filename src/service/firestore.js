@@ -262,7 +262,7 @@ export const getAppoinments = async (patientId) => {
     let collectionData = [];
     try {
         const colRef = collection(db, "appointments")
-        const q = query(colRef, where("userId", "==", patientId));
+        const q = query(colRef, where("userId", "==", patientId), orderBy('createdAt', 'desc'));
         const Snapshot = await getDocs(q)
 
         Snapshot.forEach(doc => {
@@ -274,7 +274,6 @@ export const getAppoinments = async (patientId) => {
 
     return collectionData;
 }
-
 
 export const getAppoinmentById = async (appointmentId) => {
     let collectionData;
