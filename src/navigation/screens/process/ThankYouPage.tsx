@@ -15,6 +15,8 @@ import { useRoute } from '@react-navigation/native';
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 import { PaymentState } from "@/enums/paymentState";
+import { formatPrice } from "@/utils/priceUtils";
+import { capitalizar } from "@/utils/utils";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -125,8 +127,8 @@ export default function ThankYouPage() {
                   {appointmentData.address && appointmentData.consultationType === ConsultationTypes.MedicalConsultation ? (
                     <Text style={{ marginTop: 5 }}>{appointmentData.address ? appointmentData.address.name + ' ' + appointmentData.address.location : ''}</Text>
                   ): null}
-                  <Text>{dayjs(appointmentData.selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY')}</Text>
-                  <Text>Hora: {appointmentData.selectedTime}</Text>     
+                  <Text>{capitalizar(dayjs(appointmentData.selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
+                  <Text>A las {appointmentData.selectedTime}</Text>     
               </View>
 
               <Divider /> 
@@ -160,7 +162,7 @@ export default function ThankYouPage() {
               )}
 
               <Button icon="credit-card-check" mode="contained" onPress={() => navigation.navigate(Routes.Appointments)} style={[styles.button]}>
-                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Pagar en línea</Text>
+                <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>Pagar {formatPrice(appointmentData.service.price)}</Text>
               </Button> 
 
               <View style={styles.footer}>

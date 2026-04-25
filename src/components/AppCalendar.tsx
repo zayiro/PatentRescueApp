@@ -88,7 +88,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
       });
       
       const data = response.data;
-
+      console.log(data);
       setAvailableDates(data.availableDates);
 
       // Crear markedDates para el calendario
@@ -142,18 +142,17 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     navigation.navigate(Routes.Patient);
   }, [selectedDate, navigation])
 
-  const isPastTime = (fechaStr: string | number | dayjs.Dayjs | Date | null | undefined, horaStr: string) => {
+  const isPastTime = (fechaStr: string | number | dayjs.Dayjs | Date | null | undefined, item: any) => {
+    if (!item.available) {
+      return true;
+    }
     const ahora = dayjs();
-    
-    // Parse fecha + hora
-    let hourSplit = horaStr.split('-');
-    let startHour = hourSplit[0].trim(); // "14:30"
-
+    const time = item.time;
     const fechaHoraCita = dayjs(fechaStr)
-      .hour(parseInt(startHour.split(':')[0]))  // 14
-      .minute(parseInt(startHour.split(':')[1])); // 30
-    
-    // Si pasó → return true
+      .hour(parseInt(time.split(':')[0]))  // 14
+      .minute(parseInt(time.split(':')[1])); // 30*/
+        
+    // Si ya pasó la hora → return true
     return fechaHoraCita.isBefore(ahora);
   };
 
@@ -168,17 +167,16 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
     <TouchableOpacity
       style={isPastTime(selectedDate, item) ? styles.hourItemPastTime : styles.hourItem}
       onPress={() => {
-        if (isPastTime(selectedDate, item)) {
-          Alert.alert('Hora no válida', 'No puedes seleccionar una hora que ya pasó, por favor elige otra hora disponible.');
-          return;
-        } else {
-          selectHour(item)
-        }
+        if (item.available) {
+          selectHour(item.time)
+        }       
       }}
       activeOpacity={0.7}
-      //disabled={isPastTime(selectedDate, item)} // Deshabilitar si es hora pasada
+      disabled={isPastTime(selectedDate, item)} // Deshabilitar si es hora pasada
     >
-      <Text style={[styles.hourText]}>{item}</Text>
+      <Text style={[isPastTime(selectedDate, item) ? styles.hourTextItemPastTime : styles.hourText]}>
+        {!item.available ? 'horario agendado ' : item.time}      
+      </Text>
     </TouchableOpacity>
   );
 
@@ -251,7 +249,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
             <FlatList
               data={selectedHours}
               renderItem={renderHourItem}
-              keyExtractor={(item) => item}
+              keyExtractor={(item, index) => item+"_"+index}
               showsVerticalScrollIndicator={false}              
               scrollIndicatorInsets={{ right: 2 }} // ← Indicador un poco más adentro
               contentContainerStyle={styles.horizontalHoursList}
@@ -354,33 +352,34 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   hourItem: {
-    backgroundColor: '#F3F4F6',
-    color: '#374151',
+    backgroundColor: '#d1f7e8',
     paddingHorizontal: 16,  
     paddingTop: 10,
     paddingBottom: 10,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1.5,
     borderColor: '#79d480',
     alignItems: 'center',
     marginBottom: 20
   },
-  hourItemPastTime: {
-    backgroundColor: '#F3F4F6',
-    color: '#374151',
-    paddingHorizontal: 16,  
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#e5ebe6',
-    alignItems: 'center',
-    marginBottom: 20
+  hourTextItemPastTime: {
+    color: Colors.Gray400,
+    fontSize: 22
   },
   hourText: {    
     fontSize: 22,        
   },
-  
+  hourItemPastTime: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,  
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#e5ebe6',
+    alignItems: 'center',
+    marginBottom: 20
+  },    
   // Modal más compacto para horizontal
   modalContent: {
     backgroundColor: Colors.White,    
