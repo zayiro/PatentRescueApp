@@ -17,6 +17,7 @@ import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 import { PaymentState } from "@/enums/paymentState";
 import { formatPrice } from "@/utils/priceUtils";
 import { capitalizar } from "@/utils/utils";
+import { TextConsultationType } from "@/enums/TextConsultationType";
 
 export default function ThankYouPage() {
   const navigation = useNavigation();
@@ -119,29 +120,27 @@ export default function ThankYouPage() {
           {appointmentData && (
             <>
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
-                  <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                    {appointmentData.consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.Title }}>
+                    {appointmentData.consultationType === ConsultationTypes.Telemedicine ? TextConsultationType.Telemedicine : TextConsultationType.MedicalConsultation }
                   </Text>
                   <Text style={{ fontWeight: '700' }}>{appointmentData.doctorName || ''}</Text>
                   <Text>{appointmentData.specialty.name || ''}</Text>
                   {appointmentData.address && appointmentData.consultationType === ConsultationTypes.MedicalConsultation ? (
-                    <Text style={{ marginTop: 5 }}>{appointmentData.address ? appointmentData.address.name + ' ' + appointmentData.address.location : ''}</Text>
+                    <>
+                      <Text style={{ marginTop: 10, fontWeight: '700' }}>{appointmentData.address.name}</Text>
+                      <Text style={{ marginBottom: 5 }}>{appointmentData.address.location}</Text>
+                    </>                    
                   ): null}
                   <Text>{capitalizar(dayjs(appointmentData.selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
-                  <Text>A las {appointmentData.selectedTime}</Text>     
+                  <Text>Hora: {appointmentData.selectedTime}</Text>    
+                  <Text>Duración: 30 minutos</Text>             
               </View>
 
               <Divider /> 
 
               <View style={{ marginTop: 20 }}>
-                <Text style={{ marginBottom: 30, fontWeight: '700', fontSize: 28, color: Colors.Title }}>
+                <Text style={{ marginBottom: 20, fontWeight: '700', fontSize: 28, color: Colors.Title }}>
                   ¡Gracias por reservar con nosotros!
-                </Text>
-                <Text>Puedes ver los detalles de la cita en</Text>
-                <Text style={{ marginBottom: 20 }}> 
-                  <TouchableOpacity onPress={() => navigation.navigate(Routes.Appointments)}>
-                    <Text style={{ textDecorationLine: 'underline', color: Colors.link }}>citas programadas</Text>
-                  </TouchableOpacity>
                 </Text>
                 {appointmentData.consultationType == ConsultationTypes.Telemedicine ? (
                   <>

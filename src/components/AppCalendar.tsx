@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAppointmentStorage } from "@/hooks/useAppointmentStorage";
 import dayjs from 'dayjs';
 import { capitalizar } from '@/utils/utils';
-import { Button } from 'react-native-paper';
+import { Button, Icon, IconButton, List } from 'react-native-paper';
 import { APP_BASE_URL, headerAxiosApp, timeoutAxios } from '@/config/configApp';
 import { AppointmentStep } from '@/enums/AppointmentStep';
 
@@ -64,6 +64,8 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
 
   //const hoy = dayjs().format('YYYY-MM-DD');
   const hoy = dayjs().format('YYYY-MM-DD');
+  const todayString = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
 
   const { appointment, saveAppointment } = useAppointmentStorage();
 
@@ -174,9 +176,14 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
       activeOpacity={0.7}
       disabled={isPastTime(selectedDate, item)} // Deshabilitar si es hora pasada
     >
-      <Text style={[isPastTime(selectedDate, item) ? styles.hourTextItemPastTime : styles.hourText]}>
-        {!item.available ? 'horario agendado ' : item.time}      
-      </Text>
+      <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+        <List.Icon color={item.available ? Colors.GreenLight : Colors.Gray400} icon={'calendar-clock'} />
+        <View style={{ flex: 1, alignItems: 'flex-start',  marginLeft: 15 }}>
+          <Text>{item.available ? 'Horario disponible' : 'Horario reservado'}</Text>
+          <Text style={{ fontWeight: '700' }}>{item.time}</Text>
+        </View>
+        <IconButton icon="chevron-right" size={20} iconColor={Colors.Gray400} />
+      </View>
     </TouchableOpacity>
   );
 
@@ -216,7 +223,7 @@ const AppCalendar = ({ doctorId, doctorName }: CalendarProps) => {
         onDayPress={handleDayPress}        
         theme={calendarTheme}
         enableSwipeMonths={true}
-        minDate={hoy}
+        minDate={todayString}
       />
 
       {/* Modal de horas */}
@@ -352,14 +359,13 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   hourItem: {
-    backgroundColor: '#d1f7e8',
+    backgroundColor: Colors.White,
     paddingHorizontal: 16,  
     paddingTop: 10,
     paddingBottom: 10,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#79d480',
-    alignItems: 'center',
+    borderColor: Colors.GreenLight,
     marginBottom: 20
   },
   hourTextItemPastTime: {
@@ -377,7 +383,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: '#e5ebe6',
-    alignItems: 'center',
     marginBottom: 20
   },    
   // Modal más compacto para horizontal

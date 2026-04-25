@@ -18,6 +18,7 @@ import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { capitalizar } from "@/utils/utils";
 import { AppointmentStep } from "@/enums/AppointmentStep";
 import { PaymentState } from "@/enums/paymentState";
+import { TextConsultationType } from "@/enums/TextConsultationType";
 
 export default function Patient() {
   const navigation = useNavigation();
@@ -217,16 +218,20 @@ export default function Patient() {
           {firstNameSaved.length > 0 && lastNameSaved.length > 0 && (
             <>
               <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-                <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                  {consultationType == ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.Title }}>
+                  {consultationType == ConsultationTypes.Telemedicine ? TextConsultationType.Telemedicine : TextConsultationType.MedicalConsultation }
                 </Text>
                 <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
                 <Text>{specialtyName || ''}</Text>
                 {consultationType == ConsultationTypes.MedicalConsultation && (
-                  <Text style={{ marginTop: 5 }}>{address ? address.name + ' ' + address.location : ''}</Text>  
+                  <>
+                    <Text style={{ marginTop: 10, fontWeight: '700' }}>{address.name}</Text>
+                    <Text style={{ marginBottom: 5 }}>{address.location}</Text>
+                  </>  
                 )}
                 <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
                 <Text>Hora: {selectedTime}</Text>
+                <Text>Duración: 30 minutos</Text>
               </View>
 
               <Divider />

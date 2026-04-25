@@ -74,7 +74,7 @@ export function CollaboratorDetail() {
       }
       
       if (Object.keys(addressSelected).length === 0) {
-        Alert.alert('Consulta presencial', 'Por favor selecciona el consultorio y el servicio que necesitas para la consulta');
+        Alert.alert('Consulta presencial', 'Por favor selecciona el consultorio que prefieras');
         return;
       }
     }

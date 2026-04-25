@@ -12,6 +12,7 @@ import { Button, Text, Divider } from "react-native-paper";
 import dayjs from "@/utils/dayjs";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { capitalizar } from "@/utils/utils";
+import { TextConsultationType } from "@/enums/TextConsultationType";
 
 export default function Summary() {
     const navigation = useNavigation();
@@ -70,8 +71,8 @@ export default function Summary() {
           {appointmentData ? (
             <>
               <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
-                  <Text style={{ fontSize: 28, fontWeight: 'bold', color: Colors.Title }}>
-                    {consultationType === ConsultationTypes.Telemedicine ? 'Telemedicina' : 'Consulta Presencial' }
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.Title }}>
+                    {consultationType === ConsultationTypes.Telemedicine ? TextConsultationType.Telemedicine : TextConsultationType.MedicalConsultation }
                   </Text>
                   <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
                   <Text>{specialtyName || ''}</Text>
@@ -84,13 +85,14 @@ export default function Summary() {
                   )}
 
                   <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
-                  <Text>Hora: {selectedTime}</Text>             
+                  <Text>Hora: {selectedTime}</Text> 
+                  <Text>Duración: 30 minutos</Text>            
               </View>
 
               <Divider /> 
 
               <View style={{ marginTop: 40 }}>
-                <Text style={{ fontWeight: '700', fontSize: 28, color: Colors.Title }}>Servico seleccionado</Text>
+                <Text style={{ fontWeight: '700', fontSize: 24, color: Colors.Title }}>Servico seleccionado</Text>
                 <Text>{appointmentData?.service.name}</Text>
                 <Text variant="bodyMedium" style={{ marginBottom: 20 }}><Text style={{ fontWeight: '700' }}>{formatCOP(appointmentData?.service.price)} COP</Text></Text>
                 {consultationType === ConsultationTypes.Telemedicine && (
@@ -100,7 +102,7 @@ export default function Summary() {
                   </>
                 )}
 
-                <Text variant="bodyMedium" style={{ marginBottom: 20, color: Colors.Teal }}>Es muy importante que nos confirmes tu asistencia.</Text>
+                <Text variant="bodyMedium" style={{ marginBottom: 20 }}>Es muy importante que nos confirmes tu asistencia, <Text style={{ fontWeight: '700' }}>para separar la fecha y hora seleccionada!</Text></Text>
                 
                 <Button icon="check" mode="contained" onPress={handleSubmit} loading={loading} disabled={loading} style={[styles.button]}>
                   <Text style={{ fontSize: 20, color: '#fff', lineHeight: 30 }}>{loading ? 'Validando...' : 'Confirmar cita'}</Text>
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 50,
+    paddingVertical: 30,
     backgroundColor: '#FFF',
   },
   button: {
