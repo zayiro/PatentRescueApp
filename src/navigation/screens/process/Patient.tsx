@@ -141,7 +141,7 @@ export default function Patient() {
               description: description.trim(),
           },
           status: 'completed',
-          createdAt: formatDateTime(new Date(), undefined, 'YYYY-MM-DDTHH:mm:ssZ'),
+          createdAt,
           step: AppointmentStep.Summary
       });      
       

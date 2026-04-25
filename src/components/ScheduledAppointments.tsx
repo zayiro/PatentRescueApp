@@ -17,6 +17,7 @@ import { Button, Divider } from 'react-native-paper';
 import { getAppoinments } from '@/service/firestore';
 import { ConsultationTypes } from '@/enums/ConsultationTypes';
 import { formatPrice } from '@/utils/priceUtils';
+import { formatDateTime } from '@/utils/formatDateTime';
 
 interface Cita {
   id: string;
@@ -142,6 +143,7 @@ const ScheduledAppointments = ({ patientId }: any) => {
           </View>
 
           <View style={styles.citaInfo}>
+            <Text>{formatDateTime(item.creationDate, undefined, 'YYYY-MM-DD HH:mm')}</Text>
             <Text style={styles.doctorNombre}>{item.name}</Text>
             <Text style={{ marginTop: 5, fontWeight: '700', color: Colors.SlateGray }}>{item.doctorName}</Text>
             <Text style={styles.especialidad}>{item.specialty.name}</Text>
