@@ -13,6 +13,7 @@ import {
 import {
   Avatar,
   Button,
+  Card,
   Chip,
   Icon,
   List,
@@ -44,7 +45,7 @@ export function CollaboratorDetail() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: appointment?.doctorName,
+      title: collaboratorDetail.name,
       headerShadowVisible: false,
       headerTitleStyle: { fontWeight: 'bold' },
     });
@@ -155,13 +156,28 @@ export function CollaboratorDetail() {
             scrollEnabled={true}
             nestedScrollEnabled={true}
           >
-            <View style={{ flex: 1 }}>       
-              <View style={styles.header}>
-                <Avatar.Image size={100} source={{ uri: collaboratorDetail.photo }} />
-                <Text><StarRating rating={collaboratorDetail.rating} /></Text>
-                <Text variant='titleLarge' style={styles.name}>{collaboratorDetail.name}</Text>
-                <Text variant='titleMedium'>{collaboratorDetail.selectedSpecialty}</Text>
-              </View>
+            <View style={{ flex: 1 }}>
+              <Card style={{ margin: 15, backgroundColor: Colors.LightGray }}>
+                <Card.Content>
+                  <View style={{ flexDirection: 'row' }}>                    
+                    <Avatar.Image size={100} source={{ uri: collaboratorDetail.photo }} />                    
+                    <View style={{ flex: 1, paddingLeft: 10, paddingTop: 10 }}>
+                      <Text style={{ marginBottom: 5 }}>10 años de experiencia</Text>
+                      <Text>{collaboratorDetail.selectedSpecialty}</Text>
+                      <Text><StarRating rating={collaboratorDetail.rating} /></Text>
+                      
+                    </View>
+                  </View>
+                  <View style={{ marginTop: 10, marginBottom: 5 }}>
+                    <Text style={{ fontWeight: '700' }}>{collaboratorDetail.name}</Text>
+                  </View>
+                  <View>
+                    <Text>
+                      {collaboratorDetail.experience}
+                    </Text>
+                  </View>
+                </Card.Content>
+              </Card>
                     
               <List.Section>
                 <List.Subheader>
@@ -210,10 +226,6 @@ export function CollaboratorDetail() {
             <View style={{ marginHorizontal: 15, paddingVertical: 20 }}>
                     
               <View>
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Experiencia</Text>
-                  <Text>{collaboratorDetail.experience}</Text> 
-                </View> 
                 <View style={{ marginBottom: 10 }}>
                   <Text style={{ fontWeight: '700' }}>Expecialista en</Text>
                   <Text style={{ marginLeft: 5}}>
@@ -376,7 +388,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 5,
-    paddingVertical: 40,
+    paddingVertical: 20,
     backgroundColor: '#FFF',
   },
   button: {
@@ -388,7 +400,7 @@ const styles = StyleSheet.create({
   }, 
   lista: { flexGrow: 0, paddingHorizontal: 10 },
   header: { alignItems: 'center', marginBottom: 10 },
-  name: { fontSize: 18, fontWeight: 'bold', marginTop: 10, alignContent: 'center' },
+  name: { fontSize: 17, fontWeight: '700' },
   card: { margin: 10 },
   btn: { 
     paddingVertical: 8,

@@ -9,10 +9,9 @@ import dayjs from "@/utils/dayjs";
 import { useNavigation } from "@react-navigation/native";
 import { serverTimestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert, Animated } from "react-native";
-import { Button, TextInput, Text, Divider, Checkbox, RadioButton } from "react-native-paper";
+import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View, StyleSheet, Alert, Animated, Image } from "react-native";
+import { Button, TextInput, Text, Divider, Checkbox, RadioButton, Card } from "react-native-paper";
 import uuid from 'react-native-uuid'
-import { formatDateTime } from '@/utils/formatDateTime';
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { ConsultationTypes } from "@/enums/ConsultationTypes";
 import { capitalizar } from "@/utils/utils";
@@ -197,6 +196,16 @@ export default function Patient() {
     }
   }, [user]);
 
+  const leftComponent = ({ size }: { size: number }) => (
+    <Image
+      resizeMode="cover"
+      style={{ width: 60, height: 60, borderRadius: 60 / 2 }}
+      source={{
+        uri: 'https://fastly.picsum.photos/id/168/700/700.jpg?hmac=TdvFbMN99iyiBXtZ2P8n01OzXKYcEjCkhlSnsZZ5LyU',
+      }}
+    />
+  );
+
   if (loading) return (<LoadingSpinner message='Cargando información...' />);
 
   return (
@@ -217,23 +226,32 @@ export default function Patient() {
         >
           {firstNameSaved.length > 0 && lastNameSaved.length > 0 && (
             <>
-              <View style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.Title }}>
-                  {consultationType == ConsultationTypes.Telemedicine ? TextConsultationType.Telemedicine : TextConsultationType.MedicalConsultation }
-                </Text>
-                <Text style={{ fontWeight: '700' }}>{appointment?.doctorName || ''}</Text>
-                <Text>{specialtyName || ''}</Text>
-                {consultationType == ConsultationTypes.MedicalConsultation && (
-                  <>
-                    <Text style={{ marginTop: 10, fontWeight: '700' }}>{address.name}</Text>
-                    <Text style={{ marginBottom: 5 }}>{address.location}</Text>
-                  </>  
-                )}
-                <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
-                <Text>Hora: {selectedTime}</Text>
-                <Text>Duración: 30 minutos</Text>
-              </View>
-
+              <Card style={{ paddingTop: 10, }}>
+                <Card.Title
+                  title={appointment?.doctorName || ''}
+                  subtitle={specialtyName || ''}
+                  titleStyle={{ fontWeight: '700', paddingLeft: 15 }}
+                  subtitleStyle={{ fontSize: 14, paddingLeft: 15 }}
+                  left={leftComponent}
+                />
+                <Card.Content>
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={{ fontWeight: '700' }}>
+                      {consultationType == ConsultationTypes.Telemedicine ? TextConsultationType.Telemedicine : TextConsultationType.MedicalConsultation }
+                    </Text>
+                    {consultationType == ConsultationTypes.MedicalConsultation && (
+                      <>
+                        <Text style={{ marginTop: 10, fontWeight: '700' }}>{address.name}</Text>
+                        <Text style={{ marginBottom: 5 }}>{address.location}</Text>
+                      </>  
+                    )}
+                    <Text>{capitalizar(dayjs(selectedDate).locale('es').format('dddd, DD [de] MMMM [del] YYYY'))}</Text>
+                    <Text>Hora: {selectedTime}</Text>
+                    <Text>Duración: 30 minutos</Text>
+                  </View>
+                </Card.Content>
+              </Card>
+                            
               <Divider />
 
               <View>
